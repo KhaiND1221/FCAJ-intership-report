@@ -6,7 +6,7 @@
 
 Welcome to my **FCJ Internship Report**. This web application documents my 12-week journey as a **Supervisor & AI Engineer** at **AWS Vietnam (Team NeuraX)**. It serves as a comprehensive portfolio, tracking my weekly progress, technical workshops, events participated, and self-evaluation.
 
-**Live Demo:** [View Report](https://<YOUR_GITHUB_USERNAME>.github.io/hei-intership-report/) *(Update link after deployment)*
+**Live Demo:** [View Report](https://hei1sme.github.io/hei-FCAJ-intership-report/)
 
 ## 🚀 Key Features
 
@@ -44,7 +44,7 @@ hei-intership-report/
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/<YOUR_USERNAME>/hei-intership-report.git
+    git clone https://github.com/hei1sme/hei-FCAJ-intership-report.git
     cd hei-intership-report
     ```
 
