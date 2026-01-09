@@ -231,7 +231,7 @@ export function Sidebar() {
 
                 {/* Logo Area - Minimalist */}
                 <div className="h-20 flex items-center justify-center border-b border-gray-800 bg-[#0f1b2d]">
-                    <img src="./FCJ-logo.png" alt="FCJ" className="h-10 opacity-90 hover:opacity-100 transition-opacity" />
+                    <img src={`${import.meta.env.BASE_URL}FCJ-logo.png`} alt="FCJ" className="h-10 opacity-90 hover:opacity-100 transition-opacity" />
                 </div>
 
                 {/* Search - Modern Pill/Floating feel */}

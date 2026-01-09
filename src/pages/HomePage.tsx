@@ -70,7 +70,7 @@ export function HomePage() {
                         {/* Large Profile Photo - spans full height of student info */}
                         <div className="w-72 h-[420px] rounded-2xl overflow-hidden shadow-2xl ring-4 ring-accent-orange/30 transition-transform hover:scale-[1.02] duration-300">
                             <img
-                                src="./profile.png"
+                                src={`${import.meta.env.BASE_URL}profile.png`}
                                 alt={profile.name}
                                 className="w-full h-full object-cover"
                             />
