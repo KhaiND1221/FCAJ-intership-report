@@ -11,11 +11,8 @@ import { SectionHeader } from '../components/SectionHeader';
 export function HomePage() {
     const { language } = useLanguage();
 
-    // Load markdown content based on language
     const content = loadContent('home', language);
 
-    // Report content sections
-    // Report content sections
     const reportSections = [
         {
             path: '/worklog',
@@ -62,65 +59,59 @@ export function HomePage() {
                     </p>
                 </div>
 
-                {/* Main Content - Two Column Layout */}
-                {/* Main Content - Two Column Layout */}
-                <div className="flex flex-col lg:flex-row gap-10">
-                    {/* Left Column - Profile Photo ONLY */}
-                    <div className="shrink-0 flex flex-col items-start w-full lg:w-auto">
-                        {/* Large Profile Photo - spans full height of student info */}
-                        <div className="w-72 h-[420px] rounded-2xl overflow-hidden shadow-2xl ring-4 ring-accent-orange/30 transition-transform hover:scale-[1.02] duration-300">
-                            <img
-                                src={`${import.meta.env.BASE_URL}profile.png`}
-                                alt={profile.name}
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-                    </div>
+                <div className="max-w-6xl mx-auto flex flex-col gap-12">
 
-                    {/* Right Column - Student Info + Dashboard Grid */}
-                    <div className="flex-1 flex flex-col gap-8">
-                        {/* 1. Student Info Section */}
-                        <div className="bg-white/50 backdrop-blur-sm rounded-3xl p-8 border border-gray-100 shadow-sm relative overflow-hidden group">
-                            {/* Decorative background accent */}
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-accent-orange/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-accent-orange/10 transition-colors duration-500" />
+                    {/* Top Section: Profile & Info */}
+                    <div className="flex flex-col lg:flex-row gap-8 items-stretch">
 
-                            <MarkdownRenderer content={content} />
+                        {/* 1. Profile Photo */}
+                        <div className="w-full lg:w-1/3 flex-shrink-0">
+                            <div className="h-full min-h-[400px] rounded-2xl overflow-hidden shadow-2xl ring-4 ring-accent-orange/30 transition-transform hover:scale-[1.01] duration-300">
+                                <img
+                                    src={`${import.meta.env.BASE_URL}profile.png`}
+                                    alt={profile.name}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
                         </div>
 
-                        {/* 2. Report Content Dashboard Grid */}
-                        <div>
-                            <SectionHeader
-                                icon="default"
-                                title={language === 'en' ? 'Report Content' : 'Nội Dung Báo Cáo'}
-                            />
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-6">
-                                {reportSections.map((section) => (
-                                    <Link key={section.path} to={section.path} className="group relative overflow-hidden">
-                                        <div className="bg-white/60 backdrop-blur-md border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-lg hover:border-accent-orange/30 transition-all duration-300 h-full flex items-center gap-4 group-hover:-translate-y-1">
-
-                                            {/* Icon Box */}
-                                            <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-accent-orange/10 group-hover:text-accent-orange transition-colors duration-300">
-                                                {section.icon}
-                                            </div>
-
-                                            {/* Text Content */}
-                                            <div className="flex-1">
-                                                <h3 className="font-semibold text-gray-700 group-hover:text-accent-orange transition-colors">
-                                                    {section.label[language]}
-                                                </h3>
-                                            </div>
-
-                                            {/* Arrow */}
-                                            <div className="text-gray-300 group-hover:text-accent-orange transform translate-x-0 group-hover:translate-x-1 transition-all">
-                                                <ChevronRight size={20} />
-                                            </div>
-                                        </div>
-                                    </Link>
-                                ))}
+                        {/* 2. Student Info - Auto Height, No Scrollbar */}
+                        <div className="w-full lg:w-2/3">
+                            <div className="h-full bg-white/50 backdrop-blur-sm rounded-3xl p-8 border border-gray-100 shadow-sm relative overflow-hidden group flex flex-col justify-center">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-accent-orange/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-accent-orange/10 transition-colors duration-500" />
+                                <div className="relative z-10">
+                                    <MarkdownRenderer content={content} />
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    {/* Bottom Section: Report Content Grid */}
+                    <div className="flex flex-col gap-6">
+                        <SectionHeader
+                            icon="default"
+                            title={language === 'en' ? 'Report Content' : 'Nội Dung Báo Cáo'}
+                        />
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {reportSections.map((section) => (
+                                <Link key={section.path} to={section.path} className="group relative overflow-hidden">
+                                    <div className="bg-white/60 backdrop-blur-md border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-lg hover:border-accent-orange/30 transition-all duration-300 flex items-center gap-4 group-hover:-translate-y-1 h-full">
+                                        <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-accent-orange/10 group-hover:text-accent-orange transition-colors duration-300 shrink-0">
+                                            {section.icon}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="font-semibold text-gray-800 group-hover:text-accent-orange transition-colors text-base">
+                                                {section.label[language]}
+                                            </h3>
+                                        </div>
+                                        <ChevronRight size={20} className="text-gray-300 group-hover:text-accent-orange" />
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </AnimatedPage>
