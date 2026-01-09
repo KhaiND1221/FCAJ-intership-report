@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "homepage": "https://<YOUR_GITHUB_USERNAME>.github.io/hei-intership-report",
+  "homepage": "https://hei1sme.github.io/hei-FCAJ-intership-report/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
