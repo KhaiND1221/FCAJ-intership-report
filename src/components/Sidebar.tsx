@@ -103,7 +103,7 @@ const searchableContent = [
 
 export function Sidebar() {
     const [isOpen, setIsOpen] = useState(false);
-    const [expanded, setExpanded] = useState<string[]>(['worklog', 'workshop']);
+    const [expanded, setExpanded] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [showSearchResults, setShowSearchResults] = useState(false);
     const { language, setLanguage, t } = useLanguage();
