@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
     ChevronDown,
@@ -15,6 +15,7 @@ import {
     Wrench,
     CheckCircle,
     MessageSquare,
+    Check,
     LucideIcon
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -32,6 +33,8 @@ interface SearchResult {
     path: string;
     context?: string;
 }
+
+const VISITED_PAGES_KEY = 'internship-report-visited-pages';
 
 const navigation: NavItem[] = [
     { id: 'home', path: '/', label: { en: 'Internship Report', vi: 'Báo Cáo Thực Tập' }, icon: Home },
@@ -106,9 +109,32 @@ export function Sidebar() {
     const [expanded, setExpanded] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [showSearchResults, setShowSearchResults] = useState(false);
+    const [visitedPages, setVisitedPages] = useState<string[]>(() => {
+        try {
+            const saved = sessionStorage.getItem(VISITED_PAGES_KEY);
+            return saved ? JSON.parse(saved) : [];
+        } catch {
+            return [];
+        }
+    });
     const { language, setLanguage, t } = useLanguage();
     const location = useLocation();
     const navigate = useNavigate();
+
+    // Mark current page as visited
+    const markAsVisited = useCallback((path: string) => {
+        setVisitedPages((prev) => {
+            if (prev.includes(path)) return prev;
+            const updated = [...prev, path];
+            sessionStorage.setItem(VISITED_PAGES_KEY, JSON.stringify(updated));
+            return updated;
+        });
+    }, []);
+
+    // Mark current page as visited when location changes
+    useEffect(() => {
+        markAsVisited(location.pathname);
+    }, [location.pathname, markAsVisited]);
 
     // Auto-expand parent when child is active
     useEffect(() => {
@@ -159,6 +185,7 @@ export function Sidebar() {
         const hasChildren = item.children && item.children.length > 0;
         const isExpanded = expanded.includes(item.id);
         const isActive = location.pathname === item.path || (hasChildren && location.pathname.startsWith(item.path) && item.path !== '/');
+        const isVisited = visitedPages.includes(item.path);
         const Icon = item.icon;
 
         return (
@@ -187,15 +214,26 @@ export function Sidebar() {
                             </span>
                         </div>
 
-                        {hasChildren && (
-                            <div
-                                role="button"
-                                onClick={(e) => toggleExpand(item.id, e)}
-                                className="p-1 rounded hover:bg-white/10 text-gray-500 transition-colors"
-                            >
-                                {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                            </div>
-                        )}
+                        <div className="flex items-center gap-2">
+                            {/* Visited checkmark - shown for all visited pages */}
+                            {isVisited && (
+                                <Check
+                                    size={16}
+                                    strokeWidth={2.5}
+                                    className="text-accent-orange"
+                                />
+                            )}
+
+                            {hasChildren && (
+                                <div
+                                    role="button"
+                                    onClick={(e) => toggleExpand(item.id, e)}
+                                    className="p-1 rounded hover:bg-white/10 text-gray-500 transition-colors"
+                                >
+                                    {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                                </div>
+                            )}
+                        </div>
                     </NavLink>
                 </div>
 
