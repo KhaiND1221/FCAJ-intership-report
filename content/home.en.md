@@ -1,17 +1,17 @@
 # Student Information
 
-**Full Name:** Le Nguyen Gia Hung
+**Full Name:** Nguyen Dinh Khai
 
-**Phone Number:** 0394282851
+**Phone Number:** 0386427059
 
-**Email:** heiontheway@gmail.com
+**Email:** khdt123a@gmail.com
 
 **University:** FPT University HCMC
 
-**Major:** Artificial Intelligence
+**Major:** Information Assurance
 
 **Internship Company:** Amazon Web Services Vietnam
 
-**Internship Position:** Supervisor & AI Engineer - Team NeuraX
+**Internship Position:** Security Engineer - Team NeuraX
 
 **Internship Duration:** From 05/01/2026 to 05/04/2026
