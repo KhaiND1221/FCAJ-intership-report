@@ -40,42 +40,10 @@ hei-intership-report/
     └── utils/            # Helper functions (Markdown loader)
 ```
 
-## 🏃‍♂️ Running Locally
-
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/hei1sme/hei-FCAJ-intership-report.git
-    cd hei-intership-report
-    ```
-
-2.  **Install dependencies**
-    ```bash
-    npm install
-    ```
-
-3.  **Start development server**
-    ```bash
-    npm run dev
-    ```
-
-## 📦 Deployment
-
-This project is configured to deploy to **GitHub Pages**.
-
-1.  **Build the project**
-    ```bash
-    npm run build
-    ```
-
-2.  **Deploy**
-    ```bash
-    npm run deploy
-    ```
-
 ## 📝 Author
 
-**Le Nguyen Gia Hung**
-*   **Role**: Supervisor & AI Engineer
+**Nguyen Dinh Khai**
+*   **Role**: Security Engineer
 *   **Team**: NeuraX
 *   **Internship**: AWS Vietnam (First Cloud Journey)
 
