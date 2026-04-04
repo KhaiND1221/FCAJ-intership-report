@@ -1,58 +1,52 @@
 ### Week 4 Objectives
 
-* Officially finalize and approve NutriTrack 2.0 as the team project.
-* Attend AWS re:Invent 2025 Recap Event at AWS Vietnam Office.
-* Begin detailed architecture design for NutriTrack.
-* Learn Amazon Cognito and S3 advanced features.
+* Transition fully into the **Security Engineer** role for the NeuraX (NutriTrack) project.
+* Secure infrastructure access for the development team using AWS IAM Identity Center.
+* Implement end-user Identity Management using Amazon Cognito.
+* Enforce strict IAM policies across the development environment.
 
-### Tasks carried out this week
+### Tasks to be carried out this week
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Team Meeting: Final Project Decision <br>&emsp; + Presented refined NutriTrack 2.0 proposal <br>&emsp; + Unanimous vote to proceed <br>&emsp; + Assigned roles for each member | 26/01/2026 | 26/01/2026 | [Proposal v2.0] |
-| 2 | - **AWS re:Invent 2025 Recap Event** <br>&emsp; + Location: AWS Office (Floor 26 & 36) <br>&emsp; + Full-day event with 5 technical sessions <br>&emsp; + Networking with AWS Solution Architects | 27/01/2026 | 27/01/2026 | [Event Notes] |
-| 3 | - Event Recap & Knowledge Sharing <br>&emsp; + Documented key learnings from re:Invent <br>&emsp; + Shared insights about Bedrock Agents with team <br>&emsp; + Explored SageMaker Unified Studio relevance | 28/01/2026 | 28/01/2026 | [Internal Wiki] |
-| 4 | - Deep Dive: Amazon Cognito <br>&emsp; + User Pools vs Identity Pools <br>&emsp; + JWT token management <br>&emsp; + Social login integration | 29/01/2026 | 29/01/2026 | [Cognito Docs](https://docs.aws.amazon.com/cognito/) |
-| 5 | - Architecture Design Session <br>&emsp; + Created high-level architecture diagram <br>&emsp; + Selected core AWS services for NutriTrack <br>&emsp; + Defined data flow and API structure | 30/01/2026 | 30/01/2026 | [Architecture Draft v1] |
-| 6-7 | - S3 Advanced Features Study <br>&emsp; + S3 Event Notifications <br>&emsp; + S3 Lifecycle Policies <br>&emsp; + S3 Transfer Acceleration <br>&emsp; + Updated website with Week 4 content | 31/01/2026 | 01/02/2026 | [S3 Docs](https://docs.aws.amazon.com/s3/) |
+| 1 | - Developer Access Security <br>&emsp; + Setup Identity Federation with AWS Single Sign-On (SSO) <br>&emsp; + Assign permission sets for the Dev team | 26/01/2026 | 26/01/2026 | [Identity Federation with SSO](https://000012.awsstudygroup.com) |
+| 2 | - IAM Guardrails <br>&emsp; + Configure IAM Permission Boundaries <br>&emsp; + Ensure developers cannot elevate their own privileges | 27/01/2026 | 27/01/2026 | [IAM Permission Boundaries](https://000030.awsstudygroup.com) |
+| 3 | - User Authentication Setup <br>&emsp; + Create an Amazon Cognito User Pool for NutriTrack <br>&emsp; + Configure password policies and MFA for end-users | 28/01/2026 | 28/01/2026 | [Auth with Cognito](https://000081.awsstudygroup.com/) |
+| 4 | - Identity Pools & Access <br>&emsp; + Setup Cognito Identity Pool <br>&emsp; + Map IAM roles for authenticated and unauthenticated users | 29/01/2026 | 29/01/2026 | [Cognito Auth Docs] |
+| 5 | - Cross-Domain Identity <br>&emsp; + Test Cross-Domain Authentication with Amazon Cognito <br>&emsp; + Validate JWT tokens issued by Cognito | 30/01/2026 | 30/01/2026 | [Cross-Domain Cognito](https://000141.awsstudygroup.com) |
+| 6-7 | - Security Audit & Sync <br>&emsp; + Audit all current Lambda execution roles and prune excessive permissions <br>&emsp; + Weekly sync with the development team | 31/01/2026 | 01/02/2026 | [Audit Logs] |
 
 ### Week 4 Achievements
 
-* **Project Milestone:**
-  * ✅ **NutriTrack 2.0 officially approved** as the team's capstone project.
-  * Defined project scope: AI-powered nutrition tracking with meal recommendations.
-  * Team roles assigned: Backend (2), Frontend (1), AI/ML (1), DevOps (1).
+* **Robust Developer Access:**
+  * Replaced manual IAM user creations with **AWS IAM Identity Center (SSO)**, allowing the team to log in using centralized credentials.
+  * Successfully applied **IAM Permission Boundaries** preventing developers from accidentally granting administrative permissions to the Lambda functions they deploy.
 
-* **AWS re:Invent 2025 Recap Event Learnings:**
-  * **Amazon Bedrock & Nova Models:** Learned about Nova Text-to-Speech, Nova Canvas, and fine-tuning capabilities for local context (e.g., Vietnamese laws).
-  * **Bedrock Agents (Agentic AI):** Understood Orchestration/Flow, Memory, Policy/Guardrails, and Evaluation components.
-  * **SageMaker Unified Studio:** Discovered the unified IDE for Data Engineers, Data Scientists, and AI Engineers with one-click onboarding.
-  * **Amazon S3 Updates:** Learned about S3 Tables (Iceberg support) and S3 Vector for native vector storage with significant cost reduction.
-  * **OpenSearch Agentic Search:** MCP integration, Agent Memory, and specialized agents for analytics.
-  * **Advanced RAG:** Nova Multimodal Embeddings for video/image search.
+* **Client Authentication Layer:**
+  * Provisioned the **Amazon Cognito** architecture (User Pools + Identity Pools).
+  * Enforced strict password standards (min 8 chars, uppercase, lowercase, special characters) and enabled optional MFA for NutriTrack users.
+  * Verified JWT token generation and access controls for downstream API calls.
 
-* **Technical Knowledge:**
-  * Mastered Amazon Cognito authentication patterns.
-  * Understood S3 advanced features relevant to NutriTrack (image upload, lifecycle).
+* **Security Posture:**
+  * The first architectural component of the Secure Serverless backend is live. User authentication is decoupled from the business logic.
+  * Completed the first audit of the team's Lambda execution roles, enforcing the Principle of Least Privilege.
 
 ### Challenges & Lessons
 
 * **Challenges:**
-  * Information overload from AWS re:Invent event (5 sessions in one day).
-  * Mapping new services to NutriTrack requirements required careful evaluation.
+  * Configuring Cognito to correctly issue tokens and mapping them to AWS credentials via Identity Pools was complex due to the interplay between the two pool types.
+  * Debugging `AccessDenied` errors caused by the newly implemented Permission Boundaries frustrated the developers initially.
 
 * **Solutions:**
-  * Created structured notes during each session with "Relevance to NutriTrack" column.
-  * Team review meeting the next day to filter actionable insights.
+  * Created a brief internal guide explaining the difference between User Pools (for authentication) and Identity Pools (for AWS resource authorization).
+  * Used CloudTrail to pinpoint exactly which API calls were hitting the boundary limits and modified policies accordingly.
 
 * **Lessons Learned:**
-  * AWS continuously innovates; staying updated is essential for architecture decisions.
-  * Bedrock Agents could be a future enhancement for NutriTrack (conversational meal planning).
-  * S3 Vector might reduce costs compared to OpenSearch for simple vector use cases.
+  * Implementing security guardrails often causes initial friction with developers. Communication and clear logging are essential to resolve disputes.
+  * Offloading authentication to managed services like Cognito significantly reduces security liability compared to writing custom login logic.
 
 ### Next Week Plan
 
-* Complete detailed architecture diagram with all AWS services.
-* Set up AWS development environment (IAM roles, S3 buckets).
-* Begin Proposal documentation for submission.
-* Research Amazon API Gateway and Lambda best practices.
+* Move from Access Management to Application Protection.
+* Deploy **AWS Web Application Firewall (WAF)** to protect the team's API Gateway.
+* Analyze and mitigate common OWASP Top 10 vulnerabilities (like SQLi or XSS) hitting our endpoints.

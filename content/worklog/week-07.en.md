@@ -1,60 +1,45 @@
 ### Week 7 Objectives
 
-* Implement Cognito authentication for NutriTrack.
-* Complete remaining Lambda functions for AI features.
-* Set up CI/CD pipeline with GitHub Actions.
-* Start frontend development with React.
+* Build continuous visibility into the NeuraX infrastructure for potential attacks.
+* Deploy Amazon GuardDuty for Machine Learning-backed threat detection.
+* Monitor internal network activity using VPC Flow Logs.
+* Establish automated alerts via Amazon SNS and CloudWatch Alarms.
 
 ### Tasks carried out this week
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Amazon Cognito Setup <br>&emsp; + Created User Pool for NutriTrack <br>&emsp; + Configured password policies <br>&emsp; + Set up email verification | 16/02/2026 | 16/02/2026 | [Cognito Docs](https://docs.aws.amazon.com/cognito/) |
-| 2 | - Cognito Integration <br>&emsp; + Integrated Cognito with API Gateway <br>&emsp; + Created JWT authorizer <br>&emsp; + Tested protected endpoints | 17/02/2026 | 17/02/2026 | [Auth Config] |
-| 3 | - AI Lambda Functions <br>&emsp; + Created Bedrock integration Lambda <br>&emsp; + Implemented meal suggestion endpoint <br>&emsp; + Added nutrition analysis function | 18/02/2026 | 18/02/2026 | [Bedrock Integration](https://docs.aws.amazon.com/bedrock/) |
-| 4 | - CI/CD Pipeline Setup <br>&emsp; + Created GitHub Actions workflow <br>&emsp; + Configured SAM deploy steps <br>&emsp; + Set up dev/staging environments | 19/02/2026 | 19/02/2026 | [GitHub Actions] |
-| 5 | - Frontend Project Setup <br>&emsp; + Initialized React + Vite project <br>&emsp; + Configured Tailwind CSS <br>&emsp; + Set up project structure | 20/02/2026 | 20/02/2026 | [Frontend Repo] |
-| 6-7 | - Frontend Development (Part 1) <br>&emsp; + Created authentication pages (Login, Register) <br>&emsp; + Integrated AWS Amplify for Cognito <br>&emsp; + Tested auth flow end-to-end | 21/02/2026 | 22/02/2026 | [UI Components] |
+| 1 | - Threat Detection Initialization <br>&emsp; + Enable AWS GuardDuty across the specific AWS account <br>&emsp; + Monitor baseline resource behavior | 16/02/2026 | 16/02/2026 | [Threat Detection with GuardDuty](https://000098.awsstudygroup.com) |
+| 2 | - Network Visibility <br>&emsp; + Enable VPC Flow Logs for the primary backend VPC <br>&emsp; + Push Flow Logs data to CloudWatch | 17/02/2026 | 17/02/2026 | [Network Monitoring with VPC Flow Logs](https://000074.awsstudygroup.com) |
+| 3 | - Advanced Telemetry <br>&emsp; + Setup Advanced Monitoring with CloudWatch Metrics <br>&emsp; + Create an operational dashboard | 18/02/2026 | 18/02/2026 | [Advanced Monitoring with CloudWatch](https://000029.awsstudygroup.com) |
+| 4 | - Alerting Systems <br>&emsp; + Setup Amazon Simple Notification Service (SNS) topics <br>&emsp; + Connect SNS to our internal NeuraX Discord webhook | 19/02/2026 | 19/02/2026 | [Messaging Systems with SNS](https://000077.awsstudygroup.com) |
+| 5 | - Security Triggers <br>&emsp; + Configure EventBridge rules to route GuardDuty high-severity findings to SNS <br>&emsp; + Set CloudWatch alarms for an unusual number of 4xx/5xx API Gateway errors | 20/02/2026 | 20/02/2026 | [CloudWatch Advanced Workshop](https://000036.awsstudygroup.com) |
+| 6-7 | - Penetration Demo <br>&emsp; + Simulated unusual API calls (Port scanning/Brute force) from an external IP <br>&emsp; + Verified alerts triggering | 21/02/2026 | 22/02/2026 | [Internal Testing] |
 
 ### Week 7 Achievements
 
-* **Authentication:**
-  * Cognito User Pool created with secure password policy.
-  * API Gateway protected with JWT authorizer.
-  * Email verification flow working.
+* **Proactive Security Awareness:**
+  * Adopted **Amazon GuardDuty**. Our AWS environment is now continually monitored against compromised credentials, abnormal API data exfiltration, and malicious IP communications without needing custom-built agents.
+  * Achieved 100% visibility into network traffic hitting our subnets through **VPC Flow Logs**, enabling the team to detect lateral movement or unauthorized SSH attempts.
 
-* **AI Integration:**
-  * Bedrock Claude 3 Sonnet integrated for meal suggestions.
-  * Nutrition analysis function providing calorie/macro breakdown.
-  * Rate limiting configured to manage Bedrock API costs.
-
-* **CI/CD:**
-  * Automated deployment pipeline: Push → Test → Deploy.
-  * Separate stacks for dev and staging environments.
-  * Rollback mechanism configured.
-
-* **Frontend:**
-  * React + Vite + Tailwind project initialized.
-  * Login and Registration pages completed.
-  * AWS Amplify configured for Cognito integration.
+* **Real-time Incident Communication:**
+  * Successfully piped security events directly from AWS EventBridge to SNS, which perfectly triggers messages into our NeuraX Discord channel. Discovered threats are no longer buried in log screens.
 
 ### Challenges & Lessons
 
 * **Challenges:**
-  * Bedrock API responses are async; needed proper error handling.
-  * Cognito token refresh flow was complex to implement.
+  * GuardDuty requires an extended learning period to establish a baseline. Generating meaningful test findings was difficult because it categorizes "safe" test-traffic properly.
+  * VPC Flow Logs generate an enormous amount of data, blowing up CloudWatch storage costs during the first 24 hours.
 
 * **Solutions:**
-  * Implemented retry logic with exponential backoff for Bedrock.
-  * Used AWS Amplify library which handles token refresh automatically.
+  * Utilized GuardDuty's built-in "Generate Sample Findings" feature to ensure the EventBridge/SNS integration was functioning without needing to actually compromise the platform.
+  * Changed the VPC Flow Logs destination from CloudWatch directly to Amazon S3 with an aggregation interval to optimize the retention cost.
 
 * **Lessons Learned:**
-  * Bedrock prompts need careful engineering for consistent outputs.
-  * AWS Amplify simplifies frontend auth integration significantly.
+  * Too much telemetry without filtering is just noise. Tuning the severity limits before pushing alerts to Discord is critical to avoid "alert fatigue" among the development team.
 
 ### Next Week Plan
 
-* Complete all frontend pages (Dashboard, Meal Log, Analytics).
-* Implement image upload and meal photo analysis.
-* Integrate frontend with all backend APIs.
-* Begin unit testing for Lambda functions.
+* Drill down into the specific privacy concerns of medical/fitness data.
+* Set up **Amazon Macie** to evaluate S3 bucket privacy patterns.
+* Conduct Data Anomaly Detection on our stored backups.

@@ -1,59 +1,48 @@
 ### Week 9 Objectives
 
-* Complete end-to-end testing for all user flows.
-* Set up CloudWatch monitoring and alarms.
-* Implement performance optimizations.
-* Fix remaining bugs and polish UI.
+* Aggregate all distributed security signals into a single pane of glass using AWS Security Hub.
+* Benchmark the NeuraX architecture against international compliance standards.
+* Implement centralized governance using AWS Firewall Manager.
+* Conduct vulnerability scanning on compute instances using Amazon Inspector.
 
 ### Tasks carried out this week
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - End-to-End Testing <br>&emsp; + Created E2E test suite with Playwright <br>&emsp; + Tested auth flow, meal logging, analytics <br>&emsp; + Automated regression tests | 02/03/2026 | 02/03/2026 | [E2E Tests] |
-| 2 | - CloudWatch Setup (Part 1) <br>&emsp; + Created CloudWatch dashboards <br>&emsp; + Configured Lambda metrics visualization <br>&emsp; + Set up API Gateway metrics | 03/03/2026 | 03/03/2026 | [CloudWatch Docs](https://docs.aws.amazon.com/cloudwatch/) |
-| 3 | - CloudWatch Setup (Part 2) <br>&emsp; + Created alarms for error rates <br>&emsp; + Set up SNS notifications <br>&emsp; + Configured cost monitoring alerts | 04/03/2026 | 04/03/2026 | [Alarm Config] |
-| 4 | - Performance Optimization <br>&emsp; + Optimized Lambda cold starts (Provisioned Concurrency) <br>&emsp; + Enabled DynamoDB DAX for caching <br>&emsp; + Implemented CloudFront for static assets | 05/03/2026 | 05/03/2026 | [Optimization Report] |
-| 5 | - Bug Fixes <br>&emsp; + Fixed 8 remaining bugs from testing <br>&emsp; + Improved error messages <br>&emsp; + Enhanced mobile responsiveness | 06/03/2026 | 06/03/2026 | [Bug Tracker] |
-| 6-7 | - UI Polish <br>&emsp; + Added loading animations <br>&emsp; + Improved accessibility (ARIA labels) <br>&emsp; + Final UI review and fixes | 07/03/2026 | 08/03/2026 | [UI Review] |
+| 1 | - Centralized Posture <br>&emsp; + Enable AWS Security Hub <br>&emsp; + Ingest findings from GuardDuty, Macie, and WAF | 02/03/2026 | 02/03/2026 | [Security Compliance with AWS Security Hub](https://000018.awsstudygroup.com) |
+| 2 | - Compliance Benchmarking <br>&emsp; + Run CIS AWS Foundations Benchmark checks <br>&emsp; + Identity critical non-compliant resources (e.g., missing MFA, open security groups) | 03/03/2026 | 03/03/2026 | [CIS Benchmark] |
+| 3 | - Security Governance <br>&emsp; + Explore centralized WAF rule deployment via AWS Firewall Manager <br>&emsp; + Set consistent security policies across potential multi-account setups | 04/03/2026 | 04/03/2026 | [Security Governance with Firewall Manager](https://000097.awsstudygroup.com) |
+| 4 | - Vulnerability Scanning <br>&emsp; + Deploy Amazon Inspector for our EC2 Bastion host / batch containers <br>&emsp; + Review CVE severity rankings | 05/03/2026 | 05/03/2026 | [Systems Patching with EC2 Image Builder](https://000099.awsstudygroup.com) |
+| 5 | - Patch Management <br>&emsp; + Test automated patching pipelines <br>&emsp; + Enforce golden image compliance | 06/03/2026 | 06/03/2026 | [Systems Manager] |
+| 6-7 | - Pre-Audit Prep <br>&emsp; + Discuss Security Hub severity scores with the team <br>&emsp; + Assign remediation tasks for next week | 07/03/2026 | 08/03/2026 | [Internal Meeting] |
 
 ### Week 9 Achievements
 
-* **Testing:**
-  * E2E test suite with 15 automated scenarios.
-  * 95% pass rate on all critical paths.
-  * Regression test runs on every deployment.
+* **Automated Compliance:**
+  * Enabled **AWS Security Hub**, providing the team with a comprehensive 360-degree view of our security posture. We successfully mapped our resources against the prestigious **CIS AWS Foundations Benchmark** to pinpoint architectural gaps.
+  
+* **Centralized Perimeter Management:**
+  * Adopted the conceptual framework of **AWS Firewall Manager** to automatically apply baseline WAF rules to every new API Gateway the developers spawn, preventing rogue APIs from going public unprotected.
 
-* **Monitoring:**
-  * CloudWatch dashboard with real-time metrics.
-  * Alarms configured: Error Rate > 5%, Latency > 3s, Cost > Budget.
-  * SNS email notifications for critical alerts.
-
-* **Performance:**
-  * Cold start reduced from 3s to 0.5s with Provisioned Concurrency.
-  * DynamoDB queries 80% faster with DAX caching.
-  * Static assets load 60% faster with CloudFront CDN.
-
-* **Bug Fixes:**
-  * 8 bugs fixed, 0 critical issues remaining.
-  * Mobile experience significantly improved.
+* **Compute Vulnerability Mitigation:**
+  * Configured **Amazon Inspector** to continuously assess our EC2 bastion hosts (used for private DB access) for zero-day vulnerabilities. Automated patching is now streamlined.
 
 ### Challenges & Lessons
 
 * **Challenges:**
-  * Provisioned Concurrency increased costs significantly.
-  * DAX setup required VPC configuration changes.
+  * Security Hub highlighted over 100+ "High Severity" findings immediately upon activation, overwhelming the team and creating a false sense of panic.
+  * Translating compliance requirements (like password rotation or MFA for root) into actionable developer workflows.
 
 * **Solutions:**
-  * Used scheduled scaling for Provisioned Concurrency (peak hours only).
-  * Created private subnets for DAX within existing VPC.
+  * Filtered the Security Hub findings to focus exclusively on public-facing internet resources and high-risk IAM escalations first. Organized findings by resource instead of timeline.
+  * Conducted a mini-workshop with the team to enable MFA on all personal IAM profiles systematically.
 
 * **Lessons Learned:**
-  * Performance optimization must balance cost vs. speed.
-  * Monitoring should be set up early, not as an afterthought.
+  * Compliance score is an iterative metric, not an immediate goal. Attempting to fix every finding on day one is impossible. Triage and prioritization are the hallmarks of a good security engineer.
+  * The cloud attack surface is massive. Centralized visibility tools are mandatory, not optional, for an enterprise-level project.
 
 ### Next Week Plan
 
-* Conduct load testing and stress testing.
-* Implement cost optimization strategies.
-* Prepare demo for stakeholder presentation.
-* Start writing technical documentation.
+* Move from passive defense to active offense.
+* Initiate the **Hands-On Penetration Testing** phase for the NutriTrack backend.
+* Attempt simulated attacks using Burp Suite against our API Gateway and Cognito endpoints to find logic flaws.

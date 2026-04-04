@@ -2,59 +2,53 @@
 
 * Establish a complete digital working environment for the NeuraX team (Discord, GitHub, Trello).
 * Successfully organize the Kick-off Meeting and align operational processes.
-* Research basic AWS services by role (IAM, S3, EC2).
-* Brainstorm project ideas for the internship.
+* Learn fundamental AWS services via Cloud Journey (Explore AWS Services).
+* Set up personal reporting and cost management on AWS.
 
 ### Tasks to be carried out this week:
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Set up Discord Server "NeuraX HQ" <br>&emsp; + Create channels by functional groups <br>&emsp; + Assign Roles for 5 members | 05/01/2026 | 06/01/2026 | - |
-| 2 | - Initialize GitHub Organization <br>&emsp; + Create 3 Repositories <br>&emsp; + Configure Branch Protection Rules <br>&emsp; + Invite members | 06/01/2026 | 07/01/2026 | [NeuraX-HQ](https://github.com/NeuraX-HQ) |
-| 3 | - Prepare Kick-off Meeting Agenda <br> - Host meeting with 5 members <br>&emsp; + Confirm roles & timeline <br>&emsp; + Discuss operating regulations | 07/01/2026 | 08/01/2026 | - |
-| 4 | - Learn AWS basics <br>&emsp; + What is AWS and main service groups <br>&emsp; + Compute, Storage, Networking, Database <br> - Research AWS IAM <br>&emsp; + Users, Groups, Policies <br>&emsp; + MFA Configuration | 08/01/2026 | 09/01/2026 | [AWS IAM Docs](https://docs.aws.amazon.com/IAM/) |
-| 5 | - Research Amazon S3 <br>&emsp; + Bucket, Objects, Permissions <br>&emsp; + Storage Classes <br> - Learn Amazon EC2 basics <br>&emsp; + Instance types, AMI <br>&emsp; + Security Groups | 09/01/2026 | 10/01/2026 | [AWS S3 Docs](https://docs.aws.amazon.com/s3/) |
-| 6 | - Brainstorm project ideas with team <br>&emsp; + Discuss possible directions <br>&emsp; + No specific idea finalized yet | 10/01/2026 | 11/01/2026 | - |
-| 7 | - Setup Personal Report Website <br>&emsp; + Using React + Vite <br>&emsp; + Deploy to GitHub Pages | 11/01/2026 | 11/01/2026 | - |
+| 1 | - Set up Discord Server "NeuraX HQ" <br>&emsp; + Create channels by functional groups <br>&emsp; + Assign Roles for members | 05/01/2026 | 06/01/2026 | - |
+| 2 | - Initialize GitHub Organization <br>&emsp; + Create Repositories <br>&emsp; + Configure Branch Protection Rules <br>&emsp; + Invite members | 06/01/2026 | 07/01/2026 | [NeuraX-HQ](https://github.com/NeuraX-HQ) |
+| 3 | - Prepare Kick-off Meeting Agenda <br> - Host meeting with team members <br>&emsp; + Confirm roles & timeline <br>&emsp; + Discuss operating regulations | 07/01/2026 | 08/01/2026 | - |
+| 4 | - Explore AWS Services (Part 1) <br>&emsp; + Compute Essentials with Amazon Elastic Compute Cloud (EC2) <br>&emsp; + Database Essentials with Amazon Relational Database Service (RDS) | 08/01/2026 | 09/01/2026 | [Cloud Journey](https://cloudjourney.awsstudygroup.com/1-explore/) |
+| 5 | - Explore AWS Services (Part 2) <br>&emsp; + Static Website Hosting with Amazon S3 <br>&emsp; + Initial exploration of Identity and Access Management (IAM) | 09/01/2026 | 10/01/2026 | [Cloud Journey](https://cloudjourney.awsstudygroup.com/1-explore/) |
+| 6 | - Cost Management <br>&emsp; + Managing Costs with AWS Budgets <br>&emsp; + Setting up budget alarms for the team account | 10/01/2026 | 11/01/2026 | [AWS Budgets Labs](https://cloudjourney.awsstudygroup.com/) |
+| 7 | - Setup Personal Report Website <br>&emsp; + Deploying basic structure | 11/01/2026 | 11/01/2026 | - |
 
 ### Week 1 Achievements:
 
-* 100% of team members (5/5) have fully joined all work channels:
-  * Discord Server "NeuraX HQ"
-  * GitHub Organization
-  * Trello Board
+* Fully established the NeuraX team workspace:
+  * Discord Server "NeuraX HQ", GitHub Organization, Trello Board initialized.
 
 * Published 02 important documents:
-  * Kick-off Meeting Minutes
-  * Team Operating Regulations
+  * Kick-off Meeting Minutes and Team Operating Regulations.
 
-* Gained basic knowledge of AWS:
-  * Understood overview of AWS service groups (Compute, Storage, Networking, Database)
-  * Learned about IAM: Users, Groups, Policies and permission management
-  * Researched S3: Bucket, Objects, Storage Classes
-  * Familiarized with EC2: Instance types, AMI, Security Groups
+* Gained basic knowledge of AWS Core Services:
+  * Familiarized with EC2: Instance types, AMI, basic access.
+  * Researched Amazon S3 for object storage and static hosting.
+  * Briefly explored RDS provisioning and IAM users.
+  * Successfully set up an AWS Budget alarm to monitor internship test account costs.
 
-* Completed Personal Report Website setup and deployed to GitHub Pages.
-
-* Brainstormed ideas with the team but no specific idea finalized yet, need to continue discussion next week.
+* Completed Personal Report Website basic setup.
 
 ### Challenges & Lessons:
 
 * **Challenges:** 
-  * Configuring Branch Protection Rules on GitHub initially failed due to insufficient Admin permissions for the Bot account.
-  * AWS services are numerous and complex, requiring time to fully understand.
+  * Understanding the billing structures of different AWS regions and service tiers was confusing initially.
+  * AWS services have overlapping features which made it hard to grasp the big picture.
 
 * **Solutions:** 
-  * Referenced GitHub Docs and granted Owner/Admin permissions to the Bot account.
-  * Focused on learning one service at a time, starting with the most basic ones (IAM, S3, EC2).
+  * Heavily relied on the AWS Budget alarm lab to ensure we don't accidentally incur costs.
+  * Followed the structured "Explore AWS Services" path on Cloud Journey strictly instead of random tutorials.
 
 * **Lessons Learned:** 
-  * Need to carefully check Organization permissions before configuration.
-  * Should have a clear AWS learning roadmap, avoid learning too many services at once.
+  * Always set up a Billing/Cost Budget alarm before launching any service.
+  * Creating a clear learning path is better than reading scattered documentation.
 
 ### Next Week Plan:
 
-* Continue learning more basic AWS services (VPC, Lambda, API Gateway).
-* Go to the company to get familiar with the actual working environment and meet the team.
-* Main goal: Finalize the official project idea in Week 2.
-* Start drafting the Proposal if the idea is confirmed.
+* Deep dive into Network Security (VPC, Subnets) and foundational IAM concepts.
+* Complete basic Cloud Fundamentals labs or courses.
+* Discuss initial architecture requirements for the NeuraX project from a secure networking standpoint.

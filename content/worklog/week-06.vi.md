@@ -1,54 +1,48 @@
 ### Mục tiêu Tuần 6
 
-* Nộp và được phê duyệt NutriTrack Proposal.
-* Bắt đầu triển khai backend với Lambda functions.
-* Thiết lập SAM CLI cho phát triển local.
-* Tạo OpenAPI specification cho tất cả endpoints.
+* Đảm bảo Dữ liệu lưu trữ (At-rest) và Dữ liệu truyền tải (In-transit) được mã hóa đồng bộ trong hệ sinh thái NeuraX.
+* Quản lý và tiến hành xoay vòng khóa mật mã qua AWS Key Management Service (KMS).
+* Loại bỏ việc "code cứng" (hard-code) các tham số bí mật bằng AWS Secrets Manager.
+* Thi hành các Quy chuẩn Bảo mật S3 (S3 Security Best Practices) cho kho chứa ảnh thực đơn NutriTrack.
 
-### Các nhiệm vụ thực hiện trong tuần
+### Các công việc thực hiện trong tuần
 
-| Ngày | Nhiệm vụ | Ngày BĐ | Ngày HT | Tài liệu tham khảo |
+| Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Nộp Proposal <br>&emsp; + Hoàn thiện tài liệu NutriTrack Proposal <br>&emsp; + Nộp để mentor review <br>&emsp; + Chuẩn bị slides thuyết trình | 09/02/2026 | 09/02/2026 | [Final Proposal] |
-| 2 | - Thiết lập SAM CLI <br>&emsp; + Cài đặt AWS SAM CLI <br>&emsp; + Tạo sample template.yaml <br>&emsp; + Test local Lambda invocation | 10/02/2026 | 10/02/2026 | [SAM Docs](https://docs.aws.amazon.com/serverless-application-model/) |
-| 3 | - OpenAPI Specification <br>&emsp; + Định nghĩa tất cả 12 API endpoints <br>&emsp; + Tài liệu hóa request/response schemas <br>&emsp; + Tạo Swagger documentation | 11/02/2026 | 11/02/2026 | [OpenAPI Spec] |
-| 4 | - Lambda Functions (Phần 1) <br>&emsp; + Tạo user management functions <br>&emsp; + POST /users, GET /users/{id} <br>&emsp; + Tích hợp với DynamoDB | 12/02/2026 | 12/02/2026 | [Lambda Code] |
-| 5 | - Lambda Functions (Phần 2) <br>&emsp; + Tạo meal logging functions <br>&emsp; + POST /meals, GET /meals <br>&emsp; + Upload ảnh qua S3 presigned URL | 13/02/2026 | 13/02/2026 | [Lambda Code] |
-| 6-7 | - API Gateway Integration <br>&emsp; + Kết nối Lambda functions với API Gateway <br>&emsp; + Cấu hình CORS settings <br>&emsp; + Test endpoints với Postman | 14/02/2026 | 15/02/2026 | [API Tests] |
+| 1 | - Thiết lập Hệ thống Khóa <br>&emsp; + Tạo Customer Managed Keys (CMK) trong AWS KMS <br>&emsp; + Định nghĩa Key Policies cấp quyền truy cập | 09/02/2026 | 09/02/2026 | [Encryption with AWS KMS](https://000033.awsstudygroup.com) |
+| 2 | - Mã hóa S3 & DynamoDB <br>&emsp; + Áp dụng vòng khóa KMS lên bảng DynamoDB của NutriTrack <br>&emsp; + Bắt buộc mã hóa mặc định (Default Encryption) trên mọi S3 bucket | 10/02/2026 | 10/02/2026 | [AWS Sec Best Practices] |
+| 3 | - Quản lý tham số Bí mật <br>&emsp; + Chuyển các khóa API bên thứ ba vào lưu trong AWS Secrets Manager <br>&emsp; + Xóa toàn bộ secret tồn tại dưới dạng thuần text trong Lambda Env Vars | 11/02/2026 | 11/02/2026 | [AWS Secrets Manager](https://000096.awsstudygroup.com) |
+| 4 | - Định tuyến Kín cho S3 <br>&emsp; + Ngăn chặn luồng dữ liệu từ Lambda gọi sang S3 đi qua mạng Internet công cộng <br>&emsp; + Setup S3 Gateway VPC Endpoint | 12/02/2026 | 12/02/2026 | [Private Access to S3](https://000111.awsstudygroup.com) |
+| 5 | - Tăng cường bọc thép S3 <br>&emsp; + Kích hoạt toàn bộ S3 Block Public Access <br>&emsp; + Viết S3 Bucket Policy từ chối mọi truy vấn không thông qua HTTPS | 13/02/2026 | 13/02/2026 | [S3 Security Best Practices](https://000069.awsstudygroup.com) |
+| 6-7 | - Đánh giá Kiến trúc <br>&emsp; + Phổ biến quy chuẩn mã hóa cùng Dev team <br>&emsp; + Rà soát đảm bảo các IAM Role của Lambda đã thêm cờ `kms:Decrypt` | 14/02/2026 | 15/02/2026 | [Architecture Draft] |
 
-### Thành tựu Tuần 6
+### Kết quả đạt được trong Tuần 6
 
-* **Proposal:**
-  * ✅ NutriTrack Proposal đã nộp và **được mentor phê duyệt**.
-  * Nhận feedback tích cực về lựa chọn kiến trúc serverless.
-  * Góp ý nhỏ: thêm chi tiết về AI integration.
+* **Thực thi Mã hóa dữ liệu:**
+  * Tạo thành công Custom Keys bảo mật cao qua **AWS KMS** và triển khai gắn thành công vào mảng lưu trữ (DynamoDB, S3). Rủi ro rò rỉ dữ liệu khi bị đánh cắp ổ cứng cấp bách được triệt tiêu toàn diện.
 
-* **Môi trường phát triển:**
-  * SAM CLI được cấu hình cho Lambda development local.
-  * Local testing hoạt động với Docker và DynamoDB Local.
+* **Cô lập tham số mật (Secrets Decoupling):**
+  * Rà soát mã nguồn IaC của nhóm dev. Lọc bỏ các giá trị biến môi trường chứa token nhạy cảm, thay bằng việc cho code tự tải cấu hình mật từ **AWS Secrets Manager**, giảm hẳn nguy cơ sập bẫy rò rỉ khóa lên GitHub.
 
-* **Tiến độ Backend:**
-  * 6 Lambda functions đã triển khai và test.
-  * API Gateway được cấu hình với CORS và authorization đúng cách.
-  * OpenAPI documentation được tạo với Swagger UI.
+* **Tiêu chuẩn hóa kho S3:**
+  * Niêm phong tuyệt đối các kho ảnh của NutriTrack qua tính năng "Block Public Access". Mọi giao tiếp trao đổi dữ liệu từ Lambda sang S3 giờ đây chạy an toàn qua **VPC Endpoints** nội bộ trực tiếp trên hạ tầng mạng của AWS.
 
-### Khó khăn & Bài học
+### Thách thức & Bài học kinh nghiệm
 
-* **Khó khăn:**
-  * SAM CLI trên Windows có một số vấn đề path với Docker.
-  * Tạo presigned URL yêu cầu IAM permissions cụ thể.
+* **Thách thức:**
+  * Sau khi bật mã hóa bảng DynamoDB, các cục hàm Lambda đột ngột ném lỗi `AccessDeniedContext` mù mờ, gây tê liệt các API.
+  * Developers báo lỗi không test code dưới local được vì công cụ AWS SAM thiếu quyền kết nối ngữ cảnh KMS.
 
-* **Cách giải quyết:**
-  * Sử dụng WSL2 cho SAM CLI development thay vì native Windows.
-  * Thêm quyền S3 PutObject vào Lambda execution role.
+* **Giải pháp:**
+  * Lần theo dấu vết trên AWS CloudTrail, phát hiện Execution Role của Lambda chỉ có quyền đọc DynamoDB mà chưa được cấp bổ sung cờ lệnh `kms:GenerateDataKey` và `kms:Decrypt` cho con CMK đang dùng. 
+  * Hướng dẫn team sử dụng kĩ thuật test Mock Integration đối với KMS để vượt qua lỗi rào cản dưới local.
 
-* **Bài học rút ra:**
-  * WSL2 + SAM CLI là setup được khuyến nghị cho Windows developers.
-  * Luôn test IAM permissions với minimal policy trước.
+* **Bài học:**
+  * Việc áp dụng mã hóa phá vỡ định nghĩa quyền truy cập cũ: Có quyền hạn với IAM không có nghĩa là sẽ đọc được dữ liệu nếu Identity bị thiếu quyền xử lý trong KMS Policy.
+  * AWS Secrets Manager sẽ làm hệ thống Lambda xử lý chậm hơn vài mili-giây lúc khởi động (cold start), nhưng đó là sự đánh đổi bắt buộc để lấy sự an toàn ở tầm mức Enterprise.
 
 ### Kế hoạch Tuần 7
 
-* Triển khai các Lambda functions còn lại (nutrition calculation, AI recommendations).
-* Thiết lập Amazon Cognito cho user authentication.
-* Tạo CI/CD pipeline với GitHub Actions.
-* Bắt đầu cấu trúc frontend development.
+* Bước vào phân đoạn Theo dõi & Trinh sát Bảo mật (Continuous Security Monitoring).
+* Kích hoạt radar phân tích mã độc khôn ngoan với **Amazon GuardDuty**.
+* Đọc và phân tích **VPC Flow Logs**, đi kèm thiết kế hệ thống báo động CloudWatch Alarms chuyên bắt lỗi các hành vi bất thường trên API của NeuraX.

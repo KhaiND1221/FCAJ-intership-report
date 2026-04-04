@@ -1,53 +1,50 @@
 ### Week 3 Objectives
 
-* Deep dive into Amazon Bedrock and AI/ML services on AWS.
-* Evaluate and shortlist project ideas with the team.
-* Continue learning serverless architecture patterns.
-* Research Bedrock Knowledge Base for RAG (Retrieval-Augmented Generation).
+* Complete the basic Cloud Journey series with DynamoDB and CLI.
+* Finalize the NeuraX (NutriTrack) project idea and assign specific technical roles.
+* Transition from basic training to the official Role-Based tasks (Security Engineer role).
+* Draft the initial Architecture Design for the NeuraX backend.
 
-### Tasks carried out this week
+### Tasks to be carried out this week
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Project Ideas Discussion <br>&emsp; + Evaluated 3 proposals: NutriTrack, SnapChef, Secure-RAG <br>&emsp; + Each member presented their proposal | 19/01/2026 | 19/01/2026 | [Meeting Notes] |
-| 2 | - Deep Dive: Amazon Bedrock <br>&emsp; + Foundation Models overview <br>&emsp; + Claude, Titan, Llama models comparison <br>&emsp; + Pricing and use cases | 20/01/2026 | 20/01/2026 | [AWS Bedrock Docs](https://docs.aws.amazon.com/bedrock/) |
-| 3 | - Research: Bedrock Knowledge Base <br>&emsp; + Understanding RAG workflow <br>&emsp; + Data ingestion and vector embeddings <br>&emsp; + OpenSearch Serverless integration | 21/01/2026 | 21/01/2026 | [Bedrock KB Docs](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-how-it-works.html) |
-| 4 | - Serverless Architecture Study <br>&emsp; + API Gateway + Lambda patterns <br>&emsp; + DynamoDB for serverless apps <br>&emsp; + Event-driven architecture | 22/01/2026 | 22/01/2026 | [Serverless on AWS](https://aws.amazon.com/serverless/) |
-| 5 | - Team Meeting: Proposal Refinement <br>&emsp; + Merged SnapChef + NutriTrack concepts <br>&emsp; + Focus on health & nutrition tracking <br>&emsp; + AI-powered meal recommendations | 23/01/2026 | 23/01/2026 | [Proposal Draft v1] |
-| 6-7 | - Documentation & Self-study <br>&emsp; + Drafted initial architecture for NutriTrack <br>&emsp; + Updated personal report website | 24/01/2026 | 25/01/2026 | - |
+| 1 | - NoSQL Database <br>&emsp; + NoSQL Database Essentials with Amazon DynamoDB | 19/01/2026 | 19/01/2026 | [DynamoDB Essentials](https://000060.awsstudygroup.com) |
+| 2 | - System Operators & Edge Computing <br>&emsp; + Command Line Operations with AWS CLI <br>&emsp; + Content Delivery with Amazon CloudFront | 20/01/2026 | 20/01/2026 | [AWS CLI & CloudFront](https://cloudjourney.awsstudygroup.com/) |
+| 3 | - Project Brainstorming <br>&emsp; + Confirmed "NutriTrack" as the core application (NeuraX Project) <br>&emsp; + Discussed Serverless Architecture (Lambda/API Gateway) | 21/01/2026 | 21/01/2026 | [Meeting Notes] |
+| 4 | - Architecture & Role Assignment <br>&emsp; + Assigned to the **Cloud Security Engineer** role <br>&emsp; + Scoped the initial security boundaries for the project | 22/01/2026 | 22/01/2026 | [Architecture Draft] |
+| 5 | - Initial Proposal <br>&emsp; + Drafted the Security section of the NutriTrack Proposal <br>&emsp; + Prepared to move into specialized security tracks (WAF, Cognito) | 23/01/2026 | 23/01/2026 | [Draft Document] |
+| 6-7 | - Weekend Self-Study <br>&emsp; + Explored security best practices for API Gateway and DynamoDB | 24/01/2026 | 25/01/2026 | [AWS Sec Docs] |
 
 ### Week 3 Achievements
 
-* AI/ML Knowledge:
-  * Gained comprehensive understanding of **Amazon Bedrock** ecosystem.
-  * Learned how **Knowledge Bases** implement RAG: data chunking → vector embeddings → semantic search → augmented generation.
-  * Compared Foundation Models: Claude 3 (best reasoning), Titan (AWS native), Llama 3 (open-source).
+* **Completed Basic Cloud Journey Training:**
+  * Mastered NoSQL concepts using DynamoDB.
+  * Successfully navigated and managed AWS resources using the AWS CLI.
+  * Understand how CloudFront accelerates content delivery globally.
 
-* Project Progress:
-  * Team narrowed down from 3 proposals to 1 merged concept: **NutriTrack 2.0** (combining NutriTrack + SnapChef).
-  * Initial architecture draft completed focusing on serverless design.
+* **Project Foundation:**
+  * 100% of the team agreed on the "NutriTrack" project idea (A serverless diet tracking app under the NeuraX namespace).
+  * Officially assumed the **Cloud Security Engineer** role for the project, responsible for protecting user data and application APIs.
 
-* Serverless Skills:
-  * Understood API Gateway routing and Lambda trigger patterns.
-  * Learned DynamoDB single-table design concepts.
+* **Documentation:**
+  * Co-authored the project proposal, specifically detailing the Shared Responsibility Model application for our Serverless components.
 
 ### Challenges & Lessons
 
 * **Challenges:**
-  * RAG concepts are complex; vector embeddings and similarity search require mathematical understanding.
-  * Team had different visions for the project; required multiple discussions to align.
+  * Using the AWS CLI initially resulted in frequent syntax errors compared to clicking through the Management Console.
+  * Transitioning from a generalist learner to a specialized Security Role required shifting the mindset from "how to build" to "how to break and protect".
 
 * **Solutions:**
-  * Watched YouTube tutorials on embeddings and vector databases.
-  * Created a shared Miro board to visualize everyone's ideas before voting.
+  * Leveraged `aws help` commands extensively to learn required parameters.
+  * Started reviewing the AWS Well-Architected Framework (Security Pillar).
 
 * **Lessons Learned:**
-  * RAG is powerful but requires proper data preparation (chunking strategy matters).
-  * Early team alignment saves time later; conflicts resolved early prevent bigger issues.
+  * While Serverless abstracts the infrastructure, it does *not* mean you can ignore security. API Gateway and Lambda require strict identity and resource policies.
 
 ### Next Week Plan
 
-* Finalize and vote on the official project proposal (NutriTrack 2.0).
-* Begin detailed architecture design for NutriTrack.
-* Attend AWS re:Invent 2025 Recap Event at AWS Vietnam Office.
-* Learn about Amazon S3 advanced features and Amazon Cognito for authentication.
+* Shift completely to customized security tasks for NeuraX.
+* Week 4 Focus: Identity & Access Management for end-users using **Amazon Cognito**.
+* Implement IAM Permission Boundaries for other developers on the team.

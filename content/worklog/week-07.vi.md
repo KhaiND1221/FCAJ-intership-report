@@ -1,60 +1,45 @@
 ### Mục tiêu Tuần 7
 
-* Triển khai Cognito authentication cho NutriTrack.
-* Hoàn thành các Lambda functions còn lại cho AI features.
-* Thiết lập CI/CD pipeline với GitHub Actions.
-* Bắt đầu frontend development với React.
+* Xây dựng khả năng giám sát không gián đoạn để phát hiện nguy cơ tấn công hạ tầng NeuraX.
+* Tích hợp Amazon GuardDuty, tận dụng Machine Learning để rà soát hành vi bất thường.
+* Giám sát luồng mạng nội bộ với tính năng VPC Flow Logs.
+* Thiết lập hệ thống Cảnh báo tự động thông qua Amazon SNS và CloudWatch Alarms.
 
-### Các nhiệm vụ thực hiện trong tuần
+### Các công việc thực hiện trong tuần
 
-| Ngày | Nhiệm vụ | Ngày BĐ | Ngày HT | Tài liệu tham khảo |
+| Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Thiết lập Amazon Cognito <br>&emsp; + Tạo User Pool cho NutriTrack <br>&emsp; + Cấu hình password policies <br>&emsp; + Thiết lập email verification | 16/02/2026 | 16/02/2026 | [Cognito Docs](https://docs.aws.amazon.com/cognito/) |
-| 2 | - Cognito Integration <br>&emsp; + Tích hợp Cognito với API Gateway <br>&emsp; + Tạo JWT authorizer <br>&emsp; + Test protected endpoints | 17/02/2026 | 17/02/2026 | [Auth Config] |
-| 3 | - AI Lambda Functions <br>&emsp; + Tạo Lambda tích hợp Bedrock <br>&emsp; + Triển khai endpoint gợi ý bữa ăn <br>&emsp; + Thêm function phân tích dinh dưỡng | 18/02/2026 | 18/02/2026 | [Bedrock Integration](https://docs.aws.amazon.com/bedrock/) |
-| 4 | - Thiết lập CI/CD Pipeline <br>&emsp; + Tạo GitHub Actions workflow <br>&emsp; + Cấu hình SAM deploy steps <br>&emsp; + Thiết lập môi trường dev/staging | 19/02/2026 | 19/02/2026 | [GitHub Actions] |
-| 5 | - Thiết lập Frontend Project <br>&emsp; + Khởi tạo React + Vite project <br>&emsp; + Cấu hình Tailwind CSS <br>&emsp; + Thiết lập cấu trúc project | 20/02/2026 | 20/02/2026 | [Frontend Repo] |
-| 6-7 | - Frontend Development (Phần 1) <br>&emsp; + Tạo authentication pages (Login, Register) <br>&emsp; + Tích hợp AWS Amplify cho Cognito <br>&emsp; + Test auth flow end-to-end | 21/02/2026 | 22/02/2026 | [UI Components] |
+| 1 | - Khởi tạo Trinh sát Bảo mật <br>&emsp; + Bật AWS GuardDuty cho tài khoản thực tập <br>&emsp; + Thiết lập mức baseline cho hành vi tài nguyên | 16/02/2026 | 16/02/2026 | [Threat Detection with GuardDuty](https://000098.awsstudygroup.com) |
+| 2 | - Giám sát luồng mạng <br>&emsp; + Bật VPC Flow Logs cho Backend VPC chính yếu <br>&emsp; + Đẩy dữ liệu Flow Logs về CloudWatch | 17/02/2026 | 17/02/2026 | [Network Monitoring with VPC Flow Logs](https://000074.awsstudygroup.com) |
+| 3 | - Đo đạc Nâng cao <br>&emsp; + Thiết lập Advanced Monitoring với CloudWatch Metrics <br>&emsp; + Dựng Dashboard quan sát tổng thể | 18/02/2026 | 18/02/2026 | [Advanced Monitoring with CloudWatch](https://000029.awsstudygroup.com) |
+| 4 | - Hệ thống Báo động <br>&emsp; + Triển khai Amazon Simple Notification Service (SNS) <br>&emsp; + Nối SNS với webhook của NeuraX Discord nội bộ | 19/02/2026 | 19/02/2026 | [Messaging Systems with SNS](https://000077.awsstudygroup.com) |
+| 5 | - Căng bẫy sự kiện <br>&emsp; + Viết luật EventBridge định tuyến các phát hiện nghiêm trọng của GuardDuty sang SNS <br>&emsp; + Cài báo động CloudWatch nếu API Gateway trả về quá nhiều lỗi 4xx/5xx | 20/02/2026 | 20/02/2026 | [CloudWatch Advanced Workshop](https://000036.awsstudygroup.com) |
+| 6-7 | - Thử nghiệm Mô phỏng <br>&emsp; + Chạy các lệnh API bất thường (Quét cổng/Brute force) từ một IP ngoài <br>&emsp; + Xác nhận tin nhắn báo động nổ về kênh chat | 21/02/2026 | 22/02/2026 | [Kiểm thử Nội bộ] |
 
-### Thành tựu Tuần 7
+### Kết quả đạt được trong Tuần 7
 
-* **Authentication:**
-  * Cognito User Pool đã tạo với secure password policy.
-  * API Gateway được bảo vệ với JWT authorizer.
-  * Email verification flow hoạt động.
+* **Phòng thủ Chủ động (Proactive Security):**
+  * Đã bật chức năng **Amazon GuardDuty**. Nhờ đó, môi trường AWS liên tục được quét để nhận diện dấu hiệu tài khoản bị lộ mật khẩu, gọi API móc nối dữ liệu bất hợp pháp... mà không cần phải cài cắm Agent phức tạp.
+  * Hoàn thành hiển thị 100% luồng truy cập đi xuyên qua các subnet thông qua **VPC Flow Logs**, giúp team có cơ sở chứng cứ để chặn mọi gói tin quét ngang trái phép.
 
-* **AI Integration:**
-  * Bedrock Claude 3 Sonnet được tích hợp cho gợi ý bữa ăn.
-  * Nutrition analysis function cung cấp breakdown calories/macros.
-  * Rate limiting được cấu hình để quản lý chi phí Bedrock API.
+* **Giao tiếp sự cố Thời gian thực:**
+  * Tạo chuỗi liên kết hoàn hảo dẫn truyền sự kiện an ninh mạng từ AWS EventBridge nhảy thẳng thành tin nhắn báo động gọn gàng trên channel NeuraX Discord. Báo động không còn bị chôn vùi dưới đáy biểu đồ Log.
 
-* **CI/CD:**
-  * Pipeline deployment tự động: Push → Test → Deploy.
-  * Stacks riêng biệt cho môi trường dev và staging.
-  * Cơ chế rollback được cấu hình.
+### Thách thức & Bài học kinh nghiệm
 
-* **Frontend:**
-  * React + Vite + Tailwind project đã khởi tạo.
-  * Trang Login và Registration hoàn thành.
-  * AWS Amplify được cấu hình cho Cognito integration.
+* **Thách thức:**
+  * GuardDuty cần thời gian máy học (learning period) để xác định mức baseline bình thường. Khá khó để giả lập tấn công một cách giả tạo bởi cơ chế của AWS thừa thông minh để coi các truy cập kia là an toàn.
+  * Bật tối đa tính năng lưu VPC Flow Logs trực tiếp lên CloudWatch làm phình to dữ liệu nhanh chóng, ngốn chi phí lưu trữ trong vòng chỉ 24h đầu.
 
-### Khó khăn & Bài học
+* **Giải pháp:**
+  * Sử dụng tính năng "Generate Sample Findings" tích hợp sẵn của GuardDuty để test tính liền mạch của bộ thu phát EventBridge/SNS thay vì cố gắng tự đi "hacker" hệ thống mình.
+  * Tinh chỉnh cấu hình đẩy lưu trữ của VPC Flow Logs chuyển trực tiếp về Amazon S3 chung với việc gom nhóm khoảng thời lượng dài hơn (aggregation interval) nhằm tiết kiệm ngân sách.
 
-* **Khó khăn:**
-  * Bedrock API responses là async; cần proper error handling.
-  * Cognito token refresh flow khá phức tạp để implement.
-
-* **Cách giải quyết:**
-  * Triển khai retry logic với exponential backoff cho Bedrock.
-  * Sử dụng AWS Amplify library vì nó tự động xử lý token refresh.
-
-* **Bài học rút ra:**
-  * Bedrock prompts cần được engineering cẩn thận để đảm bảo output nhất quán.
-  * AWS Amplify đơn giản hóa đáng kể việc tích hợp auth frontend.
+* **Bài học:**
+  * Có quá nhiều chỉ số viễn trắc (telemetry) mà không màng tới bộ lọc sẽ trở thành rác. Việc siết chặt ngưỡng báo động (chuẩn High-severity) trước khi đẩy về Discord là tối quan trọng nhằm chống lại "Hội chứng mệt mỏi cảnh báo" (Alert fatigue) ở Team Dev.
 
 ### Kế hoạch Tuần 8
 
-* Hoàn thành tất cả frontend pages (Dashboard, Meal Log, Analytics).
-* Triển khai upload ảnh và phân tích ảnh bữa ăn.
-* Tích hợp frontend với tất cả backend APIs.
-* Bắt đầu unit testing cho Lambda functions.
+* Chăm chút vào các yếu tố riêng tư nhạy cảm của dữ liệu Y tế/Sức khỏe.
+* Dùng **Amazon Macie** đánh giá quyền truy cập sâu bên trong dữ liệu S3.
+* Triển khai bộ dò tìm bất thường đối với hệ thống sao lưu.

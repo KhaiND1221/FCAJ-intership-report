@@ -1,54 +1,48 @@
 ### Week 6 Objectives
 
-* Submit and get approval for NutriTrack Proposal.
-* Begin backend implementation with Lambda functions.
-* Set up SAM CLI for local development.
-* Create OpenAPI specification for all endpoints.
+* Ensure Data at Rest and Data in Transit are encrypted across the NeuraX ecosystem.
+* Manage and rotate cryptographic keys using AWS Key Management Service (KMS).
+* Eliminate hard-coded secrets by implementing AWS Secrets Manager.
+* Enforce strict S3 Security Best Practices for the NutriTrack meal image buckets.
 
 ### Tasks carried out this week
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Proposal Submission <br>&emsp; + Finalized NutriTrack Proposal document <br>&emsp; + Submitted for mentor review <br>&emsp; + Prepared presentation slides | 09/02/2026 | 09/02/2026 | [Final Proposal] |
-| 2 | - SAM CLI Setup <br>&emsp; + Installed AWS SAM CLI <br>&emsp; + Created sample template.yaml <br>&emsp; + Tested local Lambda invocation | 10/02/2026 | 10/02/2026 | [SAM Docs](https://docs.aws.amazon.com/serverless-application-model/) |
-| 3 | - OpenAPI Specification <br>&emsp; + Defined all 12 API endpoints <br>&emsp; + Documented request/response schemas <br>&emsp; + Created Swagger documentation | 11/02/2026 | 11/02/2026 | [OpenAPI Spec] |
-| 4 | - Lambda Functions (Part 1) <br>&emsp; + Created user management functions <br>&emsp; + POST /users, GET /users/{id} <br>&emsp; + Integrated with DynamoDB | 12/02/2026 | 12/02/2026 | [Lambda Code] |
-| 5 | - Lambda Functions (Part 2) <br>&emsp; + Created meal logging functions <br>&emsp; + POST /meals, GET /meals <br>&emsp; + Image upload to S3 presigned URL | 13/02/2026 | 13/02/2026 | [Lambda Code] |
-| 6-7 | - API Gateway Integration <br>&emsp; + Connected Lambda functions to API Gateway <br>&emsp; + Configured CORS settings <br>&emsp; + Tested endpoints with Postman | 14/02/2026 | 15/02/2026 | [API Tests] |
+| 1 | - Key Management Setup <br>&emsp; + Create Customer Managed Keys (CMK) in AWS KMS <br>&emsp; + Define Key Policies for access | 09/02/2026 | 09/02/2026 | [Encryption with AWS KMS](https://000033.awsstudygroup.com) |
+| 2 | - DynamoDB & S3 Encryption <br>&emsp; + Apply KMS CMKs to NutriTrack's DynamoDB tables <br>&emsp; + Enforce default encryption on all S3 buckets | 10/02/2026 | 10/02/2026 | [AWS Sec Best Practices] |
+| 3 | - Secrets Management <br>&emsp; + Store external API keys inside AWS Secrets Manager <br>&emsp; + Remove all plain-text secrets from Lambda Env Vars | 11/02/2026 | 11/02/2026 | [AWS Secrets Manager](https://000096.awsstudygroup.com) |
+| 4 | - VPC Endpoints for S3 <br>&emsp; + Prevent Lambda traffic to S3 from traversing the public internet <br>&emsp; + Setup S3 Gateway VPC Endpoint | 12/02/2026 | 12/02/2026 | [Private Access to S3](https://000111.awsstudygroup.com) |
+| 5 | - S3 Hardening <br>&emsp; + Enable S3 Block Public Access entirely <br>&emsp; + Implement S3 Bucket Policies restricting non-HTTPS requests (SecureTransport) | 13/02/2026 | 13/02/2026 | [S3 Security Best Practices](https://000069.awsstudygroup.com) |
+| 6-7 | - Architecture Review <br>&emsp; + Validate encryption standards with the dev team <br>&emsp; + Ensure Lambda roles have `kms:Decrypt` access | 14/02/2026 | 15/02/2026 | [Architecture Draft] |
 
 ### Week 6 Achievements
 
-* **Proposal:**
-  * ✅ NutriTrack Proposal submitted and **approved by mentor**.
-  * Received positive feedback on serverless architecture choice.
-  * Minor suggestions: add more detail on AI integration.
+* **Data Encryption Enforced:**
+  * Created robust Customer Managed Keys using **AWS KMS** and successfully encrypted all persistent storage elements (DynamoDB and S3). The risk of data exposure through raw storage theft is mitigated.
 
-* **Development Environment:**
-  * SAM CLI configured for local Lambda development.
-  * Local testing working with Docker and DynamoDB Local.
+* **Secrets Decoupling:**
+  * Cleaned up the developer's infrastructure as code (IaC) templates. Hardcoded environment variables containing API tokens were removed and replaced with dynamic fetching from **AWS Secrets Manager**, reducing credential leakage risks in GitHub.
 
-* **Backend Progress:**
-  * 6 Lambda functions implemented and tested.
-  * API Gateway configured with proper CORS and authorization.
-  * OpenAPI documentation generated with Swagger UI.
+* **S3 Security Standardized:**
+  * Sealed the NutriTrack meal image storage by enabling "Block Public Access". All intra-cloud S3 API calls from Lambda now safely traverse the AWS backbone network explicitly through **VPC Endpoints**, cutting off public internet exposure.
 
 ### Challenges & Lessons
 
 * **Challenges:**
-  * SAM CLI on Windows had some path issues with Docker.
-  * Presigned URL generation required specific IAM permissions.
+  * Lambda functions suddenly started throwing `AccessDeniedContext` errors after encrypting DynamoDB tables.
+  * Developers experienced local testing failures because AWS SAM local didn't have the KMS Context permissions configured.
 
 * **Solutions:**
-  * Used WSL2 for SAM CLI development instead of native Windows.
-  * Added S3 PutObject permission to Lambda execution role.
+  * Traced the KMS CloudTrail logs and discovered that the Lambda Execution Role lacked the `kms:GenerateDataKey` and `kms:Decrypt` permissions for the specific CMK. Added the permissions to resolve.
+  * Guided the team to mock KMS integration dynamically during local unit testing.
 
 * **Lessons Learned:**
-  * WSL2 + SAM CLI is the recommended setup for Windows developers.
-  * Always test IAM permissions with a minimal policy first.
+  * Encryption changes the access paradigm: IAM access to the Data is no longer enough; the identity must also have KMS policy access to decrypt the data.
+  * Utilizing Secrets Manager introduces a slight latency spike on the first Lambda cold start, but the security trade-off is absolutely necessary.
 
 ### Next Week Plan
 
-* Implement remaining Lambda functions (nutrition calculation, AI recommendations).
-* Set up Amazon Cognito for user authentication.
-* Create CI/CD pipeline with GitHub Actions.
-* Begin frontend development structure.
+* Progress into Continuous Security Monitoring.
+* Activate **Amazon GuardDuty** for intelligent threat detection.
+* Analyze **VPC Flow Logs** and set up specific CloudWatch Alarms for abnormal API behaviors within the NeuraX app.

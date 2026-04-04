@@ -1,60 +1,48 @@
 ### Mục tiêu Tuần 11
 
-* Hoàn thành Workshop documentation cho báo cáo thực tập.
-* Chuẩn bị final presentation slides.
-* Thực hiện internal demo với mentors.
-* Hoàn thiện tất cả project documentation.
+* Trực tiếp khắc phục và vá các lỗ hổng hệ thống khai quật được từ đợt Tấn công thử nghiệm Tuần 10.
+* Thắt chặt logic lập trình phía Ứng dụng về việc đối chiếu phân quyền.
+* Trau chuốt lại cấu hình phần cứng hạ tầng (WAF / API Gateway).
+* Số hóa Cẩm nang Phản ứng Sự cố (Incident Response playbook) cho nội bộ team NeuraX.
 
-### Các nhiệm vụ thực hiện trong tuần
+### Các công việc thực hiện trong tuần
 
-| Ngày | Nhiệm vụ | Ngày BĐ | Ngày HT | Tài liệu tham khảo |
+| Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Workshop Documentation (Phần 1) <br>&emsp; + Tạo workshop overview <br>&emsp; + Tài liệu hóa prerequisites <br>&emsp; + Viết architecture description | 16/03/2026 | 16/03/2026 | [Workshop Docs] |
-| 2 | - Workshop Documentation (Phần 2) <br>&emsp; + Viết step-by-step deployment guide <br>&emsp; + Thêm screenshots cho mỗi bước <br>&emsp; + Tạo code snippets cho IaC | 17/03/2026 | 17/03/2026 | [Workshop Docs] |
-| 3 | - Workshop Documentation (Phần 3) <br>&emsp; + Tài liệu hóa testing procedures <br>&emsp; + Thêm clean-up instructions <br>&emsp; + Tạo troubleshooting FAQ | 18/03/2026 | 18/03/2026 | [Workshop Docs] |
-| 4 | - Chuẩn bị Presentation <br>&emsp; + Tạo presentation deck 25 slides <br>&emsp; + Bao gồm architecture diagrams <br>&emsp; + Thêm demo video clips | 19/03/2026 | 19/03/2026 | [Presentation Slides] |
-| 5 | - Internal Demo <br>&emsp; + Trình bày cho FCJ mentors <br>&emsp; + Demo tất cả tính năng NutriTrack <br>&emsp; + Thu thập feedback để cải thiện | 20/03/2026 | 20/03/2026 | [Demo Feedback] |
-| 6-7 | - Hoàn thiện Documentation <br>&emsp; + Áp dụng mentor feedback <br>&emsp; + Đọc lại tất cả documentation <br>&emsp; + Cập nhật bilingual content | 21/03/2026 | 22/03/2026 | [Final Docs] |
+| 1 | - Sàng lọc báo cáo Lỗ hổng <br>&emsp; + Định mức mức độ nguy hiểm và phân công ticket cho nhóm <br>&emsp; + Đặt lỗi IDOR lên mức độ khẩn cấp (Prioritized) | 16/03/2026 | 16/03/2026 | [Vulnerability Report] |
+| 2 | - Xóa sổ nợ IDOR <br>&emsp; + Chèn ngầm logic đối chiếu Claim UUID của token Cognito với ID được truy vấn <br>&emsp; + Đan xen Unit Test để bắt hàm tự tát 403 khi ID không khớp | 17/03/2026 | 17/03/2026 | [AWS Lambda Auth context] |
+| 3 | - Tường đồng Vách sắt API <br>&emsp; + Tiễn độ nhạy trả lỗi tận gốc (verbose tracebacks) từ API Gateway ra bãi rác <br>&emsp; + Thay bằng cấu trúc bọc "500 Internal Server Error" trung tính | 18/03/2026 | 18/03/2026 | [API Gateway Models] |
+| 4 | - Tinh luyện rào WAF <br>&emsp; + Review lại đống log của WAF khi giả lập bị đánh Pen-test <br>&emsp; + Châm chước các dải IP đẩy code CI/CD tự động tránh chặn nhầm bằng tính năng Exclusion Rate Limits | 19/03/2026 | 19/03/2026 | [AWS WAF Console] |
+| 5 | - Biên soạn Cẩm nang Tác chiến <br>&emsp; + Phác thảo Version 1 cho Cẩm nang phản ứng khẩn cấp (IR Playbook) <br>&emsp; + Diễn đạt step-by-step quy trình vô hiệu hóa lập tức một IAM/Cognito token nghi ngờ rò rỉ | 20/03/2026 | 20/03/2026 | [IR Playbook Template] |
+| 6-7 | - Thẩm định kết quả (Re-test) <br>&emsp; + Y chang đợt test cũ, gọi trích xuất lỗ hổng lại lần nữa (Re-scan) và mò nhắm tay lại <br>&emsp; + Hoàn thiện chu trình giải quyết đóng Ticket mã độc | 21/03/2026 | 22/03/2026 | [Re-validation Logs] |
 
-### Thành tựu Tuần 11
+### Kết quả đạt được trong Tuần 11
 
-* **Workshop Documentation:**
-  * Workshop hoàn chỉnh 4 phần (Overview, Setup, Implementation, Cleanup).
-  * 30+ screenshots với annotations.
-  * CloudFormation/SAM templates được bao gồm để reproducibility.
+* **Zero Tồn đọng Cấp thiết:**
+  * Vá xong xuôi triệt đường hổng IDOR. Lớp code Backend Serverless hiện tại sẽ gắp thẳng thuộc tính `cognito:username` bảo mật cấp bởi JWT (đã pass chữ ký) để đấu chéo so sánh với URI Parameter cấp từ client. Triệt tiêu 100% tình trạng "đứa này lén dò dữ liệu đứa kia".
 
-* **Presentation:**
-  * Presentation deck chuyên nghiệp 25 slides covering project journey.
-  * Live demo tích hợp với pre-recorded backup.
-  * Value proposition và technical depth rõ ràng.
+* **Bít cửa Hở Thông Tin:**
+  * Vệ sinh thành công vỏ bọc trả lời của API Gateway. Mọi truy vấn dị dạng hay cú pháp sai lệch giờ đều trả chung một mẫu thông tin. Kẻ gian hết cơ hội lượm lặt đặc tả tên thư mục nội bộ (stack traces) thông qua màn hình báo ngáo.
 
-* **Internal Demo:**
-  * Trình bày thành công cho 3 FCJ mentors.
-  * Nhận feedback tích cực về lựa chọn kiến trúc.
-  * Góp ý nhỏ: thêm các ví dụ error handling.
+* **Bản lề Tác chiến Trực trạm:**
+  * Xuất bản Bộ cẩm nang V1 **NeuraX Incident Response Playbook**. Cả team hiện đều có Quy chế chung (SOP) kể rành rành về cách phong tỏa Lambda, cách lật trục Khóa mạ AWS KMS, và cắt cổ tài khoản nghi án Cognito ngay trong vài ba phút.
 
-* **Documentation:**
-  * Tất cả documentation được review và finalize.
-  * Bilingual content (EN/VI) hoàn chỉnh.
-  * Sẵn sàng cho final submission.
+### Thách thức & Bài học kinh nghiệm
 
-### Khó khăn & Bài học
+* **Thách thức:**
+  * Cắt ghép logic bảo vệ giấu kín nhưng phải giữ vẹn toàn cấu trúc phản hồi frontend yêu cầu là việc rất phiềnái. Mở cái nọ dễ sập cái kia.
+  * Việc vạch định ra một quy tắc Khắc phục hỏa tốc (IR) từ zero là quá tải đối với người chưa tiếp xúc với khung quy củ cấp doanh nghiệp.
 
-* **Khó khăn:**
-  * Viết instructions step-by-step rõ ràng khó hơn dự kiến.
-  * Cân bằng giữa độ sâu kỹ thuật và khả năng tiếp cận cho beginners.
+* **Giải pháp:**
+  * Tận dụng triệt để chức năng "Mapping templates" ảo diệu ngay thân API Gateway để chặn mút và lột vỏ nội dung error thô ráp từ Backend trước khi gởi đi báo client.
+  * Tham vấn hệ thống biểu mẫu của viện SANS Institute, xào nấu lại thành bản rút gọn khớp lệnh với mảng AWS Serverless đặc hữu cho gọn gàng.
 
-* **Cách giải quyết:**
-  * Cho team members làm theo instructions để xác định các bước không rõ ràng.
-  * Thêm các boxes "Beginner Tips" xuyên suốt documentation.
-
-* **Bài học rút ra:**
-  * Documentation quan trọng như code.
-  * User testing cho documentation phát hiện các blind spots.
+* **Bài học:**
+  * Bản vá lỗi hiếm khi là món tự chơi tự chịu. Tụm đầu với đội Dev, phân giải rành rọt "Vì sao cái file mảng này phải đóng hộp" với thái độ tôn trọng là cách nhanh nhất để chốt sổ Ticket.
+  * Bản đề án chuẩn bị tác chiến (IR) nếu cất ngăn bàn mà chưa bao giờ lôi quân ra đóng kịch diễn thử phản xạ... thì nó cũng chỉ làm mồi nhen lửa. Nhất quyết phải có một buổi Drill test sắp tới.
 
 ### Kế hoạch Tuần 12
 
-* Final presentation cho tất cả stakeholders.
-* Hoàn thành self-evaluation và feedback sections.
-* Nộp báo cáo thực tập.
-* Ăn mừng hoàn thành dự án! 🎉
+* Cột gọn tàn dư của cả dự án!
+* Khắc phác thảo lần cuối chốt hạ Kiến trúc Bảo mật (Secure Architecture Diagrams) hoành tráng nhất.
+* Gom cục 12 tuần này đóng thành Báo Cáo Thực Tập vĩ mô và đi vào thuyết trình bế giảng.

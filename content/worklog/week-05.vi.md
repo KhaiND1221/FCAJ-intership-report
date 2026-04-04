@@ -1,54 +1,49 @@
 ### Mục tiêu Tuần 5
 
-* Hoàn thiện sơ đồ kiến trúc NutriTrack 2.0.
-* Thiết lập môi trường phát triển AWS (IAM, S3, DynamoDB).
-* Bắt đầu viết tài liệu Proposal để nộp.
-* Học API Gateway và Lambda best practices.
+* Thiết lập lá chắn bảo vệ lớp ứng dụng NeuraX khỏi các lỗi khai thác Web phổ biến.
+* Triển khai AWS Web Application Firewall (WAF) bảo vệ cho API Gateway và CloudFront.
+* Xây dựng cơ chế Rate Limiting để giảm thiểu tấn công DDoS cơ bản.
+* Đánh giá quy tắc WAF bằng cách mô phỏng trực tiếp các payload tấn công.
 
-### Các nhiệm vụ thực hiện trong tuần
+### Các công việc thực hiện trong tuần
 
-| Ngày | Nhiệm vụ | Ngày BĐ | Ngày HT | Tài liệu tham khảo |
+| Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Hoàn thiện Architecture <br>&emsp; + Hoàn thành sơ đồ kiến trúc AWS chi tiết <br>&emsp; + Chọn 6 dịch vụ cốt lõi: Cognito, API Gateway, Lambda, DynamoDB, S3, Bedrock | 02/02/2026 | 02/02/2026 | [Architecture v2.0] |
-| 2 | - Thiết lập môi trường AWS (Phần 1) <br>&emsp; + Tạo IAM roles với least privilege <br>&emsp; + Set up IAM user development cho team <br>&emsp; + Cấu hình MFA cho tất cả accounts | 03/02/2026 | 03/02/2026 | [IAM Config] |
-| 3 | - Thiết lập môi trường AWS (Phần 2) <br>&emsp; + Tạo S3 buckets cho media storage <br>&emsp; + Cấu hình bucket policies và CORS <br>&emsp; + Thiết lập lifecycle rules để tối ưu chi phí | 04/02/2026 | 04/02/2026 | [S3 Buckets] |
-| 4 | - Thiết kế DynamoDB <br>&emsp; + Thiết kế schema single-table cho NutriTrack <br>&emsp; + Tạo chiến lược partition key và sort key <br>&emsp; + Thiết lập GSI cho các query patterns | 05/02/2026 | 05/02/2026 | [DynamoDB Schema](https://docs.aws.amazon.com/dynamodb/) |
-| 5 | - Nghiên cứu API Gateway & Lambda <br>&emsp; + So sánh REST API vs HTTP API <br>&emsp; + Lambda function best practices <br>&emsp; + Kỹ thuật tối ưu cold start | 06/02/2026 | 06/02/2026 | [API Gateway Docs](https://docs.aws.amazon.com/apigateway/) |
-| 6-7 | - Viết tài liệu Proposal <br>&emsp; + Bắt đầu viết NutriTrack Proposal <br>&emsp; + Bao gồm problem statement, objectives, timeline <br>&emsp; + Tạo ước tính ngân sách | 07/02/2026 | 08/02/2026 | [Proposal Draft] |
+| 1 | - Khởi tạo Application Protection <br>&emsp; + Khởi tạo AWS WAF Web ACLs <br>&emsp; + Áp dụng Web ACLs lên CloudFront/API Gateway | 02/02/2026 | 02/02/2026 | [Application Protection with AWS WAF](https://000026.awsstudygroup.com) |
+| 2 | - Phòng chống rủi ro lõi <br>&emsp; + Import AWS Managed Rules (Core rule set, SQLi, XSS) <br>&emsp; + Tinh chỉnh rule để giảm thiểu cảnh báo sai (false positive) cho API | 03/02/2026 | 03/02/2026 | [AWS Sec Best Practices] |
+| 3 | - Ngăn chặn DDoS <br>&emsp; + Cấu hình Rate-based rules (VD: 500 requests / 5 mins) <br>&emsp; + Bật AWS Shield Standard chặn tấn công mạng Layer 3/4 | 04/02/2026 | 04/02/2026 | [WAF Rate Limiting Docs] |
+| 4 | - Lưu trữ Log và Phân tích WAF <br>&emsp; + Định tuyến WAF logs về CloudWatch / S3 <br>&emsp; + Thử nghiệm trực quan hóa lượng request | 05/02/2026 | 05/02/2026 | [CloudWatch Logs] |
+| 5 | - Kiểm thử WAF Policy <br>&emsp; + Giả lập payload độc hại với `curl` và Burp Suite <br>&emsp; + Xác nhận hệ thống trả về mã 403 Forbidden đúng quy trình | 06/02/2026 | 06/02/2026 | [OWASP Top 10 Testing] |
+| 6-7 | - Tối ưu hóa Rules <br>&emsp; + Đọc log các requests bị block từ phía Dev <br>&emsp; + Chuyển đổi trạng thái từ Count sang Block ở các rule ổn định | 07/02/2026 | 08/02/2026 | [Audit Logs] |
 
-### Thành tựu Tuần 5
+### Kết quả đạt được trong Tuần 5
 
-* **Kiến trúc:**
-  * Hoàn thành sơ đồ kiến trúc AWS toàn diện với data flow.
-  * Chọn dịch vụ dựa trên serverless-first, tiết kiệm chi phí.
-  * Kiến trúc được team review và phê duyệt.
+* **Hoàn thiện Vành đai bảo mật lớp 7:**
+  * Đưa **AWS WAF** vào hoạt động toàn diện tại các rìa (Edge) của CloudFront cũng như API Gateway vùng, hình thành chốt chặn giao thông toàn cục.
+  * Các loại mã độc dạng SQL injection, Cross-Site Scripting (XSS), và trình quét bot rác bị cản lại triệt để nhờ AWS Managed rules.
+  
+* **Sức chịu đựng trước DDoS:**
+  * Luật chống Spam/Brute-force (Rate Limiting) giúp tự động khóa IP nếu chúng gửi trên 500 yêu cầu trong 5 phút. Điều này đặc biệt giá trị để bảo vệ cổng đăng nhập Cognito.
 
-* **Môi trường AWS:**
-  * IAM roles được cấu hình với Principle of Least Privilege.
-  * S3 buckets đã tạo: `nutritrack-media-dev`, `nutritrack-data-dev`.
-  * DynamoDB table được thiết kế với single-table pattern cho queries hiệu quả.
+* **Quan sát và Cảnh báo:**
+  * Enabled tính năng logging yêu cầu. Nhóm hiện có thể tra cứu toàn bộ header và nội dung payload của mọi request bị rớt để làm rõ nguyên nhân.
 
-* **Tài liệu:**
-  * Proposal draft hoàn thành 70% với objectives và timeline rõ ràng.
-  * Ước tính timeline phát triển 3 tháng phù hợp với kỳ thực tập.
+### Thách thức & Bài học kinh nghiệm
 
-### Khó khăn & Bài học
+* **Thách thức:**
+  * Khi vừa bật WAF, một số API gửi lên định dạng Meal Logging có chứa cụm text lạ bị WAF hiểu lầm là SQLi (False positive), dẫn đến chặn nhầm traffic chuẩn của dự án NutriTrack.
+  * Việc tra cứu file JSON rối rắm của WAF log bên trong CloudWatch tiêu tốn nhiều thời gian.
 
-* **Khó khăn:**
-  * Thiết kế single-table DynamoDB khác với tư duy relational truyền thống.
-  * Cân bằng giữa tối ưu chi phí và yêu cầu hiệu năng.
+* **Giải pháp:**
+  * Tạm chỉnh rule nghi ngờ về trạng thái "Count" (chỉ đếm, không chặn), phân tích trường dữ liệu bị nghi ngờ và viết Exception rule (loại trừ) cho trường JSON đó.
+  * Dùng CloudWatch Log Insights với cú pháp truy vấn chuyên dụng để tách nhanh thông tin Client IP, URL và RuleID.
 
-* **Cách giải quyết:**
-  * Sử dụng sách DynamoDB của Alex DeBrie và các ví dụ làm tham khảo.
-  * Tạo document access patterns trước, sau đó thiết kế schema.
-
-* **Bài học rút ra:**
-  * Access patterns phải được định nghĩa trước khi thiết kế DynamoDB schema.
-  * On-demand pricing tốt hơn cho development; provisioned cho production.
+* **Bài học:**
+  * Không bao giờ nên bật WAF ở trạng thái "Block" ngay khi ra mắt. Luôn đặt ở trạng thái "Count" trong một khoảng thời gian để thăm dò traffic thực tế, qua đó lọc bỏ các lệnh chặn nhầm.
+  * Security tốt là security không gây khó dễ hay cản trở tính năng hợp lệ của doanh nghiệp.
 
 ### Kế hoạch Tuần 6
 
-* Hoàn thành và nộp NutriTrack Proposal để review.
-* Bắt đầu triển khai backend: cấu trúc API endpoints.
-* Thiết lập môi trường phát triển Lambda với SAM CLI.
-* Định nghĩa OpenAPI specification cho NutriTrack APIs.
+* Chuyển hướng tập trung sang **Bảo vệ Dữ liệu (Data Protection)**.
+* Sử dụng **AWS KMS** để mã hóa dữ liệu lưu trữ tại S3 và bảng DynamoDB.
+* Chuyển toàn bộ các thông số nhạy cảm trong code sang hệ thống **AWS Secrets Manager**.

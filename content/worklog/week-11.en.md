@@ -1,60 +1,48 @@
 ### Week 11 Objectives
 
-* Complete Workshop documentation for internship report.
-* Prepare final presentation slides.
-* Conduct internal demo with mentors.
-* Finalize all project documentation.
+* Remediate vulnerabilities discovered during the Week 10 Penetration Test.
+* Enforce strict Application-level authorization checks.
+* Fine-tune infrastructure settings (WAF / API Gateway).
+* Draft an Incident Response (IR) playbook for the NeuraX team.
 
 ### Tasks carried out this week
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Workshop Documentation (Part 1) <br>&emsp; + Created workshop overview <br>&emsp; + Documented prerequisites <br>&emsp; + Wrote architecture description | 16/03/2026 | 16/03/2026 | [Workshop Docs] |
-| 2 | - Workshop Documentation (Part 2) <br>&emsp; + Wrote step-by-step deployment guide <br>&emsp; + Added screenshots for each step <br>&emsp; + Created code snippets for IaC | 17/03/2026 | 17/03/2026 | [Workshop Docs] |
-| 3 | - Workshop Documentation (Part 3) <br>&emsp; + Documented testing procedures <br>&emsp; + Added clean-up instructions <br>&emsp; + Created troubleshooting FAQ | 18/03/2026 | 18/03/2026 | [Workshop Docs] |
-| 4 | - Presentation Preparation <br>&emsp; + Created 25-slide presentation deck <br>&emsp; + Included architecture diagrams <br>&emsp; + Added demo video clips | 19/03/2026 | 19/03/2026 | [Presentation Slides] |
-| 5 | - Internal Demo <br>&emsp; + Presented to FCJ mentors <br>&emsp; + Demonstrated all NutriTrack features <br>&emsp; + Collected feedback for improvements | 20/03/2026 | 20/03/2026 | [Demo Feedback] |
-| 6-7 | - Documentation Finalization <br>&emsp; + Applied mentor feedback <br>&emsp; + Proofread all documentation <br>&emsp; + Updated bilingual content | 21/03/2026 | 22/03/2026 | [Final Docs] |
+| 1 | - Vulnerability Triage <br>&emsp; + Ranked findings and assigned tickets to the team <br>&emsp; + Prioritized the IDOR vulnerability | 16/03/2026 | 16/03/2026 | [Vulnerability Report] |
+| 2 | - IDOR Remediation <br>&emsp; + Modified Lambda logic to compare Cognito JWT Claims against the requested Identity ID <br>&emsp; + Wrote unit tests confirming access denial on mismatch | 17/03/2026 | 17/03/2026 | [AWS Lambda Auth context] |
+| 3 | - API Hardening <br>&emsp; + Removed verbose error tracebacks from API Gateway mapping templates <br>&emsp; + Implemented generic "500 Internal Server Error" responses for exceptions | 18/03/2026 | 18/03/2026 | [API Gateway Models] |
+| 4 | - WAF Rules Tuning <br>&emsp; + Reviewed WAF logs from the Pen-test phase <br>&emsp; + Refined rate-limiting IP exclusions for our CI/CD pipelines | 19/03/2026 | 19/03/2026 | [AWS WAF Console] |
+| 5 | - Playbook Drafting <br>&emsp; + Drafted the initial Incident Response (IR) Playbook <br>&emsp; + Documented steps for disabling compromised IAM/Cognito credentials | 20/03/2026 | 20/03/2026 | [IR Playbook Template] |
+| 6-7 | - Remediation Testing <br>&emsp; + Conducted a final re-scan and manual test of the patched endpoints <br>&emsp; + Closed the vulnerabilities on our internal tracker | 21/03/2026 | 22/03/2026 | [Re-validation Logs] |
 
 ### Week 11 Achievements
 
-* **Workshop Documentation:**
-  * Complete 4-section workshop (Overview, Setup, Implementation, Cleanup).
-  * 30+ screenshots with annotations.
-  * CloudFormation/SAM templates included for reproducibility.
+* **Zero Critical Vulnerabilities:**
+  * Successfully patched the IDOR flaw. The Lambda backend now cross-references the user's requested path parameter against the `cognito:username` attribute embedded strictly within the validated JWT token context. Data enumeration is now impossible.
 
-* **Presentation:**
-  * Professional 25-slide deck covering project journey.
-  * Live demo integrated with pre-recorded backup.
-  * Clear value proposition and technical depth.
+* **Information Leakage Plugged:**
+  * Cleaned up the API Gateway integration responses. Attackers can no longer deduce stack traces or database structures from malformed requests.
 
-* **Internal Demo:**
-  * Successfully presented to 3 FCJ mentors.
-  * Received positive feedback on architecture choices.
-  * Minor suggestions: add more error handling examples.
-
-* **Documentation:**
-  * All documentation reviewed and finalized.
-  * Bilingual content (EN/VI) complete.
-  * Ready for final submission.
+* **Incident Readiness:**
+  * Delivered Version 1 of the **NeuraX Incident Response Playbook**. The team now has standard operating procedures (SOPs) for isolating Lambda functions, rotating AWS KMS keys, and locking out compromised Cognito users in the event of an imminent breach.
 
 ### Challenges & Lessons
 
 * **Challenges:**
-  * Writing clear step-by-step instructions is harder than expected.
-  * Balancing technical depth with accessibility for beginners.
+  * Decoupling the logic changes securely without breaking the frontend application's expected response structures required tight synchronization.
+  * Creating an IR playbook from scratch is daunting; deciding what level of detail to include without making it overly long was tough.
 
 * **Solutions:**
-  * Had team members follow instructions to identify unclear steps.
-  * Added "Beginner Tips" boxes throughout documentation.
+  * Used API Gateway mapping templates to absorb the backend exceptions and cleanly transform them into safe JSON schemas for the frontend.
+  * Used a standard SANS Institute template for the IR playbook, modifying it specifically for our Serverless AWS deployment architecture.
 
 * **Lessons Learned:**
-  * Documentation is as important as code.
-  * User testing of documentation reveals blind spots.
+  * Remediation is often a collaborative effort between Security and Development. Clear, respectful communication is needed to explain *why* exactly a code block needs to change.
+  * An Incident Response plan that has never been tested is just a piece of paper. We must simulate a walk-through in the future.
 
 ### Next Week Plan
 
-* Final presentation to all stakeholders.
-* Complete self-evaluation and feedback sections.
-* Submit internship report.
-* Celebrate project completion! 🎉
+* Project wrap-up and documentation!
+* Finalize the comprehensive Secure Architecture Diagrams.
+* Compile the work into the final Internship Report and prepare for the concluding presentation.

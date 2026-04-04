@@ -1,60 +1,49 @@
 ### Week 10 Objectives
 
-* Conduct load testing and stress testing.
-* Implement cost optimization strategies.
-* Prepare demo for stakeholder presentation.
-* Start writing technical documentation.
+* Transition from defensive architecture to an offensive security mindset.
+* Perform internal penetration testing on the NutriTrack serverless backend.
+* Validate the efficacy of Amazon Cognito and AWS WAF configurations.
+* Discover and document application-layer vulnerabilities.
 
 ### Tasks carried out this week
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Load Testing <br>&emsp; + Set up Artillery.io for load tests <br>&emsp; + Simulated 100 concurrent users <br>&emsp; + Identified bottlenecks in API endpoints | 09/03/2026 | 09/03/2026 | [Load Test Reports] |
-| 2 | - Stress Testing <br>&emsp; + Increased to 500 concurrent users <br>&emsp; + Tested Lambda scaling behavior <br>&emsp; + Verified DynamoDB auto-scaling | 10/03/2026 | 10/03/2026 | [Stress Test Reports] |
-| 3 | - Cost Optimization <br>&emsp; + Analyzed AWS Cost Explorer data <br>&emsp; + Implemented Reserved Capacity for DynamoDB <br>&emsp; + Set up S3 Intelligent-Tiering | 11/03/2026 | 11/03/2026 | [Cost Analysis](https://docs.aws.amazon.com/cost-management/) |
-| 4 | - Demo Preparation <br>&emsp; + Created demo script and flow <br>&emsp; + Set up demo data in staging <br>&emsp; + Practiced presentation with team | 12/03/2026 | 12/03/2026 | [Demo Script] |
-| 5 | - Technical Documentation (Part 1) <br>&emsp; + Started architecture documentation <br>&emsp; + Documented API specifications <br>&emsp; + Created deployment guide | 13/03/2026 | 13/03/2026 | [Tech Docs] |
-| 6-7 | - Technical Documentation (Part 2) <br>&emsp; + Wrote developer setup guide <br>&emsp; + Documented troubleshooting steps <br>&emsp; + Created runbook for operations | 14/03/2026 | 15/03/2026 | [Runbook] |
+| 1 | - Test Environment Setup <br>&emsp; + Spin up a cloned isolated environment (Staging) <br>&emsp; + Configured proxy tools (Burp Suite) to intercept traffic | 09/03/2026 | 09/03/2026 | [Burp Suite Config Docs] |
+| 2 | - Authentication & Authorization Testing <br>&emsp; + Attempted Cognito Token manipulation & bypass <br>&emsp; + Tested for Insecure Direct Object Reference (IDOR) on user profiles | 10/03/2026 | 10/03/2026 | [OWASP Auth Testing] |
+| 3 | - WAF Bypass & Injection <br>&emsp; + Assessed AWS WAF rule sets against encoded SQLi payloads <br>&emsp; + Stressed the rate-limiting rules to confirm DDoS mitigation | 11/03/2026 | 11/03/2026 | [WAF Vulnerability testing] |
+| 4 | - API Logic Flaws <br>&emsp; + Hunted for Business Logic vulnerabilities in the Lambda API endpoints <br>&emsp; + Checked for Excessive Data Exposure in JSON responses | 12/03/2026 | 12/03/2026 | [REST API Security] |
+| 5 | - Privilege Escalation Audit <br>&emsp; + Audited IAM Roles assumed by backend systems <br>&emsp; + Checked for over-permissive `sts:AssumeRole` trusts | 13/03/2026 | 13/03/2026 | [IAM Security Assessment] |
+| 6-7 | - Security Report Generation <br>&emsp; + Compiled findings into a structured Vulnerability Assessment Report <br>&emsp; + Ranked findings by CVSS severity score | 14/03/2026 | 15/03/2026 | [Vulnerability Score Matrix] |
 
 ### Week 10 Achievements
 
-* **Load Testing:**
-  * System handles 100 concurrent users with <200ms response time.
-  * Stress test showed graceful degradation at 500 users.
-  * Lambda auto-scaling kicked in at 200 concurrent requests.
+* **Offensive Security Validation:**
+  * Successfully conducted a mock penetration test hitting all layers of the stack (API Gateway, Cognito, Lambda logic, and Database interactions).
 
-* **Cost Optimization:**
-  * Estimated 40% cost reduction with optimization strategies.
-  * S3 Intelligent-Tiering saves ~$15/month for infrequent data.
-  * Bedrock usage optimized with prompt caching.
+* **Vulnerability Discovery:**
+  * Discovered a minor IDOR vulnerability in the `GET /meals/{id}` endpoint where a user could potentially enumerate a different user's meal logs if they guessed the ID, due to a missing authorization check inside the Lambda function.
+  * Identified an instance where the API response returned overly verbose error traces if a malformed parameter was sent (Information disclosure).
 
-* **Demo:**
-  * Complete demo script covering all NutriTrack features.
-  * Staging environment prepared with realistic data.
-  * Team rehearsal completed successfully.
-
-* **Documentation:**
-  * Architecture document with diagrams completed.
-  * API documentation with examples (Postman collection).
-  * Deployment and developer setup guides.
+* **WAF Efficacy Proven:**
+  * Our customized AWS WAF blocked 100% of standard script-kiddie payloads (SQLi, generic XSS) and successfully throttled the automated Burp Suite fuzzing via rate limits.
 
 ### Challenges & Lessons
 
 * **Challenges:**
-  * Lambda concurrent execution limits caused 429 errors at high load.
-  * Cost optimization required understanding complex pricing models.
+  * Setting up Burp Suite to man-in-the-middle encrypted API traffic requiring custom root certificates was technically tedious.
+  * Differentiating between an infrastructure configuration flaw versus a codebase logic flaw required deep code-review of the Lambda functions.
 
 * **Solutions:**
-  * Requested Lambda quota increase through AWS Support.
-  * Used AWS Pricing Calculator to model different scenarios.
+  * Coordinated with the frontend developer to bypass SSL pinning purely in the Staging client environment for testing purposes.
+  * Paired directly with the Backend Developer to trace the IDOR payload from the API Gateway event down to the DynamoDB lookup query.
 
 * **Lessons Learned:**
-  * Always plan for quota limits in serverless architecture.
-  * Cost optimization should be considered from design phase.
+  * Security is never purely infrastructural. AWS WAF and IAM can be configured perfectly, but flawed application logic (like missing resource ownership checks in Lambda) will fundamentally compromise the system.
+  * Penetration testing is incredibly valuable to validate your own defensive assumptions.
 
 ### Next Week Plan
 
-* Complete Workshop documentation for internship report.
-* Prepare final presentation slides.
-* Conduct internal demo with mentors.
-* Finalize all project documentation.
+* Shift from offensive discovery to the Remediation phase.
+* Work alongside developers to patch the IDOR vulnerability and eliminate verbose errors.
+* Draft an Incident Response (IR) playbook for NeuraX based on our security audit.

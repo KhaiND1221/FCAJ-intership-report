@@ -1,54 +1,49 @@
 ### Week 5 Objectives
 
-* Finalize NutriTrack 2.0 architecture diagram.
-* Set up AWS development environment (IAM, S3, DynamoDB).
-* Begin Proposal documentation for submission.
-* Learn API Gateway and Lambda best practices.
+* Shield the NeuraX Application interfaces from typical web exploits.
+* Deploy AWS Web Application Firewall (WAF) for the API Gateway and CloudFront.
+* Implement Rate Limiting to mitigate basic DDoS architectures.
+* Validate the WAF rules handling through practical payload testing.
 
-### Tasks carried out this week
+### Tasks to be carried out this week
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Architecture Finalization <br>&emsp; + Completed detailed AWS architecture diagram <br>&emsp; + Selected 6 core services: Cognito, API Gateway, Lambda, DynamoDB, S3, Bedrock | 02/02/2026 | 02/02/2026 | [Architecture v2.0] |
-| 2 | - AWS Environment Setup (Part 1) <br>&emsp; + Created IAM roles with least privilege <br>&emsp; + Set up development IAM user for team <br>&emsp; + Configured MFA for all accounts | 03/02/2026 | 03/02/2026 | [IAM Config] |
-| 3 | - AWS Environment Setup (Part 2) <br>&emsp; + Created S3 buckets for media storage <br>&emsp; + Configured bucket policies and CORS <br>&emsp; + Set up lifecycle rules for cost optimization | 04/02/2026 | 04/02/2026 | [S3 Buckets] |
-| 4 | - DynamoDB Design <br>&emsp; + Designed single-table schema for NutriTrack <br>&emsp; + Created partition key and sort key strategy <br>&emsp; + Set up GSI for query patterns | 05/02/2026 | 05/02/2026 | [DynamoDB Schema](https://docs.aws.amazon.com/dynamodb/) |
-| 5 | - API Gateway & Lambda Study <br>&emsp; + REST API vs HTTP API comparison <br>&emsp; + Lambda function best practices <br>&emsp; + Cold start optimization techniques | 06/02/2026 | 06/02/2026 | [API Gateway Docs](https://docs.aws.amazon.com/apigateway/) |
-| 6-7 | - Proposal Documentation <br>&emsp; + Started writing NutriTrack Proposal <br>&emsp; + Included problem statement, objectives, timeline <br>&emsp; + Created budget estimation | 07/02/2026 | 08/02/2026 | [Proposal Draft] |
+| 1 | - Application Protection Setup <br>&emsp; + Provision AWS WAF Web ACLs <br>&emsp; + Attach Web ACLs to CloudFront distribution | 02/02/2026 | 02/02/2026 | [Application Protection with AWS WAF](https://000026.awsstudygroup.com) |
+| 2 | - Common Vulnerability Defense <br>&emsp; + Import AWS Managed Rules (Core rule set, SQLi, XSS) <br>&emsp; + Customize rules to reduce false positives for the API | 03/02/2026 | 03/02/2026 | [AWS Sec Best Practices] |
+| 3 | - DDoS Mitigation <br>&emsp; + Configure rate-based rules (e.g., 500 requests / 5 mins) <br>&emsp; + Enable AWS Shield Standard to protect against Layer 3/4 attacks | 04/02/2026 | 04/02/2026 | [WAF Rate Limiting Docs] |
+| 4 | - WAF Logging & Analytics <br>&emsp; + Route WAF logs to CloudWatch logs / S3 <br>&emsp; + Explore requests visualization | 05/02/2026 | 05/02/2026 | [CloudWatch Logs] |
+| 5 | - WAF Policy Testing <br>&emsp; + Manually test payloads using `curl` and Burp Suite <br>&emsp; + Verify 403 Forbidden responses on malevolent requests | 06/02/2026 | 06/02/2026 | [OWASP Top 10 Testing] |
+| 6-7 | - Rule Optimization <br>&emsp; + Review flagged logs from the dev team's traffic <br>&emsp; + Adjust filtering modes properly | 07/02/2026 | 08/02/2026 | [Audit Logs] |
 
 ### Week 5 Achievements
 
-* **Architecture:**
-  * Completed comprehensive AWS architecture diagram with data flow.
-  * Selected services based on serverless-first, cost-effective approach.
-  * Architecture reviewed and approved by team.
+* **Implemented Cloud Perimeter Security:**
+  * Successfully deployed and attached **AWS WAF** to our CloudFront edges and the regional API Gateway, establishing a layer-7 security checkpoint for all incoming traffic.
+  * AWS Managed rule sets completely block attempts of SQL injection, Cross-Site Scripting (XSS), and bad bot signatures.
+  
+* **DDoS Resiliency:**
+  * Created custom rate-based rules that block IPs if they exceed 500 requests within a 5-minute sliding window, successfully preventing brute-force attacks on our Cognito login endpoints.
 
-* **AWS Environment:**
-  * IAM roles configured with Principle of Least Privilege.
-  * S3 buckets created: `nutritrack-media-dev`, `nutritrack-data-dev`.
-  * DynamoDB table designed with single-table pattern for efficient queries.
-
-* **Documentation:**
-  * Proposal draft 70% complete with clear objectives and timeline.
-  * Estimated 3-month development timeline aligned with internship period.
+* **Monitoring Integration:**
+  * Enabled full-request logging. If a payload is dropped, the team can analyze the headers and body in CloudWatch to determine if it was a false positive.
 
 ### Challenges & Lessons
 
 * **Challenges:**
-  * DynamoDB single-table design is different from traditional relational thinking.
-  * Balancing cost optimization with performance requirements.
+  * The WAF rules initially blocked valid API traffic (`false positives`) because some NutriTrack meal logging formats triggered the SQLi pattern match.
+  * Parsing standard WAF JSON logs in CloudWatch was tedious and hard to read.
 
 * **Solutions:**
-  * Used Alex DeBrie's DynamoDB book and examples as reference.
-  * Created access pattern document first, then designed schema.
+  * Switched the aggressive rule to "Count" mode, studied the blocked parameters, and created an exclusion rule exception for the specific JSON payload field.
+  * Used CloudWatch Log Insights queries to extract and format the blocked request URIs and client IPs quickly.
 
 * **Lessons Learned:**
-  * Access patterns must be defined before DynamoDB schema design.
-  * On-demand pricing is better for development; provisioned for production.
+  * Never deploy WAF rules in strict "Block" mode immediately. Always use "Count" mode for a few days to establish a traffic baseline and eliminate false positives before enforcing blocks.
+  * Security tools must not block legitimate business functionality.
 
 ### Next Week Plan
 
-* Complete and submit NutriTrack Proposal for review.
-* Start backend implementation: API endpoints structure.
-* Set up Lambda development environment with SAM CLI.
-* Define OpenAPI specification for NutriTrack APIs.
+* Shift focus to **Data Protection**.
+* Implement data-at-rest encryption for S3 buckets and DynamoDB using **AWS KMS**.
+* Remove configuration secrets from code by migrating to **AWS Secrets Manager**.

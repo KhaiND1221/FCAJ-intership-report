@@ -1,60 +1,49 @@
 ### Mục tiêu Tuần 10
 
-* Thực hiện load testing và stress testing.
-* Triển khai chiến lược tối ưu chi phí.
-* Chuẩn bị demo cho stakeholder presentation.
-* Bắt đầu viết technical documentation.
+* Đảo bước tư duy từ Thiết kế Xây dựng sang Đánh chặn và Xâm nhập (Offensive Security).
+* Triển khai chiến dịch Kiểm thử Xâm nhập (Penetration testing) nội bộ đánh thẳng vào hệ thống Serverless của NutriTrack.
+* Thẩm định uy lực thực tế của kiến trúc Amazon Cognito và mạng rào AWS WAF.
+* Khai phá và Ghi chú cặn kẽ các lỗ hổng tìm thấy tại tầng Ứng dụng.
 
-### Các nhiệm vụ thực hiện trong tuần
+### Các công việc thực hiện trong tuần
 
-| Ngày | Nhiệm vụ | Ngày BĐ | Ngày HT | Tài liệu tham khảo |
+| Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Load Testing <br>&emsp; + Thiết lập Artillery.io cho load tests <br>&emsp; + Mô phỏng 100 concurrent users <br>&emsp; + Xác định bottlenecks trong API endpoints | 09/03/2026 | 09/03/2026 | [Load Test Reports] |
-| 2 | - Stress Testing <br>&emsp; + Tăng lên 500 concurrent users <br>&emsp; + Test Lambda scaling behavior <br>&emsp; + Xác minh DynamoDB auto-scaling | 10/03/2026 | 10/03/2026 | [Stress Test Reports] |
-| 3 | - Tối ưu chi phí <br>&emsp; + Phân tích dữ liệu AWS Cost Explorer <br>&emsp; + Triển khai Reserved Capacity cho DynamoDB <br>&emsp; + Thiết lập S3 Intelligent-Tiering | 11/03/2026 | 11/03/2026 | [Cost Analysis](https://docs.aws.amazon.com/cost-management/) |
-| 4 | - Chuẩn bị Demo <br>&emsp; + Tạo demo script và flow <br>&emsp; + Thiết lập demo data trong staging <br>&emsp; + Tập trình bày với team | 12/03/2026 | 12/03/2026 | [Demo Script] |
-| 5 | - Technical Documentation (Phần 1) <br>&emsp; + Bắt đầu viết architecture documentation <br>&emsp; + Tài liệu hóa API specifications <br>&emsp; + Tạo deployment guide | 13/03/2026 | 13/03/2026 | [Tech Docs] |
-| 6-7 | - Technical Documentation (Phần 2) <br>&emsp; + Viết developer setup guide <br>&emsp; + Tài liệu hóa troubleshooting steps <br>&emsp; + Tạo runbook cho operations | 14/03/2026 | 15/03/2026 | [Runbook] |
+| 1 | - Khởi tạo Môi trường Test <br>&emsp; + Cấp mới một bản sao môi trường (Staging environment) tách biệt <br>&emsp; + Setup Burp Suite làm cọc rào chặn luồng traffic (Proxy) | 09/03/2026 | 09/03/2026 | [Burp Suite Config Docs] |
+| 2 | - Nhắm bắn vào Định danh & Phân quyền <br>&emsp; + Sửa đổi cắt ghép Token do Cognito cung cấp <br>&emsp; + Săn lỗi IDOR (Quyền tham chiếu đối tượng trực tiếp) tại API hồ sơ user | 10/03/2026 | 10/03/2026 | [OWASP Auth Testing] |
+| 3 | - Vượt rào WAF & Bơm mã độc <br>&emsp; + Dùng payload mã hóa tinh vi để dụ WAF bỏ qua các cú SQLi <br>&emsp; + Kích trần bộ rate-limiting để xem độ nảy chặn DDoS | 11/03/2026 | 11/03/2026 | [WAF Vulnerability testing] |
+| 4 | - Lỗ hổng Logic API <br>&emsp; + Dò xét điểm yếu nghiệp vụ (Business Logic flaws) dính trên file code Lambda <br>&emsp; + Săn lỗi Phơi bày Thông tin dữ liệu nhạy cảm (Excessive Data Exposure) trên format trả về JSON | 12/03/2026 | 12/03/2026 | [REST API Security] |
+| 5 | - Soi xét Đặc quyền Leo thang <br>&emsp; + Thẩm định chéo (Audit) tất cả IAM Roles của chuỗi Backend <br>&emsp; + Cảnh cáo các Policy cho phép kết nối `sts:AssumeRole` quá tùy tiện | 13/03/2026 | 13/03/2026 | [IAM Security Assessment] |
+| 6-7 | - Xuất bản Báo cáo Xâm nhập <br>&emsp; + Tóm gọn đống tàn tích vào biên bản Vulnerability Assessment Report <br>&emsp; + Xếp hạng "màu cờ" ưu tiên sửa đổi theo khung điểm CVSS | 14/03/2026 | 15/03/2026 | [Vulnerability Score Matrix] |
 
-### Thành tựu Tuần 10
+### Kết quả đạt được trong Tuần 10
 
-* **Load Testing:**
-  * Hệ thống xử lý 100 concurrent users với <200ms response time.
-  * Stress test cho thấy graceful degradation ở 500 users.
-  * Lambda auto-scaling kích hoạt ở 200 concurrent requests.
+* **Xác thực Đạn Đạo (Offensive Validation):**
+  * Mock Test thành công từ ngoài vào trong, cắt phăng qua từng vành đai: Phễu API Gateway, Lưới Cognito, Ruột Lambda và Tầng Đáy DB. 
 
-* **Tối ưu chi phí:**
-  * Ước tính giảm 40% chi phí với các chiến lược tối ưu.
-  * S3 Intelligent-Tiering tiết kiệm ~$15/tháng cho dữ liệu ít truy cập.
-  * Bedrock usage được tối ưu với prompt caching.
+* **Thám báo Lỗ hổng:**
+  * Giác ngộ ra một kẽ hở IDOR thuộc tầm trung bình-nhẹ tại nhánh `GET /meals/{id}`. Nếu lanh tay đổi biến ID bằng dãy số người khác, hàm Lambda không tiến hành so khớp ID chủ thể mà trả thẳng raw data, gây dò dỉ thông tin chéo.
+  * Đánh hơi thấy ứng dụng có thói quen trả về nguyên cục bã lỗi (verbose error traces) thay vì mã độc lập lúc nhận request lạ, tạo ngòi nổ "khai tâm" hạ tầng (Information disclosure).
 
-* **Demo:**
-  * Demo script hoàn chỉnh bao gồm tất cả tính năng NutriTrack.
-  * Môi trường staging được chuẩn bị với dữ liệu thực tế.
-  * Team rehearsal hoàn thành thành công.
+* **Minh chứng của WAF:**
+  * Phân đoạn lá chắn WAF mà tôi đã triển khai trước đó hạ đo ván hoàn toàn 100% rác payload phổ biến (SQLi/XSS). Kể cả tính năng Fuzzing tự động của máy Burp Suite cũng bị bẻ thẳng nhờ chế tài Rate Limits mạnh mẽ.
 
-* **Tài liệu:**
-  * Architecture document với diagrams hoàn thành.
-  * API documentation với examples (Postman collection).
-  * Deployment và developer setup guides.
+### Thách thức & Bài học kinh nghiệm
 
-### Khó khăn & Bài học
+* **Thách thức:**
+  * Nhét custom Certificate của Burp Suite can thiệp vào tầng mã hóa SSL là một chuỗi hành động cực kì dị tật với một đống bẫy lỗi ở local.
+  * Khi API lỗi, phải mất sức đọc thẳng tới Source code tận tầng Lambda mới dám chắc nó là do hạ tầng sai thiết kế hay dev code hời hợt.
 
-* **Khó khăn:**
-  * Lambda concurrent execution limits gây ra lỗi 429 ở high load.
-  * Tối ưu chi phí yêu cầu hiểu các pricing models phức tạp.
+* **Giải pháp:**
+  * Gọi Dev Frontend sang phá chung: Lệnh cho app Client nhắm mắt làm ngơ (Bypass SSL pinning) tạm thời dưới vỏ bọc nhánh code Staging để lấy đường móc nối traffic test.
+  * Ngồi pair-coding trực tiếp cùng Backend Developer. Cùng nhau dò lại sự kiện của API Gateway chuyền xuống hàm query DB để khoanh vùng IDOR.
 
-* **Cách giải quyết:**
-  * Yêu cầu tăng Lambda quota qua AWS Support.
-  * Sử dụng AWS Pricing Calculator để model các scenarios khác nhau.
-
-* **Bài học rút ra:**
-  * Luôn lên kế hoạch cho quota limits trong serverless architecture.
-  * Tối ưu chi phí nên được xem xét từ giai đoạn thiết kế.
+* **Bài học:**
+  * Bảo mật không bao giờ là câu chuyện độc quyền của hạ tầng. WAF dựng tường đồng vách sắt, IAM thắt cổ chai tối đa... nhưng nếu logic code của Dev quên bước chặn kiểm định (Missing authorization check), ứng dụng vẫn sập hoàn toàn.
+  * Bắn súng thử (Penetration testing) gỡ bỏ mọi hoang tưởng bọc đường rằng "chỉ cần bật tính năng bảo mật là xong".
 
 ### Kế hoạch Tuần 11
 
-* Hoàn thành Workshop documentation cho báo cáo thực tập.
-* Chuẩn bị final presentation slides.
-* Thực hiện internal demo với mentors.
-* Hoàn thiện tất cả project documentation.
+* Trả lại hiện thực "Phòng Thủ": Sang phase Chuẩn Đoán & Khắc Phục (Remediation).
+* Vào hùa cùng nhóm Dev lập tức vá víu rò rỉ IDOR và dọn dẹp tin báo lỗi.
+* Phác thảo và ban hành cẩm nang Phản Ứng Khẩn Cấp (Incident Response Playbook).

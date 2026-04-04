@@ -1,60 +1,54 @@
 ### Mục tiêu Tuần 1:
 
-* Thiết lập môi trường làm việc số hoàn chỉnh cho team NeuraX (Discord, GitHub, Trello).
+* Thiết lập môi trường làm việc kỹ thuật số hoàn chỉnh cho team NeuraX (Discord, GitHub, Trello).
 * Tổ chức thành công buổi Kick-off Meeting và thống nhất quy trình vận hành.
-* Nghiên cứu các dịch vụ AWS cơ bản theo vai trò (IAM, S3, EC2).
-* Brainstorm ý tưởng dự án cho kỳ thực tập.
+* Bắt đầu tìm hiểu các dịch vụ cơ bản của AWS thông qua lộ trình Cloud Journey (Explore AWS Services).
+* Thiết lập báo cáo cá nhân và quản lý chi phí tài khoản AWS.
 
-### Các nhiệm vụ thực hiện trong tuần:
+### Các công việc thực hiện trong tuần:
 
-| Ngày | Nhiệm vụ | Ngày BĐ | Ngày HT | Tài liệu tham khảo |
+| Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Thiết lập Discord Server "NeuraX HQ" <br>&emsp; + Tạo các kênh theo nhóm chức năng <br>&emsp; + Phân quyền Role cho 5 thành viên | 05/01/2026 | 06/01/2026 | - |
-| 2 | - Khởi tạo GitHub Organization <br>&emsp; + Tạo 3 Repositories <br>&emsp; + Cấu hình Branch Protection Rules <br>&emsp; + Invite members | 06/01/2026 | 07/01/2026 | [NeuraX-HQ](https://github.com/NeuraX-HQ) |
-| 3 | - Chuẩn bị Agenda cuộc họp Kick-off <br> - Chủ trì cuộc họp với 5 thành viên <br>&emsp; + Xác nhận vai trò & timeline <br>&emsp; + Thảo luận quy chế vận hành | 07/01/2026 | 08/01/2026 | - |
-| 4 | - Tìm hiểu AWS cơ bản <br>&emsp; + AWS là gì và các nhóm dịch vụ chính <br>&emsp; + Compute, Storage, Networking, Database <br> - Nghiên cứu AWS IAM <br>&emsp; + Users, Groups, Policies <br>&emsp; + MFA Configuration | 08/01/2026 | 09/01/2026 | [AWS IAM Docs](https://docs.aws.amazon.com/IAM/) |
-| 5 | - Nghiên cứu Amazon S3 <br>&emsp; + Bucket, Objects, Permissions <br>&emsp; + Storage Classes <br> - Tìm hiểu Amazon EC2 cơ bản <br>&emsp; + Instance types, AMI <br>&emsp; + Security Groups | 09/01/2026 | 10/01/2026 | [AWS S3 Docs](https://docs.aws.amazon.com/s3/) |
-| 6 | - Brainstorm ý tưởng dự án với team <br>&emsp; + Trao đổi về các hướng có thể triển khai <br>&emsp; + Chưa chốt được idea cụ thể | 10/01/2026 | 11/01/2026 | - |
-| 7 | - Setup Website báo cáo cá nhân <br>&emsp; + Sử dụng React + Vite <br>&emsp; + Deploy lên GitHub Pages | 11/01/2026 | 11/01/2026 | - |
+| 1 | - Thiết lập Discord Server "NeuraX HQ" <br>&emsp; + Tạo các kênh theo nhóm chức năng <br>&emsp; + Cấp quyền (Roles) cho thành viên | 05/01/2026 | 06/01/2026 | - |
+| 2 | - Khởi tạo GitHub Organization <br>&emsp; + Tạo Repositories <br>&emsp; + Cấu hình Branch Protection Rules <br>&emsp; + Mời các thành viên | 06/01/2026 | 07/01/2026 | [NeuraX-HQ](https://github.com/NeuraX-HQ) |
+| 3 | - Chuẩn bị Agenda cho Kick-off Meeting <br> - Tổ chức họp cùng team <br>&emsp; + Chốt vai trò & timeline <br>&emsp; + Thảo luận quy chế hoạt động | 07/01/2026 | 08/01/2026 | - |
+| 4 | - Tìm hiểu dịch vụ AWS (Phần 1) <br>&emsp; + Compute Essentials với Amazon EC2 <br>&emsp; + Database Essentials với Amazon RDS | 08/01/2026 | 09/01/2026 | [Cloud Journey](https://cloudjourney.awsstudygroup.com/1-explore/) |
+| 5 | - Tìm hiểu dịch vụ AWS (Phần 2) <br>&emsp; + Static Website Hosting bằng Amazon S3 <br>&emsp; + Khám phá cơ bản về IAM | 09/01/2026 | 10/01/2026 | [Cloud Journey](https://cloudjourney.awsstudygroup.com/1-explore/) |
+| 6 | - Quản lý chi phí <br>&emsp; + Thực hành Managing Costs với AWS Budgets <br>&emsp; + Đặt cảnh báo ngân sách cho tài khoản team | 10/01/2026 | 11/01/2026 | [AWS Budgets Labs](https://cloudjourney.awsstudygroup.com/) |
+| 7 | - Khởi tạo Web Báo Cáo Cá Nhân <br>&emsp; + Triển khai cấu trúc cơ bản | 11/01/2026 | 11/01/2026 | - |
 
-### Thành tựu Tuần 1:
+### Kết quả đạt được trong Tuần 1:
 
-* 100% thành viên (5/5) đã tham gia đầy đủ các kênh làm việc:
-  * Discord Server "NeuraX HQ"
-  * GitHub Organization
-  * Trello Board
+* Hoàn thiện môi trường không gian làm việc của NeuraX team:
+  * Khởi tạo thành công Discord, GitHub Organization, Trello Board.
 
-* Đã ban hành 02 văn bản quan trọng:
-  * Biên bản họp Kick-off
-  * Quy chế vận hành Team
+* Ban hành 02 tài liệu quan trọng:
+  * Biên bản Kick-off Meeting và Quy chế hoạt động nhóm.
 
-* Nắm được kiến thức cơ bản về AWS:
-  * Hiểu tổng quan về các nhóm dịch vụ AWS (Compute, Storage, Networking, Database)
-  * Tìm hiểu về IAM: Users, Groups, Policies và cách phân quyền
-  * Nghiên cứu S3: Bucket, Objects, Storage Classes
-  * Làm quen với EC2: Instance types, AMI, Security Groups
+* Nắm bắt được kiến thức nền tảng về AWS Core Services:
+  * Làm quen với EC2: Các loại Instance, AMI, phương thức truy cập.
+  * Hiểu cách dùng Amazon S3 để lưu trữ object và làm web tĩnh.
+  * Nắm bắt cơ bản về RDS và tạo tài khoản IAM.
+  * Cài đặt thành công báo động AWS Budget nhằm tránh phát sinh chi phí ngoài ý muốn.
 
-* Hoàn thành setup Website báo cáo cá nhân và deploy lên GitHub Pages.
+* Hoàn thiện bước đầu trang báo cáo thực tập cá nhân.
 
-* Đã brainstorm ý tưởng với team nhưng chưa chốt được idea cụ thể, cần tiếp tục thảo luận trong tuần sau.
+### Thách thức & Bài học kinh nghiệm:
 
-### Khó khăn & Bài học:
+* **Thách thức:** 
+  * Cơ cấu tính phí của AWS giữa các Region và các dịch vụ khá phức tạp, dễ gây nhầm lẫn ban đầu.
+  * Các dịch vụ có nhiều cấu hình chồng chéo, khó để bao quát toàn bộ trong thời gian ngắn.
 
-* **Khó khăn:** 
-  * Việc cấu hình Branch Protection Rule trên GitHub ban đầu gặp lỗi do chưa set đủ quyền Admin cho Bot account.
-  * Các dịch vụ AWS khá nhiều và phức tạp, cần thời gian để nắm vững.
+* **Giải pháp:** 
+  * Tập trung thực hành ngay bài lab AWS Budget Alarm để yên tâm trải nghiệm các dịch vụ khác.
+  * Tuân thủ sát lộ trình "Explore AWS Services" trên Cloud Journey thay vì đọc nhiều tài liệu rải rác.
 
-* **Cách giải quyết:** 
-  * Tham khảo GitHub Docs và cấp lại quyền Owner/Admin cho Bot account.
-  * Tập trung học từng service một, bắt đầu từ những service cơ bản nhất (IAM, S3, EC2).
-
-* **Bài học rút ra:** 
-  * Cần check kỹ quyền hạn (Permissions) của Organization trước khi cấu hình.
-  * Nên có lộ trình học AWS rõ ràng, không nên học lan man nhiều service cùng lúc.
+* **Bài học:** 
+  * Việc đầu tiên cần làm trên tài khoản AWS mới là thiết lập ngân sách và cảnh báo (Billing/Cost Budget).
+  * Đi theo định hướng bài bản có sẵn đem lại hiệu quả tốt hơn so với tự tìm tài liệu.
 
 ### Kế hoạch Tuần 2:
 
-* Tiếp tục học thêm các kiến thức AWS cơ bản (VPC, Lambda, API Gateway).
-* Lên công ty làm quen môi trường làm việc thực tế và gặp gỡ team.
-* Mục tiêu chính: Chốt được ý tưởng dự án chính thức trong Week 2.
-* Bắt đầu phác thảo Proposal nếu đã chốt được idea.
+* Đi sâu vào Network Security (VPC, Subnets) và các khái niệm IAM nâng cao hơn.
+* Hoàn thành các khóa/labs cơ sở về AWS Cloud Fundamentals.
+* Thảo luận yêu cầu cấu trúc mạng cho dự án NeuraX nhắm đến yếu tố bảo mật cơ sở.

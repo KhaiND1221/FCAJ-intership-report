@@ -1,50 +1,51 @@
 ### Mục tiêu Tuần 2
 
-* Hoàn thành Week 1 khóa học "AWS Cloud Fundamentals" trên Coursera.
-* Thực hành 5 bài Lab cơ bản (Bedrock, RDS, Lambda, Budgets, EC2).
-* Nghiên cứu sâu về IAM và VPC (Mạng & Bảo mật).
-* Tham gia hoạt động nhận áo đồng phục AWS x FCAJ.
+* Đi sâu tìm hiểu Network Security thông qua kiến trúc Amazon VPC.
+* Nắm vững cách quản lý ranh giới truy cập thông qua AWS IAM.
+* Thực hành bài Lab về Auto Scaling và CloudWatch từ cổng Cloud Journey.
+* Tham gia các hoạt động kết nối nhóm và nhận áo đồng phục.
 
-### Các nhiệm vụ thực hiện trong tuần
+### Các công việc thực hiện trong tuần
 
-| Ngày | Nhiệm vụ | Ngày BĐ | Ngày HT | Tài liệu tham khảo |
+| Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - AWS Hands-on Labs (Phần 1) <br>&emsp; + Lab 1: Sử dụng Foundation Model trong Amazon Bedrock <br>&emsp; + Lab 2: Tạo Amazon RDS Database <br>&emsp; + Lab 3: Tạo Web App sử dụng Lambda | 12/01/2026 | 12/01/2026 | [Screenshots / Lab Logs] |
-| 1 | - AWS Hands-on Labs (Phần 2) <br>&emsp; + Lab 4: Thiết lập Cost Budget (AWS Budgets) <br>&emsp; + Lab 5: Khởi chạy EC2 Instance | 12/01/2026 | 12/01/2026 | [Screenshots] |
-| 2 | - Deep Dive: AWS IAM <br>&emsp; + Nghiên cứu Users, Groups, Policies, Roles <br>&emsp; + Hiểu nguyên tắc Principle of Least Privilege | 13/01/2026 | 13/01/2026 | [Notes on Notion] |
-| 3 | - Hoạt động hành chính & Team Bonding <br>&emsp; + Ngày nghỉ (Tự học) <br>&emsp; + Nhận áo AWS x FCAJ <br>&emsp; + Networking với các team khác | 14/01/2026 | 14/01/2026 | [Photo] |
-| 4 | - Deep Dive: Amazon VPC <br>&emsp; + Nghiên cứu Subnets, Route Tables, Internet Gateway <br>&emsp; + Hiểu Public vs Private Subnets | 15/01/2026 | 15/01/2026 | [Architecture Draft] |
-| 4 | - Chứng chỉ Coursera <br>&emsp; + Hoàn thành Week 1: AWS Cloud Fundamentals <br>&emsp; + Đạt Quiz | 15/01/2026 | 15/01/2026 | [Certificate / Badge] |
-| 5-7 | - Tự đánh giá & Lên kế hoạch Tuần 3 <br>&emsp; + Ôn tập lại tất cả các labs <br>&emsp; + Cập nhật Website báo cáo cá nhân | 16/01/2026 | 18/01/2026 | [Web Link] |
+| 1 | - Deep Dive: Amazon VPC <br>&emsp; + Tìm hiểu Subnets, Route Tables, Internet Gateway <br>&emsp; + Phân biệt Public và Private Subnets | 12/01/2026 | 12/01/2026 | [Networking Essentials with VPC](https://000003.awsstudygroup.com) |
+| 1 | - Deep Dive: AWS IAM <br>&emsp; + Nguyên tắc đặc quyền tối thiểu (Least Privilege) <br>&emsp; + Cấu hình IAM Policies và Roles | 12/01/2026 | 12/01/2026 | [Access Management with IAM](https://000002.awsstudygroup.com) |
+| 2 | - Nâng cao tính bền bỉ <br>&emsp; + Thiết lập Auto Scaling cho EC2 <br>&emsp; + Cấp quyền EC2 thông qua Instance Profiling (IAM Roles) | 13/01/2026 | 13/01/2026 | [Cloud Journey Labs](https://cloudjourney.awsstudygroup.com/1-explore/) |
+| 3 | - Hành chính & Gắn kết team <br>&emsp; + Ngày tự học <br>&emsp; + Nhận áo đồng phục AWS x FCAJ <br>&emsp; + Giao lưu với các team khác | 14/01/2026 | 14/01/2026 | [Hình ảnh] |
+| 4 | - Giám sát & Metrics <br>&emsp; + Giám sát hệ thống với Amazon CloudWatch <br>&emsp; + Thiết lập Custom Metrics và Alarms | 15/01/2026 | 15/01/2026 | [Monitoring with CloudWatch](https://000008.awsstudygroup.com) |
+| 4 | - Chứng chỉ Coursera <br>&emsp; + Hoàn thành Tuần 1: AWS Cloud Fundamentals <br>&emsp; + Đạt điểm vượt qua bài Quiz | 15/01/2026 | 15/01/2026 | [Chứng chỉ / Huy hiệu] |
+| 5-7 | - Ôn tập & Lên kế hoạch Tuần 3 <br>&emsp; + Đánh giá các labs IAM/VPC đã làm <br>&emsp; + Cập nhật web báo cáo cá nhân | 16/01/2026 | 18/01/2026 | [Link Web] |
 
-### Thành tựu Tuần 2
+### Kết quả đạt được trong Tuần 2
 
 * Kỹ năng thực hành:
-  * Đã biết cách khởi tạo và quản lý 5 dịch vụ cốt lõi: **EC2** (Compute), **RDS** (Database), **Lambda** (Serverless), **Bedrock** (AI), **Budgets** (Cost).
-  * Đã thiết lập thành công cảnh báo ngân sách (Budget Alarm) để tránh mất tiền oan.
+  * Khởi tạo và bảo mật hạ tầng mạng cô lập với **VPC**.
+  * Thành thạo các yếu tố cơ bản của **IAM Policies** để thắt chặt quyền truy cập tài nguyên.
+  * Triển khai một cụm máy chủ tự động co giãn với **EC2 Auto Scaling** và giám sát bởi **CloudWatch**.
 
-* Kiến thức lý thuyết:
-  * Hoàn thành 100% Week 1 khóa học Coursera.
-  * Hiểu rõ mô hình **Shared Responsibility Model** và kiến trúc mạng **VPC** cơ bản.
+* Kiến thức:
+  * Hoàn thiện 100% Tuần 1 môn AWS Cloud Fundamentals (Coursera).
+  * Hiểu rõ mô hình Trách nhiệm chung (Shared Responsibility Model) cũng như khái niệm cách ly mạng.
 
-* Hoạt động ngoại khóa:
-  * Nhận áo đồng phục, chính thức hòa nhập văn hóa FCJ.
+* Ngoại khóa:
+  * Nhận áo đồng phục và chính thức hòa nhập với văn hóa FCJ.
 
-### Khó khăn & Bài học
+### Thách thức & Bài học kinh nghiệm
 
-* **Khó khăn:**
-  * Khái niệm về VPC (Subnet, CIDR block) khá trừu tượng và khó hình dung luồng đi của gói tin.
-  * Lab RDS tốn nhiều thời gian khởi tạo (Provisioning time) hơn dự kiến.
+* **Thách thức:**
+  * Cấu hình định tuyến VPC (Subnet, bảng định tuyến, NAT Gateway) phức tạp, cấu hình sai dễ gây gián đoạn kết nối.
+  * Việc tự viết JSON Policy cho IAM rất dễ phát sinh lỗi cú pháp hoặc quyền.
 
-* **Cách giải quyết:**
-  * Vẽ lại sơ đồ mạng ra giấy để dễ hiểu hơn.
-  * Tranh thủ đọc tài liệu lý thuyết trong lúc chờ RDS khởi tạo.
+* **Giải pháp:**
+  * Vẽ biểu đồ mạng ra giấy để trực quan hóa luồng dữ liệu trước khi thực hiện trên AWS.
+  * Sử dụng công cụ AWS IAM Policy Simulator để kiểm tra việc cấp quyền.
 
-* **Bài học rút ra:**
-  * Networking là cốt lõi: Nếu không hiểu VPC, sẽ không thể kết nối các dịch vụ (ví dụ: Lambda không gọi được RDS). Cần dành thêm thời gian cho phần này.
+* **Bài học:**
+  * Network và IAM chính là trái tim của phòng thủ đám mây (Cloud Security). Nếu cấp quyền không chặt và không cô lập VPC đúng cách, mọi dịch vụ tầng cao (như lambda, API) đều có nguy cơ bị tấn công.
 
 ### Kế hoạch Tuần 3
 
-* Trọng tâm: Chốt Idea Proposal "NeuraX Knowledge Vault" (Secure-RAG).
-* Technical: Nghiên cứu sâu hơn về **Amazon Bedrock Knowledge Base** (cho dự án RAG).
-* Hành chính: Đăng ký lịch lên văn phòng cho Thứ 3 tuần sau.
+* Hoàn tất các dịch vụ truyền tải dữ liệu và ứng dụng (DynamoDB, CloudFront).
+* Bắt đầu họp bàn định hướng kiến trúc cho dự án **NeuraX**.
+* Vạch ra các yêu cầu bảo mật nền tảng cho ứng dụng web của team.
