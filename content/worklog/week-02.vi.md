@@ -1,5 +1,4 @@
 ### Mục tiêu Tuần 2:
-> *(Kiểm thử Hệ thống: Bản cập nhật này gửi lên lúc 23:17 để test khả năng Auto-Update)*
 
 * Hoàn thành Module 3 & 4.
 * Thực hiện nghiên cứu tùy chọn: AWS Well-Architected Framework.
