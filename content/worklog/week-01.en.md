@@ -1,54 +1,42 @@
-### Week 1 Objectives:
+### Week 1 Objectives
 
-* Establish a complete digital working environment for the NeuraX team (Discord, GitHub, Trello).
-* Successfully organize the Kick-off Meeting and align operational processes.
-* Learn fundamental AWS services via Cloud Journey (Explore AWS Services).
-* Set up personal reporting and cost management on AWS.
+* Set up the digital working environment for the team (Discord, GitHub, Trello).
+* Organize the Kick-off Meeting and agree on operating procedures.
+* Begin learning AWS basic services through the Cloud Journey (Module 1, 2, 3).
+* Establish a personal report and manage AWS account costs.
 
-### Tasks to be carried out this week:
+### Tasks to be carried out this week
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Set up Discord Server "NeuraX HQ" <br>&emsp; + Create channels by functional groups <br>&emsp; + Assign Roles for members | 05/01/2026 | 06/01/2026 | - |
-| 2 | - Initialize GitHub Organization <br>&emsp; + Create Repositories <br>&emsp; + Configure Branch Protection Rules <br>&emsp; + Invite members | 06/01/2026 | 07/01/2026 | [NeuraX-HQ](https://github.com/NeuraX-HQ) |
-| 3 | - Prepare Kick-off Meeting Agenda <br> - Host meeting with team members <br>&emsp; + Confirm roles & timeline <br>&emsp; + Discuss operating regulations | 07/01/2026 | 08/01/2026 | - |
-| 4 | - Explore AWS Services (Part 1) <br>&emsp; + Compute Essentials with Amazon Elastic Compute Cloud (EC2) <br>&emsp; + Database Essentials with Amazon Relational Database Service (RDS) | 08/01/2026 | 09/01/2026 | [Cloud Journey](https://cloudjourney.awsstudygroup.com/1-explore/) |
-| 5 | - Explore AWS Services (Part 2) <br>&emsp; + Static Website Hosting with Amazon S3 <br>&emsp; + Initial exploration of Identity and Access Management (IAM) | 09/01/2026 | 10/01/2026 | [Cloud Journey](https://cloudjourney.awsstudygroup.com/1-explore/) |
-| 6 | - Cost Management <br>&emsp; + Managing Costs with AWS Budgets <br>&emsp; + Setting up budget alarms for the team account | 10/01/2026 | 11/01/2026 | [AWS Budgets Labs](https://cloudjourney.awsstudygroup.com/) |
-| 7 | - Setup Personal Report Website <br>&emsp; + Deploying basic structure | 11/01/2026 | 11/01/2026 | - |
+| 1 | - Setup Discord Server and Organizational spaces | 05/01/2026 | 06/01/2026 | - |
+| 2 | - Read internship rules <br> - Create AWS Account <br>&emsp; + Lab 1: Create AWS account and manage user groups <br>&emsp; + Lab 7: Set up Usage Budgets <br>&emsp; + Lab 9: Learn about AWS Support Services | 06/01/2026 | 07/01/2026 | [Lab 1](https://000001.awsstudygroup.com/) |
+| 3 | - Begin Module 2 Theory: <br>&emsp; + VPC, Subnets, Routetable, Security Groups <br>&emsp; + VPC Peering, Load Balancing, EC2 <br> - Init personal report with Hugo | 07/01/2026 | 08/01/2026 | [Cloud Journey](https://cloudjourney.awsstudygroup.com/) |
+| 4 | - Complete Module 2 Labs: <br>&emsp; + Lab 3: EC2 Instances and NAT Gateway <br>&emsp; + Lab 10: Key pairs, Security Groups, and RDP <br>&emsp; + Lab 19: VPC Peering Connection & Network ACLs <br> - Download MobaXTerm & PuTTY | 08/01/2026 | 09/01/2026 | [Lab 3](https://000003.awsstudygroup.com/) <br> [Lab 10](https://000010.awsstudygroup.com/) <br> [Lab 19](https://000019.awsstudygroup.com/) |
+| 5 | - Lab 20: Create AWS Transit Gateway <br>&emsp; + Fixed Template (changed instance to t3.micro) <br> - Cleanup resources to avoid charges | 09/01/2026 | 10/01/2026 | [Lab 20](https://000020.awsstudygroup.com/) |
+| 6-7 | - Begin Module 3 Theory: EBS, EFS, S3 Buckets <br> - Lab 13: AWS Backup (Vaults and Plans) <br> - Lab 24: Storage Gateway <br> - Lab 57: Host static website using S3 Buckets | 10/01/2026 | 11/01/2026 | [Lab 13](https://000013.awsstudygroup.com/) <br> [Lab 24](https://000024.awsstudygroup.com/) <br> [Lab 57](https://000057.awsstudygroup.com/) |
 
-### Week 1 Achievements:
+### Week 1 Achievements
 
-* Fully established the NeuraX team workspace:
-  * Discord Server "NeuraX HQ", GitHub Organization, Trello Board initialized.
+* **Accounts and Environments:**
+  * Created and secured the AWS Account, setting up billing alarms (Lab 7).
 
-* Published 02 important documents:
-  * Kick-off Meeting Minutes and Team Operating Regulations.
+* **Networking & Computing:**
+  * Mastered deploying EC2 instances, NAT Gateways, and Peering structures (Lab 3, Lab 19).
+  * Debugged and fixed a broken CloudFormation template in the Transit Gateway lab (Lab 20).
 
-* Gained basic knowledge of AWS Core Services:
-  * Familiarized with EC2: Instance types, AMI, basic access.
-  * Researched Amazon S3 for object storage and static hosting.
-  * Briefly explored RDS provisioning and IAM users.
-  * Successfully set up an AWS Budget alarm to monitor internship test account costs.
+* **Storage and Backups:**
+  * Configured reliable File shares using Storage Gateway (Lab 24).
+  * Hosted a static website on Amazon S3 and established regular AWS Backups (Lab 13, Lab 57).
 
-* Completed Personal Report Website basic setup.
+### Challenges & Lessons
 
-### Challenges & Lessons:
+* **Challenges:**
+  * AWS billing can unexpectedly charge you if Lab resources (like Transit Gateways or NATs) are left running overnight. You must delete the stack immediately after testing.
+* **Lessons Learned:**
+  * Fixing old CloudFormation scripts (such as migrating unsupported instance types to `t3.micro`) is a critical real-world cloud engineering skill.
 
-* **Challenges:** 
-  * Understanding the billing structures of different AWS regions and service tiers was confusing initially.
-  * AWS services have overlapping features which made it hard to grasp the big picture.
+### Next Week Plan
 
-* **Solutions:** 
-  * Heavily relied on the AWS Budget alarm lab to ensure we don't accidentally incur costs.
-  * Followed the structured "Explore AWS Services" path on Cloud Journey strictly instead of random tutorials.
-
-* **Lessons Learned:** 
-  * Always set up a Billing/Cost Budget alarm before launching any service.
-  * Creating a clear learning path is better than reading scattered documentation.
-
-### Next Week Plan:
-
-* Deep dive into Network Security (VPC, Subnets) and foundational IAM concepts.
-* Complete basic Cloud Fundamentals labs or courses.
-* Discuss initial architecture requirements for the NeuraX project from a secure networking standpoint.
+* Dive into advanced compute and database implementations (RDS, Load Balancing).
+* Attend the AWS Cloud Day event in HCMC.

@@ -1,51 +1,35 @@
-### Mục tiêu Tuần 2
+### Mục tiêu Tuần 2:
 
-* Đi sâu tìm hiểu Network Security thông qua kiến trúc Amazon VPC.
-* Nắm vững cách quản lý ranh giới truy cập thông qua AWS IAM.
-* Thực hành bài Lab về Auto Scaling và CloudWatch từ cổng Cloud Journey.
-* Tham gia các hoạt động kết nối nhóm và nhận áo đồng phục.
+* Hoàn thành Module 3 & 4.
+* Thực hiện nghiên cứu tùy chọn: AWS Well-Architected Framework.
+* Thảo luận ý tưởng workshop.
+* Tham gia sự kiện AWS Cloud Day.
 
-### Các công việc thực hiện trong tuần
+### Các công việc thực hiện trong tuần:
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Deep Dive: Amazon VPC <br>&emsp; + Tìm hiểu Subnets, Route Tables, Internet Gateway <br>&emsp; + Phân biệt Public và Private Subnets | 12/01/2026 | 12/01/2026 | [Networking Essentials with VPC](https://000003.awsstudygroup.com) |
-| 1 | - Deep Dive: AWS IAM <br>&emsp; + Nguyên tắc đặc quyền tối thiểu (Least Privilege) <br>&emsp; + Cấu hình IAM Policies và Roles | 12/01/2026 | 12/01/2026 | [Access Management with IAM](https://000002.awsstudygroup.com) |
-| 2 | - Nâng cao tính bền bỉ <br>&emsp; + Thiết lập Auto Scaling cho EC2 <br>&emsp; + Cấp quyền EC2 thông qua Instance Profiling (IAM Roles) | 13/01/2026 | 13/01/2026 | [Cloud Journey Labs](https://cloudjourney.awsstudygroup.com/1-explore/) |
-| 3 | - Hành chính & Gắn kết team <br>&emsp; + Ngày tự học <br>&emsp; + Nhận áo đồng phục AWS x FCAJ <br>&emsp; + Giao lưu với các team khác | 14/01/2026 | 14/01/2026 | [Hình ảnh] |
-| 4 | - Giám sát & Metrics <br>&emsp; + Giám sát hệ thống với Amazon CloudWatch <br>&emsp; + Thiết lập Custom Metrics và Alarms | 15/01/2026 | 15/01/2026 | [Monitoring with CloudWatch](https://000008.awsstudygroup.com) |
-| 4 | - Chứng chỉ Coursera <br>&emsp; + Hoàn thành Tuần 1: AWS Cloud Fundamentals <br>&emsp; + Đạt điểm vượt qua bài Quiz | 15/01/2026 | 15/01/2026 | [Chứng chỉ / Huy hiệu] |
-| 5-7 | - Ôn tập & Lên kế hoạch Tuần 3 <br>&emsp; + Đánh giá các labs IAM/VPC đã làm <br>&emsp; + Cập nhật web báo cáo cá nhân | 16/01/2026 | 18/01/2026 | [Link Web] |
+| 1 | - Bắt đầu Module 4: Các dịch vụ lưu trữ. <br> - Học về S3 Access Point & Storage class. | 12/01/2026 | 12/01/2026 | - |
+| 2 | - Lab 6: RDS Database <br>&emsp; + Dùng Linux qua EC2 để cài MySQL <br>&emsp; + Tạo Load Balancer & Target Groups <br>&emsp; + Cài công cụ `Siege` để Load test mô phỏng 50 người dùng cho đến khi EC2 tự terminate | 13/01/2026 | 13/01/2026 | [Lab 6](https://000006.awsstudygroup.com/) |
+| 3 | - Lab 5: Hỗ trợ team fix lỗi script lab kết nối RDS <br> - Thiếu bước `cd` tới thư mục ứng dụng | 14/01/2026 | 14/01/2026 | [Lab 5](https://000005.awsstudygroup.com/) |
+| 4 | - Tham gia Sự kiện **AWS Cloud Day** (Gen AI and Data track) | 15/01/2026 | 15/01/2026 | [Sự kiện AWS] |
+| 5-6 | - Làm lại Lab 10: Route 53 Hybrid DNS & Microsoft AD <br> - Lab 8: CloudWatch Metrics & Dashboard <br> - Khảo sát AWS Well-Architected Framework (6 Trụ cột: Vận hành, Bảo mật, Tin cậy, Hiệu suất, Chi phí, Bền vững) | 16/01/2026 | 17/01/2026 | [Lab 8](https://000008.awsstudygroup.com/) <br> [Well-Architected Docs] |
 
-### Kết quả đạt được trong Tuần 2
+### Kết quả đạt được trong Tuần 2:
 
-* Kỹ năng thực hành:
-  * Khởi tạo và bảo mật hạ tầng mạng cô lập với **VPC**.
-  * Thành thạo các yếu tố cơ bản của **IAM Policies** để thắt chặt quyền truy cập tài nguyên.
-  * Triển khai một cụm máy chủ tự động co giãn với **EC2 Auto Scaling** và giám sát bởi **CloudWatch**.
+* Thiết lập Database & Proxy chịu tải thành công khi hoàn tất Lab 6 (RDS, Load Balancing). Tự tìm giải pháp thay thế tool test lỗi thời bằng `Siege`.
+* Hỗ trợ sửa các script bash bị mất thư mục kết nối DB trong hướng dẫn của hệ thống (Lab 5).
+* Đọc và đánh giá CloudWatch metrics theo thời gian thực (Lab 8).
+* Nắm vững triết lý 6 trụ cột cốt lõi làm nên một hệ thống Cloud chuẩn "Well-Architected".
 
-* Kiến thức:
-  * Hoàn thiện 100% Tuần 1 môn AWS Cloud Fundamentals (Coursera).
-  * Hiểu rõ mô hình Trách nhiệm chung (Shared Responsibility Model) cũng như khái niệm cách ly mạng.
+### Thách thức & Bài học kinh nghiệm:
 
-* Ngoại khóa:
-  * Nhận áo đồng phục và chính thức hòa nhập với văn hóa FCJ.
+* **Thách thức:** Bài thực hành sử dụng rất nhiều tool / mã nguồn ngoài đã quá cũ không còn chạy được.
+* **Bài học:** Không được nhắm mắt làm theo tài liệu blindly. Luôn cần khả năng debug cơ bản (Ví dụ: Đọc lỗi thiếu file thì phải tự `cd` chuyển thư mục hoặc kiếm tool Load Test thay thế).
 
-### Thách thức & Bài học kinh nghiệm
+### Kế hoạch Tuần 3:
 
-* **Thách thức:**
-  * Cấu hình định tuyến VPC (Subnet, bảng định tuyến, NAT Gateway) phức tạp, cấu hình sai dễ gây gián đoạn kết nối.
-  * Việc tự viết JSON Policy cho IAM rất dễ phát sinh lỗi cú pháp hoặc quyền.
-
-* **Giải pháp:**
-  * Vẽ biểu đồ mạng ra giấy để trực quan hóa luồng dữ liệu trước khi thực hiện trên AWS.
-  * Sử dụng công cụ AWS IAM Policy Simulator để kiểm tra việc cấp quyền.
-
-* **Bài học:**
-  * Network và IAM chính là trái tim của phòng thủ đám mây (Cloud Security). Nếu cấp quyền không chặt và không cô lập VPC đúng cách, mọi dịch vụ tầng cao (như lambda, API) đều có nguy cơ bị tấn công.
-
-### Kế hoạch Tuần 3
-
-* Hoàn tất các dịch vụ truyền tải dữ liệu và ứng dụng (DynamoDB, CloudFront).
-* Bắt đầu họp bàn định hướng kiến trúc cho dự án **NeuraX**.
-* Vạch ra các yêu cầu bảo mật nền tảng cho ứng dụng web của team.
+* Hoàn thành Module 5.
+* Làm mạnh về quản trị lưu trữ FSx.
+* Giới hạn quyền hạn IAM và triển khai KMS mã hóa.
+* Quét lỗi tự động với AWS Security Hub.

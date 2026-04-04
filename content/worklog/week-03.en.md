@@ -1,50 +1,44 @@
 ### Week 3 Objectives
 
-* Complete the basic Cloud Journey series with DynamoDB and CLI.
-* Finalize the NeuraX (NutriTrack) project idea and assign specific technical roles.
-* Transition from basic training to the official Role-Based tasks (Security Engineer role).
-* Draft the initial Architecture Design for the NeuraX backend.
+* Complete Module 5.
+* Assist teammates with lagging modules.
+* Deep dive into Identity and Access Management constraints.
+* Fix issues with outdated Free Tier architectures.
 
 ### Tasks to be carried out this week
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - NoSQL Database <br>&emsp; + NoSQL Database Essentials with Amazon DynamoDB | 19/01/2026 | 19/01/2026 | [DynamoDB Essentials](https://000060.awsstudygroup.com) |
-| 2 | - System Operators & Edge Computing <br>&emsp; + Command Line Operations with AWS CLI <br>&emsp; + Content Delivery with Amazon CloudFront | 20/01/2026 | 20/01/2026 | [AWS CLI & CloudFront](https://cloudjourney.awsstudygroup.com/) |
-| 3 | - Project Brainstorming <br>&emsp; + Confirmed "NutriTrack" as the core application (NeuraX Project) <br>&emsp; + Discussed Serverless Architecture (Lambda/API Gateway) | 21/01/2026 | 21/01/2026 | [Meeting Notes] |
-| 4 | - Architecture & Role Assignment <br>&emsp; + Assigned to the **Cloud Security Engineer** role <br>&emsp; + Scoped the initial security boundaries for the project | 22/01/2026 | 22/01/2026 | [Architecture Draft] |
-| 5 | - Initial Proposal <br>&emsp; + Drafted the Security section of the NutriTrack Proposal <br>&emsp; + Prepared to move into specialized security tracks (WAF, Cognito) | 23/01/2026 | 23/01/2026 | [Draft Document] |
-| 6-7 | - Weekend Self-Study <br>&emsp; + Explored security best practices for API Gateway and DynamoDB | 24/01/2026 | 25/01/2026 | [AWS Sec Docs] |
+| 1-2 | - Lab 25: Amazon FSx File System <br>&emsp; + Re-programmed unsupported nodejs12.x Lambda runtime to nodejs20.x <br>&emsp; + Monitored disk throughput reaching 400MB via CloudWatch <br>&emsp; + Applied Deduplication and User Data Quotas <br> - Understand Shared Responsibility Model | 19/01/2026 | 20/01/2026 | [Lab 25](https://000025.awsstudygroup.com/) |
+| 3 | - Module 5 Theory: Amazon Cognito, AWS Organizations, Identity Center (SSO), AWS KMS, Security Hub <br> - Lab 14: Import Custom VM to AMI (Failed unsupported kernel on Ubuntu 24.04, succeeded with Ubuntu 22.04) | 21/01/2026 | 21/01/2026 | [Lab 14 Part 1](https://000014.awsstudygroup.com/) |
+| 4 | - Lab 14: Export custom EC2 back to .OVA format <br> - Lab 18: Activated AWS Security Hub and AWS Config | 22/01/2026 | 22/01/2026 | [Lab 14 Part 2](https://000014.awsstudygroup.com/) <br> [Lab 18](https://000018.awsstudygroup.com/) |
+| 5 | - Lab 22: Lambda scripting to Auto-Start/Stop EC2 by tags (Slack webhook logging) <br> - Lab 28/30: Set up strict IAM Policies restricting access outside the `ap-southeast-1` region <br> - Lab 18 Result: Achieved 85% Security Score (Identified critical vulnerability: IAM User had raw Administrative Access) <br> - Lab 33: Explore KMS Key Management | 23/01/2026 | 23/01/2026 | [Lab 22](https://000022.awsstudygroup.com/) <br> [Lab 28](https://000028.awsstudygroup.com/) <br> [Lab 30](https://000030.awsstudygroup.com/) <br> [Lab 33](https://000033.awsstudygroup.com/) |
+| 6-7 | - Lab 44: Time & IP based limits for IAM roles <br> - Lab 48: Deprecated access keys in favor of dynamic IAM Roles for EC2-S3 access <br> - Lab 12: Structuring AWS Organizations & Service Control Policies (SCPs) <br> - Microsoft Workload: AD troubleshooting & mounting volumes cross-instance | 24/01/2026 | 25/01/2026 | [Lab 44](https://000044.awsstudygroup.com/) <br> [Lab 48](https://000048.awsstudygroup.com/) |
 
 ### Week 3 Achievements
 
-* **Completed Basic Cloud Journey Training:**
-  * Mastered NoSQL concepts using DynamoDB.
-  * Successfully navigated and managed AWS resources using the AWS CLI.
-  * Understand how CloudFront accelerates content delivery globally.
+* **Runtime Adjustments:**
+  * Fixed outdated architectural challenges (Lab 25) by migrating legacy Lambda runtime codes from `nodejs12.x` to actively supported `nodejs20.x` layers.
 
-* **Project Foundation:**
-  * 100% of the team agreed on the "NutriTrack" project idea (A serverless diet tracking app under the NeuraX namespace).
-  * Officially assumed the **Cloud Security Engineer** role for the project, responsible for protecting user data and application APIs.
+* **Advanced Storage:**
+  * Handled enterprise storage deployments utilizing Amazon FSx, experimenting with User Quotas, continuous availability (CA), and tracking throughput spikes via CloudWatch.
 
-* **Documentation:**
-  * Co-authored the project proposal, specifically detailing the Shared Responsibility Model application for our Serverless components.
+* **Identity & Security Guardrails:**
+  * Restrained broad account behavior through Service Control Policies (Lab 12), geographical restrictions limiting server execution strictly to Singapore (Lab 28 & 30).
+  * Removed raw IAM Access Keys in favor of robust IAM Instance Profiles (Lab 48).
+
+* **Auditing:**
+  * Enabled AWS Security Hub (Lab 18). Mapped the current baseline configuration to a security score of 85%, flagging high-priority issues that required immediate attention (like root-level access policies).
 
 ### Challenges & Lessons
 
 * **Challenges:**
-  * Using the AWS CLI initially resulted in frequent syntax errors compared to clicking through the Management Console.
-  * Transitioning from a generalist learner to a specialized Security Role required shifting the mindset from "how to build" to "how to break and protect".
-
-* **Solutions:**
-  * Leveraged `aws help` commands extensively to learn required parameters.
-  * Started reviewing the AWS Well-Architected Framework (Security Pillar).
+  * VM Import/Export pipelines (Lab 14) are incredibly volatile to OS Kernel variations. Newer Ubuntu releases completely halted the import process, forcing a fallback to Ubuntu 22.04 LTS.
 
 * **Lessons Learned:**
-  * While Serverless abstracts the infrastructure, it does *not* mean you can ignore security. API Gateway and Lambda require strict identity and resource policies.
+  * Just because you can do something in the console doesn't mean it's secure. Earning an 85% on Security Hub reminded me that applying "Least Privilege" is an active duty, not a default setting in AWS.
 
 ### Next Week Plan
 
-* Shift completely to customized security tasks for NeuraX.
-* Week 4 Focus: Identity & Access Management for end-users using **Amazon Cognito**.
-* Implement IAM Permission Boundaries for other developers on the team.
+* Progress fully into my project role as the **Cloud Security Engineer** for NeuraX.
+* Establish AWS Cognito architectures specifically tailored for our app.
