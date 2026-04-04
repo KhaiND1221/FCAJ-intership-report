@@ -1,4 +1,5 @@
 ### Week 2 Objectives
+> *(System Testing: This update was pushed at 23:17 to test the Auto-Update functionality)*
 
 * Complete AWS Module 3 & 4.
 * Research the AWS Well-Architected Framework.

@@ -1,4 +1,5 @@
 # Thông Tin Sinh Viên
+> *(Kiểm tra hệ thống lúc 23:08 - Web đã tự thay mới mà không cần thiết lập lại)*
 
 **Họ Tên:** Nguyen Dinh Khai
 
