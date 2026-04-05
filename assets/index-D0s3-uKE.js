@@ -1144,10 +1144,10 @@ Hoặc bạn có thể tải xuống Tệp Ước tính Ngân sách [Placeholder
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
 | 1 | - Application Protection Setup <br>&emsp; + Provision AWS WAF Web ACLs <br>&emsp; + Attach Web ACLs to CloudFront distribution | 02/02/2026 | 02/02/2026 | [Application Protection with AWS WAF](https://000026.awsstudygroup.com) |
-| 2 | - Common Vulnerability Defense <br>&emsp; + Import AWS Managed Rules (Core rule set, SQLi, XSS) <br>&emsp; + Customize rules to reduce false positives for the API | 03/02/2026 | 03/02/2026 | [AWS Sec Best Practices] |
-| 3 | - DDoS Mitigation <br>&emsp; + Configure rate-based rules (e.g., 500 requests / 5 mins) <br>&emsp; + Enable AWS Shield Standard to protect against Layer 3/4 attacks | 04/02/2026 | 04/02/2026 | [WAF Rate Limiting Docs] |
+| 2 | - Common Vulnerability Defense <br>&emsp; + Import AWS Managed Rules (Core rule set, SQLi, XSS) <br>&emsp; + Customize rules to reduce false positives for the API | 03/02/2026 | 03/02/2026 |  |
+| 3 | - DDoS Mitigation <br>&emsp; + Configure rate-based rules (e.g., 500 requests / 5 mins) <br>&emsp; + Enable AWS Shield Standard to protect against Layer 3/4 attacks | 04/02/2026 | 04/02/2026 |  |
 | 4 | - WAF Logging & Analytics <br>&emsp; + Route WAF logs to CloudWatch logs / S3 <br>&emsp; + Explore requests visualization | 05/02/2026 | 05/02/2026 | [CloudWatch Logs] |
-| 5 | - WAF Policy Testing <br>&emsp; + Manually test payloads using \`curl\` and Burp Suite <br>&emsp; + Verify 403 Forbidden responses on malevolent requests | 06/02/2026 | 06/02/2026 | [OWASP Top 10 Testing] |
+| 5 | - WAF Policy Testing <br>&emsp; + Manually test payloads using \`curl\` and Burp Suite <br>&emsp; + Verify 403 Forbidden responses on malevolent requests | 06/02/2026 | 06/02/2026 |  |
 | 6-7 | - Rule Optimization <br>&emsp; + Review flagged logs from the dev team's traffic <br>&emsp; + Adjust filtering modes properly | 07/02/2026 | 08/02/2026 | [Audit Logs] |
 
 ### Week 5 Achievements
@@ -1193,10 +1193,10 @@ Hoặc bạn có thể tải xuống Tệp Ước tính Ngân sách [Placeholder
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
 | 1 | - Khởi tạo Application Protection <br>&emsp; + Khởi tạo AWS WAF Web ACLs <br>&emsp; + Áp dụng Web ACLs lên CloudFront/API Gateway | 02/02/2026 | 02/02/2026 | [Application Protection with AWS WAF](https://000026.awsstudygroup.com) |
-| 2 | - Phòng chống rủi ro lõi <br>&emsp; + Import AWS Managed Rules (Core rule set, SQLi, XSS) <br>&emsp; + Tinh chỉnh rule để giảm thiểu cảnh báo sai (false positive) cho API | 03/02/2026 | 03/02/2026 | [AWS Sec Best Practices] |
-| 3 | - Ngăn chặn DDoS <br>&emsp; + Cấu hình Rate-based rules (VD: 500 requests / 5 mins) <br>&emsp; + Bật AWS Shield Standard chặn tấn công mạng Layer 3/4 | 04/02/2026 | 04/02/2026 | [WAF Rate Limiting Docs] |
+| 2 | - Phòng chống rủi ro lõi <br>&emsp; + Import AWS Managed Rules (Core rule set, SQLi, XSS) <br>&emsp; + Tinh chỉnh rule để giảm thiểu cảnh báo sai (false positive) cho API | 03/02/2026 | 03/02/2026 |  |
+| 3 | - Ngăn chặn DDoS <br>&emsp; + Cấu hình Rate-based rules (VD: 500 requests / 5 mins) <br>&emsp; + Bật AWS Shield Standard chặn tấn công mạng Layer 3/4 | 04/02/2026 | 04/02/2026 |  |
 | 4 | - Lưu trữ Log và Phân tích WAF <br>&emsp; + Định tuyến WAF logs về CloudWatch / S3 <br>&emsp; + Thử nghiệm trực quan hóa lượng request | 05/02/2026 | 05/02/2026 | [CloudWatch Logs] |
-| 5 | - Kiểm thử WAF Policy <br>&emsp; + Giả lập payload độc hại với \`curl\` và Burp Suite <br>&emsp; + Xác nhận hệ thống trả về mã 403 Forbidden đúng quy trình | 06/02/2026 | 06/02/2026 | [OWASP Top 10 Testing] |
+| 5 | - Kiểm thử WAF Policy <br>&emsp; + Giả lập payload độc hại với \`curl\` và Burp Suite <br>&emsp; + Xác nhận hệ thống trả về mã 403 Forbidden đúng quy trình | 06/02/2026 | 06/02/2026 |  |
 | 6-7 | - Tối ưu hóa Rules <br>&emsp; + Đọc log các requests bị block từ phía Dev <br>&emsp; + Chuyển đổi trạng thái từ Count sang Block ở các rule ổn định | 07/02/2026 | 08/02/2026 | [Audit Logs] |
 
 ### Kết quả đạt được trong Tuần 5
