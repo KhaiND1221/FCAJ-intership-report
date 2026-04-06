@@ -558,7 +558,7 @@ The platform employs a multi-layer serverless AWS architecture to manage user da
 
 #### NutriTrack Platform Architecture
 
-![NutriTrack Solution Architecture](/FCAJ-intership-report/solution-architect/nutritrack-solution-architect.drawio.png)
+![NutriTrack Solution Architecture](/FCAJ-intership-report/solution-architect/nutritrack.drawio.png)
 
 **AWS Services Used**
 
@@ -744,7 +744,7 @@ Nền tảng sử dụng kiến trúc AWS serverless đa tầng để quản lý
 
 #### Kiến trúc Nền tảng NutriTrack
 
-![Kiến trúc Giải pháp NutriTrack](/FCAJ-intership-report/solution-architect/nutritrack-solution-architect.drawio.png)
+![Kiến trúc Giải pháp NutriTrack](/FCAJ-intership-report/solution-architect/nutritrack.drawio.png)
 
 **Các dịch vụ AWS được sử dụng**
 
