@@ -41,7 +41,7 @@ Nền tảng sử dụng kiến trúc AWS serverless đa tầng để quản lý
 
 #### Kiến trúc Nền tảng NutriTrack
 
-![Kiến trúc Giải pháp NutriTrack](/FCAJ-intership-report/solution-architect/nutritrack.drawio.png)
+![Kiến trúc Giải pháp NutriTrack](/FCAJ-intership-report/solution-architect/nutritrack-final.drawio.png)
 
 **Các dịch vụ AWS được sử dụng**
 
