@@ -16,7 +16,11 @@ function MermaidChart({ chart }: { chart: string }) {
         async function renderChart() {
             try {
                 const mermaidModule = await import('mermaid');
-                const mermaid = mermaidModule.default;
+                const mermaid = mermaidModule.default || mermaidModule;
+                
+                if (!mermaid || !mermaid.initialize) {
+                    throw new Error("Mermaid object is invalid");
+                }
                 
                 mermaid.initialize({
                     startOnLoad: false,
