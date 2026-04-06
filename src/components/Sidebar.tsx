@@ -67,10 +67,65 @@ const navigation: NavItem[] = [
         label: { en: '4. Workshop', vi: '4. Workshop' },
         icon: Wrench,
         children: [
-            { id: 'overview', path: '/workshop/overview', label: { en: '4.1 Overview', vi: '4.1 Tổng Quan' }, icon: ChevronRight },
-            { id: 'setup', path: '/workshop/setup', label: { en: '4.2 Setup', vi: '4.2 Cài Đặt' }, icon: ChevronRight },
-            { id: 'implementation', path: '/workshop/implementation', label: { en: '4.3 Implementation', vi: '4.3 Triển Khai' }, icon: ChevronRight },
-            { id: 'cleanup', path: '/workshop/cleanup', label: { en: '4.4 Clean Up', vi: '4.4 Dọn Dẹp' }, icon: ChevronRight },
+            { id: 'ws-overview', path: '/workshop/4.1-Workshop-overview', label: { en: '4.1 Overview', vi: '4.1 Tổng Quan' }, icon: ChevronRight },
+            { id: 'ws-prereq', path: '/workshop/4.2-Prerequiste', label: { en: '4.2 Prerequisites', vi: '4.2 Điều Kiện' }, icon: ChevronRight },
+            {
+                id: 'ws-foundation', path: '/workshop/4.3-Foundation-Setup', label: { en: '4.3 Foundation Setup', vi: '4.3 Thiết Lập Nền Tảng' }, icon: ChevronRight,
+                children: [
+                    { id: 'ws-4.3.1', path: '/workshop/4.3-Foundation-Setup/4.3.1-Amplify-Init', label: { en: '4.3.1 Amplify Gen 2', vi: '4.3.1 Khởi tạo Amplify' }, icon: ChevronRight },
+                    { id: 'ws-4.3.2', path: '/workshop/4.3-Foundation-Setup/4.3.2-Cognito-Auth', label: { en: '4.3.2 Cognito Auth', vi: '4.3.2 Xác thực Cognito' }, icon: ChevronRight },
+                    { id: 'ws-4.3.3', path: '/workshop/4.3-Foundation-Setup/4.3.3-S3-Storage', label: { en: '4.3.3 S3 Storage', vi: '4.3.3 S3 Storage' }, icon: ChevronRight }
+                ]
+            },
+            {
+                id: 'ws-data', path: '/workshop/4.4-Monitoring-Setup', label: { en: '4.4 Data Layer', vi: '4.4 Tầng Dữ Liệu' }, icon: ChevronRight,
+                children: [
+                    { id: 'ws-4.4.1', path: '/workshop/4.4-Monitoring-Setup/4.4.1-AppSync', label: { en: '4.4.1 AppSync GraphQL', vi: '4.4.1 Schema AppSync' }, icon: ChevronRight },
+                    { id: 'ws-4.4.2', path: '/workshop/4.4-Monitoring-Setup/4.4.2-DynamoDB', label: { en: '4.4.2 DynamoDB Tables', vi: '4.4.2 Bảng DynamoDB' }, icon: ChevronRight }
+                ]
+            },
+            {
+                id: 'ws-compute', path: '/workshop/4.5-Processing-Setup', label: { en: '4.5 Compute & AI', vi: '4.5 Compute & AI' }, icon: ChevronRight,
+                children: [
+                    { id: 'ws-4.5.1', path: '/workshop/4.5-Processing-Setup/4.5.1-Bedrock', label: { en: '4.5.1 Bedrock Qwen3-VL', vi: '4.5.1 Bedrock Qwen3-VL' }, icon: ChevronRight },
+                    { id: 'ws-4.5.2', path: '/workshop/4.5-Processing-Setup/4.5.2-AIEngine', label: { en: '4.5.2 aiEngine Lambda', vi: '4.5.2 Lambda aiEngine' }, icon: ChevronRight },
+                    { id: 'ws-4.5.3', path: '/workshop/4.5-Processing-Setup/4.5.3-ProcessNutrition', label: { en: '4.5.3 processNutrition Lambda', vi: '4.5.3 Lambda processNutrition' }, icon: ChevronRight },
+                    { id: 'ws-4.5.4', path: '/workshop/4.5-Processing-Setup/4.5.4-ResizeImage', label: { en: '4.5.4 resizeImage Lambda', vi: '4.5.4 Lambda resizeImage' }, icon: ChevronRight }
+                ]
+            },
+            {
+                id: 'ws-api-social', path: '/workshop/4.6-Automation-Setup', label: { en: '4.6 API & Social', vi: '4.6 API & Xã Hội' }, icon: ChevronRight,
+                children: [
+                    { id: 'ws-4.6.1', path: '/workshop/4.6-Automation-Setup/4.6.1-FriendRequest', label: { en: '4.6.1 friendRequest Lambda', vi: '4.6.1 Lambda friendRequest' }, icon: ChevronRight },
+                    { id: 'ws-4.6.2', path: '/workshop/4.6-Automation-Setup/4.6.2-Realtime-Subscriptions', label: { en: '4.6.2 Realtime Subscriptions', vi: '4.6.2 Subscriptions Thời Gian Thực' }, icon: ChevronRight }
+                ]
+            },
+            {
+                id: 'ws-frontend', path: '/workshop/4.7-Dashboard-Setup', label: { en: '4.7 Frontend', vi: '4.7 Frontend' }, icon: ChevronRight,
+                children: [
+                    { id: 'ws-4.7.1', path: '/workshop/4.7-Dashboard-Setup/4.7.1-ReactNative', label: { en: '4.7.1 Expo Setup', vi: '4.7.1 Thiết lập Expo' }, icon: ChevronRight },
+                    { id: 'ws-4.7.2', path: '/workshop/4.7-Dashboard-Setup/4.7.2-UIComponents', label: { en: '4.7.2 UI Components', vi: '4.7.2 Giao diện UI' }, icon: ChevronRight },
+                    { id: 'ws-4.7.3', path: '/workshop/4.7-Dashboard-Setup/4.7.3-Voice-Camera', label: { en: '4.7.3 Voice & Camera', vi: '4.7.3 Giọng Nói & Camera' }, icon: ChevronRight }
+                ]
+            },
+            {
+                id: 'ws-ecs', path: '/workshop/4.8-Verify-Setup', label: { en: '4.8 ECS Deployment', vi: '4.8 Triển Khai ECS' }, icon: ChevronRight,
+                children: [
+                    { id: 'ws-4.8.1', path: '/workshop/4.8-Verify-Setup/4.8.1-VPC-ECR', label: { en: '4.8.1 VPC & ECR', vi: '4.8.1 VPC & ECR' }, icon: ChevronRight },
+                    { id: 'ws-4.8.2', path: '/workshop/4.8-Verify-Setup/4.8.2-Fargate-ALB', label: { en: '4.8.2 Fargate & ALB', vi: '4.8.2 Fargate & ALB' }, icon: ChevronRight }
+                ]
+            },
+            { id: 'ws-cicd', path: '/workshop/4.9-Use-CDK', label: { en: '4.9 CI/CD', vi: '4.9 CI/CD' }, icon: ChevronRight },
+            { id: 'ws-cleanup', path: '/workshop/4.10-Cleanup', label: { en: '4.10 Cleanup', vi: '4.10 Dọn Dẹp' }, icon: ChevronRight },
+            {
+                id: 'ws-appendices', path: '/workshop/4.11-Appendices', label: { en: '4.11 Appendices', vi: '4.11 Phụ Lục' }, icon: ChevronRight,
+                children: [
+                    { id: 'ws-4.11.1', path: '/workshop/4.11-Appendices/4.11.1-Budget-Breakdown', label: { en: '4.11.1 Budget Breakdown', vi: '4.11.1 Chi Tiết Ngân Sách' }, icon: ChevronRight },
+                    { id: 'ws-4.11.2', path: '/workshop/4.11-Appendices/4.11.2-IAM-Policies', label: { en: '4.11.2 IAM Policies', vi: '4.11.2 IAM Policies' }, icon: ChevronRight },
+                    { id: 'ws-4.11.3', path: '/workshop/4.11-Appendices/4.11.3-Troubleshooting', label: { en: '4.11.3 Troubleshooting', vi: '4.11.3 Xử Lý Lỗi' }, icon: ChevronRight },
+                    { id: 'ws-4.11.4', path: '/workshop/4.11-Appendices/4.11.4-Prompt-Templates', label: { en: '4.11.4 Prompt Templates', vi: '4.11.4 Prompt Templates' }, icon: ChevronRight }
+                ]
+            },
         ],
     },
     { id: 'evaluation', path: '/evaluation', label: { en: '5. Self-Evaluation', vi: '5. Tự Đánh Giá' }, icon: CheckCircle },
@@ -96,11 +151,18 @@ const searchableContent = [
     { label: 'Week 12 Worklog', path: '/worklog/week-12', keywords: ['week 12'] },
     { label: 'Proposal', path: '/proposal', keywords: ['project', 'solution', 'architecture', 'aws services', 'timeline', 'budget'] },
     { label: 'Events Participated', path: '/events', keywords: ['event', 'community', 'meetup', 'aws day'] },
-    { label: 'Workshop', path: '/workshop', keywords: ['lab', 'hands-on', 'tutorial'] },
-    { label: 'Workshop Overview', path: '/workshop/overview', keywords: ['introduction', 'vpc', 's3', 'endpoints'] },
-    { label: 'Workshop Setup', path: '/workshop/setup', keywords: ['prerequisites', 'configuration'] },
-    { label: 'Workshop Implementation', path: '/workshop/implementation', keywords: ['steps', 'deploy', 'code'] },
-    { label: 'Workshop Clean Up', path: '/workshop/cleanup', keywords: ['delete', 'resources', 'cost'] },
+    { label: 'Workshop', path: '/workshop', keywords: ['lab', 'hands-on', 'tutorial', 'nutritrack'] },
+    { label: '4.1 Workshop Overview', path: '/workshop/4.1-Workshop-overview', keywords: ['overview', 'architecture', 'nutritrack'] },
+    { label: '4.2 Prerequisites', path: '/workshop/4.2-Prerequiste', keywords: ['prerequisites', 'node 22', 'aws cli'] },
+    { label: '4.3 Foundation Setup', path: '/workshop/4.3-Foundation-Setup', keywords: ['amplify gen 2', 'cognito', 's3'] },
+    { label: '4.4 Data Layer', path: '/workshop/4.4-Monitoring-Setup', keywords: ['appsync', 'dynamodb', 'graphql'] },
+    { label: '4.5 Compute & AI', path: '/workshop/4.5-Processing-Setup', keywords: ['lambda', 'bedrock', 'ai'] },
+    { label: '4.6 API & Social', path: '/workshop/4.6-Automation-Setup', keywords: ['friend', 'subscriptions'] },
+    { label: '4.7 Frontend', path: '/workshop/4.7-Dashboard-Setup', keywords: ['expo', 'react native'] },
+    { label: '4.8 ECS Deployment', path: '/workshop/4.8-Verify-Setup', keywords: ['ecs', 'fargate', 'vpc'] },
+    { label: '4.9 CI/CD', path: '/workshop/4.9-Use-CDK', keywords: ['cicd', 'amplify hosting'] },
+    { label: '4.10 Cleanup', path: '/workshop/4.10-Cleanup', keywords: ['cleanup', 'delete', 'teardown'] },
+    { label: '4.11 Appendices', path: '/workshop/4.11-Appendices', keywords: ['appendix', 'reference'] },
     { label: 'Self-Evaluation', path: '/evaluation', keywords: ['assessment', 'criteria', 'rating', 'good', 'fair'] },
     { label: 'Sharing & Feedback', path: '/feedback', keywords: ['feelings', 'satisfaction', 'recommend', 'knowledge'] },
 ];
@@ -137,15 +199,23 @@ export function Sidebar() {
         markAsVisited(location.pathname);
     }, [location.pathname, markAsVisited]);
 
-    // Auto-expand parent when child is active
+    // Auto-expand parent when item or child is active
     useEffect(() => {
-        navigation.forEach((item) => {
-            if (item.children?.some((child) => location.pathname.startsWith(child.path))) {
-                if (!expanded.includes(item.id)) {
-                    setExpanded((prev) => [...prev, item.id]);
+        const expandPath = (items: NavItem[], currentPath: string) => {
+            items.forEach((item) => {
+                const isActiveOrChildActive = currentPath === item.path || currentPath.startsWith(item.path + '/');
+                if (isActiveOrChildActive && item.children) {
+                    setExpanded((prev) => {
+                        if (!prev.includes(item.id)) return [...prev, item.id];
+                        return prev;
+                    });
                 }
-            }
-        });
+                if (item.children) {
+                    expandPath(item.children, currentPath);
+                }
+            });
+        };
+        expandPath(navigation, location.pathname);
     }, [location.pathname]);
 
     // Search functionality
@@ -185,7 +255,7 @@ export function Sidebar() {
     const renderNavItem = (item: NavItem, depth = 0) => {
         const hasChildren = item.children && item.children.length > 0;
         const isExpanded = expanded.includes(item.id);
-        const isActive = location.pathname === item.path || (hasChildren && location.pathname.startsWith(item.path) && item.path !== '/');
+        const isActive = location.pathname === item.path || (hasChildren && location.pathname.startsWith(item.path + '/'));
         const isVisited = visitedPages.includes(item.path);
         const Icon = item.icon;
 
@@ -196,8 +266,8 @@ export function Sidebar() {
                         to={item.path}
                         onClick={() => setIsOpen(false)}
                         className={`
-                            group flex items-center justify-between py-3 px-4 transition-all duration-200
-                            ${depth === 0 ? '' : 'pl-11 pr-4'}
+                            group flex items-center justify-between py-3 transition-all duration-200
+                            ${depth === 0 ? 'px-4' : depth === 1 ? 'pl-10 pr-4' : 'pl-[3.5rem] pr-4'}
                             ${isActive
                                 ? 'bg-gradient-to-r from-accent-orange/10 to-transparent text-white border-l-[3px] border-accent-orange'
                                 : 'text-gray-400 hover:text-white hover:bg-white/5 border-l-[3px] border-transparent'
@@ -205,11 +275,25 @@ export function Sidebar() {
                         `}
                     >
                         <div className="flex items-center gap-3.5">
-                            <Icon
-                                size={depth === 0 ? 20 : 16}
-                                strokeWidth={1.5}
-                                className={`transition-colors duration-200 ${isActive ? 'text-accent-orange' : 'text-gray-500 group-hover:text-gray-300'}`}
-                            />
+                            {depth === 0 ? (
+                                <Icon
+                                    size={20}
+                                    strokeWidth={1.5}
+                                    className={`transition-colors duration-200 ${isActive ? 'text-accent-orange' : 'text-gray-500 group-hover:text-gray-300'}`}
+                                />
+                            ) : hasChildren ? (
+                                <div
+                                    role="button"
+                                    onClick={(e) => toggleExpand(item.id, e)}
+                                    className={`transition-colors duration-200 p-0.5 rounded hover:bg-white/10 ${isActive ? 'text-accent-orange' : 'text-gray-500'}`}
+                                >
+                                    {isExpanded ? <ChevronDown size={14} strokeWidth={2.5} /> : <ChevronRight size={14} strokeWidth={2.5} />}
+                                </div>
+                            ) : (
+                                <div className="w-[18px] flex items-center justify-center">
+                                    <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-accent-orange' : 'bg-gray-600 group-hover:bg-gray-400'} transition-colors duration-200`}></div>
+                                </div>
+                            )}
                             <span className={`text-sm tracking-wide ${depth === 0 ? 'font-medium' : 'font-normal'}`}>
                                 {t(item.label)}
                             </span>
@@ -225,7 +309,7 @@ export function Sidebar() {
                                 />
                             )}
 
-                            {hasChildren && (
+                            {depth === 0 && hasChildren && (
                                 <div
                                     role="button"
                                     onClick={(e) => toggleExpand(item.id, e)}
@@ -372,7 +456,7 @@ export function Sidebar() {
                     <div className="px-7 pb-5 pt-1">
                         <div className="text-[10px] font-medium text-gray-600 flex justify-between tracking-wide">
                             <span>LAST UPDATED</span>
-                            <span className="text-gray-500">09/01/2026</span>
+                            <span className="text-gray-500">{typeof __BUILD_DATE__ !== 'undefined' ? __BUILD_DATE__ : '06/04/2026'}</span>
                         </div>
                     </div>
                 </div>
