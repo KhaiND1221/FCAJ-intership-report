@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { LanguageProvider } from './contexts/LanguageContext';
@@ -19,6 +20,10 @@ import { FeedbackPage } from './pages/FeedbackPage';
 
 function AppContent() {
     const location = useLocation();
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, [location.pathname]);
 
     return (
         <AnimatePresence mode="wait">
@@ -46,9 +51,9 @@ function AppContent() {
 
                 {/* Workshop Routes - new dynamic routing */}
                 <Route path="/workshop" element={<WorkshopPage />} />
-                {/* Sub-section route (e.g. /workshop/4.3-Foundation-Setup/4.3.1-Amplify-Init) */}
+                {/* Sub-section route (e.g. /workshop/5.3-foundation/5.3.1-s3-buckets) */}
                 <Route path="/workshop/:sectionId/:subId" element={<WorkshopSectionPage />} />
-                {/* Main section route (e.g. /workshop/4.1-Workshop-overview) */}
+                {/* Main section route (e.g. /workshop/5.1-overview) */}
                 <Route path="/workshop/:sectionId" element={<WorkshopSectionPage />} />
 
                 {/* Evaluation & Feedback */}

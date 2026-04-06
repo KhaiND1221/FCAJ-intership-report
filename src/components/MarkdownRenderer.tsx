@@ -2,6 +2,100 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { Link } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { coldarkDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+function MermaidChart({ chart }: { chart: string }) {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        let isMounted = true;
+        
+        async function renderChart() {
+            try {
+                const mermaidModule = await import('mermaid');
+                const mermaid = mermaidModule.default;
+                
+                mermaid.initialize({
+                    startOnLoad: false,
+                    theme: 'default',
+                    securityLevel: 'loose',
+                });
+
+                const id = 'mermaid-' + Math.random().toString(36).substring(2, 9);
+                const { svg } = await mermaid.render(id, chart);
+                
+                if (isMounted && containerRef.current) {
+                    containerRef.current.innerHTML = svg;
+                }
+            } catch (e) {
+                console.error('Mermaid rendering failed', e);
+                if (isMounted) {
+                    setError('Failed to render diagram.');
+                }
+            }
+        }
+        
+        renderChart();
+        
+        return () => {
+            isMounted = false;
+        };
+    }, [chart]);
+
+    if (error) {
+        return <div className="p-4 border border-red-200 bg-red-50 text-red-600 rounded">{error}</div>;
+    }
+
+    return <div ref={containerRef} className="mermaid-chart my-6 flex justify-center w-full overflow-x-auto" />;
+}
+
+function CopyableCodeBlock({ language, code }: { language: string; code: string }) {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(code);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
+        <div className="code-block relative rounded-xl overflow-hidden my-6 border border-gray-200 shadow-sm">
+            <div className="flex justify-between items-center bg-gray-800 text-gray-300 px-4 py-2.5 text-xs font-mono border-b border-gray-700">
+                <span className="font-semibold uppercase tracking-wider">{language || 'code'}</span>
+                <button
+                    onClick={handleCopy}
+                    className="hover:text-white hover:bg-gray-700 px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 focus:outline-none"
+                    aria-label="Copy code to clipboard"
+                >
+                    {copied ? (
+                        <>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <span className="text-green-500 font-medium">Copied!</span>
+                        </>
+                    ) : (
+                        <>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span>Copy</span>
+                        </>
+                    )}
+                </button>
+            </div>
+            <div className="text-[13px] sm:text-sm code-highlighter-wrapper">
+                <SyntaxHighlighter
+                    language={language === 'json' ? 'javascript' : language || 'javascript'}
+                    style={coldarkDark}
+                    customStyle={{ margin: 0, padding: '1.25rem', background: '#111827', borderRadius: '0' }}
+                    wrapLines={true}
+                >
+                    {code}
+                </SyntaxHighlighter>
+            </div>
+        </div>
+    );
+}
 
 interface MarkdownRendererProps {
     content: string;
@@ -102,6 +196,13 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                 // Code blocks
                 code: ({ className, children }) => {
                     const isInline = !className;
+                    const match = /language-(\w+)/.exec(className || '');
+                    const isMermaid = match && match[1] === 'mermaid';
+
+                    if (isMermaid) {
+                        return <MermaidChart chart={String(children).replace(/\n$/, '')} />;
+                    }
+
                     if (isInline) {
                         return (
                             <code className="bg-gray-100 text-rose-600 px-1.5 py-0.5 rounded text-sm font-mono">
@@ -109,16 +210,11 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                             </code>
                         );
                     }
-                    return (
-                        <div className="code-block">
-                            <div className="code-header">
-                                <span>{className?.replace('language-', '') || 'code'}</span>
-                            </div>
-                            <pre className="code-content">
-                                <code>{children}</code>
-                            </pre>
-                        </div>
-                    );
+                    
+                    const language = match ? match[1] : '';
+                    const codeString = String(children).replace(/\n$/, '');
+                    
+                    return <CopyableCodeBlock language={language} code={codeString} />;
                 },
 
                 // Blockquotes for admonitions

@@ -2,7 +2,7 @@
 // Flat files: /content/path.en.md or /content/path.vi.md
 // Subfolder (workshop): /content/workshop/section/index.en.md or index.vi.md
 
-const contentModules = import.meta.glob('/content/**/*.md', { query: '?raw', import: 'default', eager: true });
+const contentModules = import.meta.glob('/content/**/*.md', { as: 'raw', eager: true });
 
 export function loadContent(path: string, language: 'en' | 'vi'): string {
     // Try language-specific file first
@@ -24,8 +24,8 @@ export function loadContent(path: string, language: 'en' | 'vi'): string {
 
 /**
  * Load workshop section content from subfolder index files.
- * e.g. loadWorkshopSection('4.1-Workshop-overview', 'en')
- *   → /content/workshop/4.1-Workshop-overview/index.en.md
+ * e.g. loadWorkshopSection('5.1-Workshop-overview', 'en')
+ *   → /content/workshop/5.1-Workshop-overview/index.en.md
  */
 export function loadWorkshopSection(section: string, language: 'en' | 'vi'): string {
     const langPath = `/content/workshop/${section}/index.${language}.md`;
