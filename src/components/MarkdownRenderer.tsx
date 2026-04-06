@@ -34,10 +34,10 @@ function MermaidChart({ chart }: { chart: string }) {
                 if (isMounted && containerRef.current) {
                     containerRef.current.innerHTML = svg;
                 }
-            } catch (e) {
+            } catch (e: any) {
                 console.error('Mermaid rendering failed', e);
                 if (isMounted) {
-                    setError('Failed to render diagram.');
+                    setError('Failed to render diagram: ' + (e?.message || String(e)));
                 }
             }
         }
