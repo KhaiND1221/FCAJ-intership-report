@@ -49,7 +49,7 @@ Cài các công cụ sau lên máy. Các phiên bản liệt kê là mức tối
 
 | Công cụ                                          | Phiên bản tối thiểu | Dùng cho                                        |
 | ------------------------------------------------ | ------------------- | ----------------------------------------------- |
-| Node.js                                          | **20 LTS** trở lên  | Chạy `ampx` CLI, build Lambda, Expo             |
+| Node.js                                          | **22 LTS** trở lên  | Chạy `ampx` CLI, build Lambda, Expo             |
 | npm                                              | **10+**             | Cài package (đi kèm Node 20+)                   |
 | AWS CLI                                          | **v2**              | Cấu hình credential, thao tác CloudFormation/S3 |
 | Git                                              | **2.40+**           | Clone template, push branch cho CI              |
@@ -72,7 +72,7 @@ docker --version
 git --version
 ```
 
-Cả năm lệnh phải in ra kết quả không lỗi. Node phải báo **v20.x trở lên**.
+Cả năm lệnh phải in ra kết quả không lỗi. Node phải báo **v22.x trở lên**.
 
 ### AWS CLI profile
 

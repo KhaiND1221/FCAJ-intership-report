@@ -12,7 +12,7 @@ By the end of this workshop you will have a running stack that contains:
   - `process-nutrition` — hybrid DynamoDB + AI nutrition lookup.
   - `friend-request` — friend system mutations.
   - `resize-image` — S3 event trigger on the `incoming/` prefix.
-- **10 AI actions** served by the `aiEngine` Lambda: `analyzeFoodImage`, `generateCoachResponse`, `searchFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`.
+- **10 AI actions** served by the `aiEngine` Lambda: `analyzeFoodImage`, `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`.
 - **Amazon Bedrock** foundation model `qwen.qwen3-vl-235b-a22b` in **ap-southeast-2** (Sydney), invoked by the AI coach persona **Ollie**.
 - **Amazon S3** storage bucket with `incoming/`, `voice/`, and `media/` prefixes, wired to `resize-image` via an S3 event notification and a 1-day lifecycle rule on `incoming/`.
 - **Amazon Cognito** user pool with email + OTP signup and Google federated identity.
@@ -83,7 +83,23 @@ After completing this workshop you will be able to:
 
 ## Estimated Cost
 
-Running this workshop end to end for one day in a single region typically lands in the **$5 to $15 USD** range. The dominant line items are Bedrock token usage and ECS Fargate hours. Left running for a full month on light dev traffic, expect **$50 to $150 USD**, again dominated by Bedrock. See the cost breakdown in `../4.11-Appendices/` and enable AWS Budgets before you begin.
+Based on the actual AWS pricing model **without Free Tier benefits**, here is the updated cost analysis:
+
+### 1-Day Workshop (1 User)
+- **Assumption:** 1 developer running smoke tests (approx. 50-100 Bedrock API calls, 1 ECS Fargate task running for 8 hours).
+- **Compute:** ECS Fargate (0.25 vCPU, 0.5 GB RAM) for 8 hours ≈ $0.15.
+- **AI Processing (Bedrock):** ~1M input/output tokens using `qwen3-vl` ≈ $1.00 - $3.00.
+- **Other Services (DynamoDB, AppSync, S3, Cognito):** Minimal standard usage ≈ $0.50.
+- **Total Estimated Cost:** **$2.00 - $5.00 USD/day**.
+
+### 1-Month Production (1,000 Users)
+- **Assumption:** 1,000 daily active users, averaging 5 food logs (Bedrock API calls) per day. Total ≈ 150,000 requests/month.
+- **Compute:** 2 ECS Fargate tasks running 24/7 ≈ $17.50.
+- **AI Processing (Bedrock):** 150k calls × ~2,000 tokens/call ≈ 300 million tokens/month ≈ $300.00 - $600.00.
+- **Data (DynamoDB & S3):** ~50GB storage, read/write units ≈ $15.00.
+- **Total Estimated Cost:** **$350.00 - $650.00 USD/month**.
+
+*(Note: The dominant cost is Amazon Bedrock token usage. Enable AWS Budgets before you begin.)*
 
 ## Duration and Difficulty
 

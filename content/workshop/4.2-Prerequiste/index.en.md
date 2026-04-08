@@ -49,7 +49,7 @@ Install the following on your workstation. Versions listed are the minimum teste
 
 | Tool                                       | Minimum version     | Used for                                        |
 | ------------------------------------------ | ------------------- | ----------------------------------------------- |
-| Node.js                                    | **20 LTS** or newer | Running `ampx` CLI, Lambda builds, Expo         |
+| Node.js                                    | **22 LTS** or newer | Running `ampx` CLI, Lambda builds, Expo         |
 | npm                                        | **10+**             | Package install (bundled with Node 20+)         |
 | AWS CLI                                    | **v2**              | Credential setup, CloudFormation and S3 ops     |
 | Git                                        | **2.40+**           | Cloning the template, pushing branches for CI   |
@@ -72,7 +72,7 @@ docker --version
 git --version
 ```
 
-All five should print without errors. Node must report **v20.x or higher**.
+All five should print without errors. Node must report **v22.x or higher**.
 
 ### AWS CLI profile
 

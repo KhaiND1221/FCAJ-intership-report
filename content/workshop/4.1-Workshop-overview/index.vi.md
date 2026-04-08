@@ -12,7 +12,7 @@ Sau khi hoàn thành workshop, bạn sẽ có một stack đang chạy gồm:
   - `process-nutrition` — tra cứu dinh dưỡng lai DynamoDB + AI.
   - `friend-request` — mutation cho hệ thống bạn bè.
   - `resize-image` — trigger S3 event trên prefix `incoming/`.
-- **10 hành động AI** do Lambda `aiEngine` phục vụ: `analyzeFoodImage`, `generateCoachResponse`, `searchFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`.
+- **10 hành động AI** do Lambda `aiEngine` phục vụ: `analyzeFoodImage`, `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`.
 - **Amazon Bedrock** với foundation model `qwen.qwen3-vl-235b-a22b` ở **ap-southeast-2** (Sydney), gọi bởi AI coach persona tên **Ollie**.
 - **Amazon S3** bucket với các prefix `incoming/`, `voice/`, `media/`, gắn vào `resize-image` qua S3 event notification và lifecycle rule 1 ngày trên `incoming/`.
 - **Amazon Cognito** user pool với đăng ký email + OTP và Google federated identity.
@@ -83,7 +83,23 @@ Sau khi hoàn thành workshop này, bạn sẽ có thể:
 
 ## Ước tính chi phí
 
-Chạy workshop này từ đầu đến cuối trong một ngày ở một region thường rơi vào khoảng **$5 đến $15 USD**. Hai khoản tốn nhất là Bedrock token và ECS Fargate. Nếu để chạy cả tháng với traffic dev nhẹ, dự kiến **$50 đến $150 USD**, vẫn do Bedrock chiếm phần lớn. Xem chi tiết chi phí ở `../4.11-Appendices/` và bật AWS Budgets trước khi bắt đầu.
+Dựa trên mô hình giá thức tế của AWS **không áp dụng Free Tier**, dưới đây là phân tích chi phí được cập nhật:
+
+### Workshop 1 ngày (1 User)
+- **Giả định:** 1 lập trình viên chạy smoke test (khoảng 50-100 lượt gọi Bedrock API, 1 ECS Fargate task chạy trong 8 tiếng).
+- **Compute:** ECS Fargate (0.25 vCPU, 0.5 GB RAM) trong 8 giờ ≈ $0.15.
+- **AI (Bedrock):** ~1M token input/output dùng `qwen3-vl` ≈ $1.00 - $3.00.
+- **Các dịch vụ khác (DynamoDB, AppSync, S3, Cognito):** Dung lượng tối thiểu ≈ $0.50.
+- **Tổng chi phí ước tính:** **$2.00 - $5.00 USD/ngày**.
+
+### Production 1 tháng (1.000 Users)
+- **Giả định:** 1.000 người dùng tích cực hằng ngày, trung bình 5 lần gọi Bedrock mỗi ngày. Tổng ≈ 150.000 request/tháng.
+- **Compute:** 2 ECS Fargate tasks chạy 24/7 ≈ $17.50.
+- **AI (Bedrock):** 150k lượt gọi × ~2.000 tokens/lần ≈ 300 triệu tokens/tháng ≈ $300.00 - $600.00 (tùy thuộc vào giá token cụ thể).
+- **Data (DynamoDB & S3):** ~50GB lưu trữ, read/write units ≈ $15.00.
+- **Tổng chi phí ước tính:** **$350.00 - $650.00 USD/tháng**.
+
+*(Lưu ý: Yếu tố tốn kém nhất là số lượng token gửi qua Bedrock. Hãy bật AWS Budgets trước khi bắt đầu.)*
 
 ## Thời lượng và độ khó
 
