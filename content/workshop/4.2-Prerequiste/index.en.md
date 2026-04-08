@@ -14,27 +14,11 @@ You need an AWS account where you can:
 
 For the workshop, use either the root account or an IAM user with the `AdministratorAccess` managed policy. Do **not** use a read-only or developer sandbox account — several steps will fail on IAM permission boundaries.
 
-### 2. Bedrock model access — REQUEST THIS FIRST
+### 2. Accessing Amazon Bedrock Models
 
-> **IMPORTANT — request in advance.** Amazon Bedrock foundation models are gated. Access for `qwen.qwen3-vl-235b-a22b` in `ap-southeast-2` is usually granted in minutes but can take up to 24 hours. Submit the request **before** starting section 4.5, ideally the day before the workshop.
-
-Steps:
-
-1. Open the AWS Console and switch the region to **Asia Pacific (Sydney) — ap-southeast-2**.
-2. Go to **Amazon Bedrock → Model access**.
-3. Click **Modify model access**.
-4. Enable **Qwen 3 VL 235B A22B** (`qwen.qwen3-vl-235b-a22b`).
-5. Submit and wait for the status to become **Access granted**.
-
-![Bedrock model access granted for Qwen3-VL](images/bedrock-model-access.png)
-
-The IAM policy attached to the `ai-engine` Lambda in `backend/amplify/backend.ts` only grants `bedrock:InvokeModel` on this exact model ARN:
-
-```text
-arn:aws:bedrock:ap-southeast-2::foundation-model/qwen.qwen3-vl-235b-a22b
-```
-
-If you switch regions or models, you must also update `backend.ts` and `ai-engine/handler.ts`.
+Amazon Bedrock now allows users to directly access available models without requiring prior registration. To integrate and use Bedrock's AI models in your source code, follow these instructions:
+1. **Identify the Model ID**: Select the Bedrock model you want to use and note its unique identifier.
+2. **Use the Boto3 Library**: Integrate the `boto3` library (AWS SDK for Python) into your project to establish a connection and call Bedrock APIs, passing the identified model ID to interact and send requests to the model.
 
 ### 3. AWS Budgets alert
 

@@ -14,27 +14,11 @@ Bạn cần một tài khoản AWS có thể:
 
 Cho workshop này, dùng tài khoản root hoặc một IAM user có managed policy `AdministratorAccess`. **Không** dùng tài khoản read-only hay sandbox hạn chế — nhiều bước sẽ lỗi do permission boundary.
 
-### 2. Truy cập model Bedrock — ĐĂNG KÝ TRƯỚC
+### 2. Truy cập Mô hình Amazon Bedrock
 
-> **QUAN TRỌNG — đăng ký từ trước.** Các foundation model trên Amazon Bedrock yêu cầu kích hoạt. Quyền truy cập `qwen.qwen3-vl-235b-a22b` tại `ap-southeast-2` thường được cấp trong vài phút nhưng có thể mất đến 24 giờ. Gửi yêu cầu **trước** khi bước vào phần 4.5, lý tưởng là từ ngày hôm trước.
-
-Các bước:
-
-1. Mở AWS Console và chuyển region sang **Asia Pacific (Sydney) — ap-southeast-2**.
-2. Vào **Amazon Bedrock → Model access**.
-3. Nhấn **Modify model access**.
-4. Bật **Qwen 3 VL 235B A22B** (`qwen.qwen3-vl-235b-a22b`).
-5. Submit và chờ trạng thái chuyển sang **Access granted**.
-
-![Bedrock cap quyen cho Qwen3-VL](images/bedrock-model-access.png)
-
-IAM policy gắn vào Lambda `ai-engine` trong `backend/amplify/backend.ts` chỉ cấp `bedrock:InvokeModel` cho đúng ARN model này:
-
-```text
-arn:aws:bedrock:ap-southeast-2::foundation-model/qwen.qwen3-vl-235b-a22b
-```
-
-Nếu bạn đổi region hoặc model, bạn cũng phải sửa `backend.ts` và `ai-engine/handler.ts`.
+Amazon Bedrock hiện cho phép người dùng truy cập trực tiếp các mô hình có sẵn mà không yêu cầu đăng ký trước. Để tích hợp và sử dụng các mô hình AI của Bedrock trong mã nguồn của bạn, hãy thực hiện theo hướng dẫn sau:
+1.  **Xác định Mã định danh Mô hình (Model ID)**: Chọn mô hình Bedrock bạn muốn sử dụng và ghi nhận mã định danh duy nhất của nó.
+2.  **Sử dụng Thư viện Boto3**: Tích hợp thư viện `boto3` (AWS SDK for Python) vào dự án của bạn để thiết lập kết nối và gọi các API của Bedrock, truyền vào mã định danh mô hình đã xác định để tương tác và gửi yêu cầu đến mô hình.
 
 ### 3. Cảnh báo AWS Budgets
 
