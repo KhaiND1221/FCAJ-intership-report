@@ -9,12 +9,12 @@
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Sàng lọc báo cáo Lỗ hổng <br>&emsp; + Định mức mức độ nguy hiểm và phân công ticket cho nhóm <br>&emsp; + Đặt lỗi IDOR lên mức độ khẩn cấp (Prioritized) | 16/03/2026 | 16/03/2026 | [Vulnerability Report] |
-| 2 | - Xóa sổ nợ IDOR <br>&emsp; + Chèn ngầm logic đối chiếu Claim UUID của token Cognito với ID được truy vấn <br>&emsp; + Đan xen Unit Test để bắt hàm tự tát 403 khi ID không khớp | 17/03/2026 | 17/03/2026 | [AWS Lambda Auth context] |
-| 3 | ⭐ **SỰ KIỆN:** AWS Cloud Mastery 3 (ĐH FPT) <br>&emsp; - Phác thảo Presentation Deck <br>&emsp; + Chụp các bản đồ Diagram kiến trúc bỏ vô Slide. <br>&emsp; + Kể câu chuyện cắt chi phí tối đa nhờ chẻ Data qua Haiku và Sonnet. | 18/03/2026 | 18/03/2026 | - |
-| 4 | - Tinh luyện rào WAF <br>&emsp; + Review lại đống log của WAF khi giả lập bị đánh Pen-test <br>&emsp; + Châm chước các dải IP đẩy code CI/CD tự động tránh chặn nhầm bằng tính năng Exclusion Rate Limits | 19/03/2026 | 19/03/2026 | [AWS WAF Console] |
-| 5 | - Biên soạn Cẩm nang Tác chiến <br>&emsp; + Phác thảo Version 1 cho Cẩm nang phản ứng khẩn cấp (IR Playbook) <br>&emsp; + Diễn đạt step-by-step quy trình vô hiệu hóa lập tức một IAM/Cognito token nghi ngờ rò rỉ | 20/03/2026 | 20/03/2026 | [IR Playbook Template] |
-| 6-7 | - Thẩm định kết quả (Re-test) <br>&emsp; + Y chang đợt test cũ, gọi trích xuất lỗ hổng lại lần nữa (Re-scan) và mò nhắm tay lại <br>&emsp; + Hoàn thiện chu trình giải quyết đóng Ticket mã độc | 21/03/2026 | 22/03/2026 | [Re-validation Logs] |
+| 1 | - Sàng lọc báo cáo Lỗ hổng <br>&emsp; + Định mức mức độ nguy hiểm và phân công ticket cho nhóm <br>&emsp; + Đặt lỗi IDOR lên mức độ khẩn cấp (Prioritized) | 09/04/2026 | 09/04/2026 | [Vulnerability Report] |
+| 2 | - Xóa sổ nợ IDOR <br>&emsp; + Chèn ngầm logic đối chiếu Claim UUID của token Cognito với ID được truy vấn <br>&emsp; + Đan xen Unit Test để bắt hàm tự tát 403 khi ID không khớp | 10/04/2026 | 10/04/2026 | [AWS Lambda Auth context] |
+| 3 | ⭐ **SỰ KIỆN:** AWS Cloud Mastery 3 (ĐH FPT) <br>&emsp; - Phác thảo Presentation Deck <br>&emsp; + Chụp các bản đồ Diagram kiến trúc bỏ vô Slide. <br>&emsp; + Kể câu chuyện cắt chi phí tối đa nhờ chẻ Data qua Haiku và Sonnet. | 11/04/2026 | 11/04/2026 | - |
+| 4 | - Tinh luyện rào WAF <br>&emsp; + Review lại đống log của WAF khi giả lập bị đánh Pen-test <br>&emsp; + Châm chước các dải IP đẩy code CI/CD tự động tránh chặn nhầm bằng tính năng Exclusion Rate Limits | 12/04/2026 | 12/04/2026 | [AWS WAF Console] |
+| 5 | - Biên soạn Cẩm nang Tác chiến <br>&emsp; + Phác thảo Version 1 cho Cẩm nang phản ứng khẩn cấp (IR Playbook) <br>&emsp; + Diễn đạt step-by-step quy trình vô hiệu hóa lập tức một IAM/Cognito token nghi ngờ rò rỉ | 13/04/2026 | 13/04/2026 | [IR Playbook Template] |
+| 6-7 | - Thẩm định kết quả (Re-test) <br>&emsp; + Y chang đợt test cũ, gọi trích xuất lỗ hổng lại lần nữa (Re-scan) và mò nhắm tay lại <br>&emsp; + Hoàn thiện chu trình giải quyết đóng Ticket mã độc | 14/04/2026 | 15/04/2026 | [Re-validation Logs] |
 
 ### Kết quả đạt được trong Tuần 11
 

@@ -9,12 +9,12 @@
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Hội tụ thế trận (Posture) <br>&emsp; + Kích hoạt AWS Security Hub <br>&emsp; + Thu thập cảnh báo từ GuardDuty, Macie, và WAF chung về 1 Hub | 02/03/2026 | 02/03/2026 | [Security Compliance with AWS Security Hub](https://000018.awsstudygroup.com) |
-| 2 | - Đánh giá Tuân thủ <br>&emsp; + Khởi chạy bảng kiểm định CIS AWS Foundations Benchmark <br>&emsp; + Chỉ ra các lỗ hổng tuân thủ (thiếu MFA, cổng mạng hớ hênh) | 03/03/2026 | 03/03/2026 | [CIS Benchmark] |
-| 3 | - Quản trị An ninh <br>&emsp; + Tìm hiểu áp dụng luật WAF diện rộng qua AWS Firewall Manager <br>&emsp; + Thiết lập policy tự động để chuẩn bị scale lên mô hình đa tài khoản (Multi-account) | 04/03/2026 | 04/03/2026 | [Security Governance with Firewall Manager](https://000097.awsstudygroup.com) |
-| 4 | - Dò quét Lỗ hổng <br>&emsp; + Deploy Amazon Inspector rà soát con Bastion Host (EC2) / các Container xử lý nền <br>&emsp; + Đọc và phân hạng mức độ nguy hiểm của các lỗi CVE | 05/03/2026 | 05/03/2026 | [Systems Patching with EC2 Image Builder](https://000099.awsstudygroup.com) |
-| 5 | - Quản lý Cập nhật Bản vá (Patching) <br>&emsp; + Tạo kịch bản tự động vá lỗi bảo mật OS <br>&emsp; + Đảm bảo Image gốc (Golden Image) luôn an toàn từ đầu | 06/03/2026 | 06/03/2026 | [Systems Manager] |
-| 6-7 | - Tổng kết Tiền Thanh tra <br>&emsp; + Báo cáo điểm số Security Hub cho toàn bộ cấp quản lý / dev team <br>&emsp; + Lên danh sách việc khắc phục cho tuần sau | 07/03/2026 | 08/03/2026 | [Họp nội bộ] |
+| 1 | - Hội tụ thế trận (Posture) <br>&emsp; + Kích hoạt AWS Security Hub <br>&emsp; + Thu thập cảnh báo từ GuardDuty, Macie, và WAF chung về 1 Hub | 26/03/2026 | 26/03/2026 | [Security Compliance with AWS Security Hub](https://000018.awsstudygroup.com) |
+| 2 | - Đánh giá Tuân thủ <br>&emsp; + Khởi chạy bảng kiểm định CIS AWS Foundations Benchmark <br>&emsp; + Chỉ ra các lỗ hổng tuân thủ (thiếu MFA, cổng mạng hớ hênh) | 27/03/2026 | 27/03/2026 | [CIS Benchmark] |
+| 3 | - Quản trị An ninh <br>&emsp; + Tìm hiểu áp dụng luật WAF diện rộng qua AWS Firewall Manager <br>&emsp; + Thiết lập policy tự động để chuẩn bị scale lên mô hình đa tài khoản (Multi-account) | 28/03/2026 | 28/03/2026 | [Security Governance with Firewall Manager](https://000097.awsstudygroup.com) |
+| 4 | - Dò quét Lỗ hổng <br>&emsp; + Deploy Amazon Inspector rà soát con Bastion Host (EC2) / các Container xử lý nền <br>&emsp; + Đọc và phân hạng mức độ nguy hiểm của các lỗi CVE | 29/03/2026 | 29/03/2026 | [Systems Patching with EC2 Image Builder](https://000099.awsstudygroup.com) |
+| 5 | - Quản lý Cập nhật Bản vá (Patching) <br>&emsp; + Tạo kịch bản tự động vá lỗi bảo mật OS <br>&emsp; + Đảm bảo Image gốc (Golden Image) luôn an toàn từ đầu | 30/03/2026 | 30/03/2026 | [Systems Manager] |
+| 6-7 | - Tổng kết Tiền Thanh tra <br>&emsp; + Báo cáo điểm số Security Hub cho toàn bộ cấp quản lý / dev team <br>&emsp; + Lên danh sách việc khắc phục cho tuần sau | 31/03/2026 | 01/04/2026 | [Họp nội bộ] |
 
 ### Kết quả đạt được trong Tuần 9
 

@@ -9,11 +9,11 @@
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | ⭐ **SỰ KIỆN:** AWS re:Invent 2025 Recap - Vietnam Edition <br>&emsp; - Soạn thảo NutriTrack Proposal <br>&emsp; + Viết phần Problem Statement & AI Solutions <br>&emsp; + Chốt scope cho vị trí AI-1 | 12/01/2026 | 12/01/2026 | - |
-| 2 | - Lab 6: RDS Database <br>&emsp; + Dùng Linux qua EC2 để cài MySQL <br>&emsp; + Tạo Load Balancer & Target Groups <br>&emsp; + Cài công cụ `Siege` để Load test mô phỏng 50 người dùng cho đến khi EC2 tự terminate | 13/01/2026 | 13/01/2026 | [Lab 6](https://000006.awsstudygroup.com/) |
-| 3 | - Lab 5: Hỗ trợ team fix lỗi script lab kết nối RDS <br> - Thiếu bước `cd` tới thư mục ứng dụng | 14/01/2026 | 14/01/2026 | [Lab 5](https://000005.awsstudygroup.com/) |
-| 4 | - Tham gia Sự kiện **AWS Cloud Day** (Gen AI and Data track) | 15/01/2026 | 15/01/2026 | [Sự kiện AWS] |
-| 5-6 | - Làm lại Lab 10: Route 53 Hybrid DNS & Microsoft AD <br> - Lab 8: CloudWatch Metrics & Dashboard <br> - Khảo sát AWS Well-Architected Framework (6 Trụ cột: Vận hành, Bảo mật, Tin cậy, Hiệu suất, Chi phí, Bền vững) | 16/01/2026 | 17/01/2026 | [Lab 8](https://000008.awsstudygroup.com/) <br> [Well-Architected Docs] |
+| 1 | ⭐ **SỰ KIỆN:** AWS re:Invent 2025 Recap - Vietnam Edition <br>&emsp; - Soạn thảo NutriTrack Proposal <br>&emsp; + Viết phần Problem Statement & AI Solutions <br>&emsp; + Chốt scope cho vị trí AI-1 | 27/01/2026 | 27/01/2026 | - |
+| 2 | - Lab 6: RDS Database <br>&emsp; + Dùng Linux qua EC2 để cài MySQL <br>&emsp; + Tạo Load Balancer & Target Groups <br>&emsp; + Cài công cụ `Siege` để Load test mô phỏng 50 người dùng cho đến khi EC2 tự terminate | 28/01/2026 | 28/01/2026 | [Lab 6](https://000006.awsstudygroup.com/) |
+| 3 | - Lab 5: Hỗ trợ team fix lỗi script lab kết nối RDS <br> - Thiếu bước `cd` tới thư mục ứng dụng | 29/01/2026 | 29/01/2026 | [Lab 5](https://000005.awsstudygroup.com/) |
+| 4 | - Tham gia Sự kiện **AWS Cloud Day** (Gen AI and Data track) | 30/01/2026 | 30/01/2026 | [Sự kiện AWS] |
+| 5-6 | - Làm lại Lab 10: Route 53 Hybrid DNS & Microsoft AD <br> - Lab 8: CloudWatch Metrics & Dashboard <br> - Khảo sát AWS Well-Architected Framework (6 Trụ cột: Vận hành, Bảo mật, Tin cậy, Hiệu suất, Chi phí, Bền vững) | 31/01/2026 | 01/02/2026 | [Lab 8](https://000008.awsstudygroup.com/) <br> [Well-Architected Docs] |
 
 ### Kết quả đạt được trong Tuần 2:
 

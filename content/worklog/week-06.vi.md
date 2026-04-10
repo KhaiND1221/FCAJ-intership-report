@@ -9,12 +9,12 @@
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Thiết lập Hệ thống Khóa <br>&emsp; + Tạo Customer Managed Keys (CMK) trong AWS KMS <br>&emsp; + Định nghĩa Key Policies cấp quyền truy cập | 09/02/2026 | 09/02/2026 | [Encryption with AWS KMS](https://000033.awsstudygroup.com) |
-| 2 | - Mã hóa S3 & DynamoDB <br>&emsp; + Áp dụng vòng khóa KMS lên bảng DynamoDB của NutriTrack <br>&emsp; + Bắt buộc mã hóa mặc định (Default Encryption) trên mọi S3 bucket | 10/02/2026 | 10/02/2026 | [AWS Sec Best Practices] |
-| 3 | - Quản lý tham số Bí mật <br>&emsp; + Chuyển các khóa API bên thứ ba vào lưu trong AWS Secrets Manager <br>&emsp; + Xóa toàn bộ secret tồn tại dưới dạng thuần text trong Lambda Env Vars | 11/02/2026 | 11/02/2026 | [AWS Secrets Manager](https://000096.awsstudygroup.com) |
-| 4 | - Định tuyến Kín cho S3 <br>&emsp; + Ngăn chặn luồng dữ liệu từ Lambda gọi sang S3 đi qua mạng Internet công cộng <br>&emsp; + Setup S3 Gateway VPC Endpoint | 12/02/2026 | 12/02/2026 | [Private Access to S3](https://000111.awsstudygroup.com) |
-| 5 | - Tăng cường bọc thép S3 <br>&emsp; + Kích hoạt toàn bộ S3 Block Public Access <br>&emsp; + Viết S3 Bucket Policy từ chối mọi truy vấn không thông qua HTTPS | 13/02/2026 | 13/02/2026 | [S3 Security Best Practices](https://000069.awsstudygroup.com) |
-| 6-7 | - Đánh giá Kiến trúc <br>&emsp; + Phổ biến quy chuẩn mã hóa cùng Dev team <br>&emsp; + Rà soát đảm bảo các IAM Role của Lambda đã thêm cờ `kms:Decrypt` | 14/02/2026 | 15/02/2026 | [Architecture Draft] |
+| 1 | - Thiết lập Hệ thống Khóa <br>&emsp; + Tạo Customer Managed Keys (CMK) trong AWS KMS <br>&emsp; + Định nghĩa Key Policies cấp quyền truy cập | 05/03/2026 | 05/03/2026 | [Encryption with AWS KMS](https://000033.awsstudygroup.com) |
+| 2 | - Mã hóa S3 & DynamoDB <br>&emsp; + Áp dụng vòng khóa KMS lên bảng DynamoDB của NutriTrack <br>&emsp; + Bắt buộc mã hóa mặc định (Default Encryption) trên mọi S3 bucket | 06/03/2026 | 06/03/2026 | [AWS Sec Best Practices] |
+| 3 | - Quản lý tham số Bí mật <br>&emsp; + Chuyển các khóa API bên thứ ba vào lưu trong AWS Secrets Manager <br>&emsp; + Xóa toàn bộ secret tồn tại dưới dạng thuần text trong Lambda Env Vars | 07/03/2026 | 07/03/2026 | [AWS Secrets Manager](https://000096.awsstudygroup.com) |
+| 4 | - Định tuyến Kín cho S3 <br>&emsp; + Ngăn chặn luồng dữ liệu từ Lambda gọi sang S3 đi qua mạng Internet công cộng <br>&emsp; + Setup S3 Gateway VPC Endpoint | 08/03/2026 | 08/03/2026 | [Private Access to S3](https://000111.awsstudygroup.com) |
+| 5 | - Tăng cường bọc thép S3 <br>&emsp; + Kích hoạt toàn bộ S3 Block Public Access <br>&emsp; + Viết S3 Bucket Policy từ chối mọi truy vấn không thông qua HTTPS | 09/03/2026 | 09/03/2026 | [S3 Security Best Practices](https://000069.awsstudygroup.com) |
+| 6-7 | - Đánh giá Kiến trúc <br>&emsp; + Phổ biến quy chuẩn mã hóa cùng Dev team <br>&emsp; + Rà soát đảm bảo các IAM Role của Lambda đã thêm cờ `kms:Decrypt` | 10/03/2026 | 11/03/2026 | [Architecture Draft] |
 
 ### Kết quả đạt được trong Tuần 6
 

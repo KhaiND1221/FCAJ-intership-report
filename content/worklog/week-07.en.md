@@ -9,12 +9,12 @@
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Threat Detection Initialization <br>&emsp; + Enable AWS GuardDuty across the specific AWS account <br>&emsp; + Monitor baseline resource behavior | 16/02/2026 | 16/02/2026 | [Threat Detection with GuardDuty](https://000098.awsstudygroup.com) |
-| 2 | - Network Visibility <br>&emsp; + Enable VPC Flow Logs for the primary backend VPC <br>&emsp; + Push Flow Logs data to CloudWatch | 17/02/2026 | 17/02/2026 | [Network Monitoring with VPC Flow Logs](https://000074.awsstudygroup.com) |
-| 3 | ⭐ **EVENT:** AWS Cloud Mastery 1 <br>&emsp; - Advanced Output Formatting <br>&emsp; + Forced Sonnet to return a structured JSON array of recipes including `macros`, `steps`, and `why_this`. | 18/02/2026 | 18/02/2026 | - |
-| 4 | - Alerting Systems <br>&emsp; + Setup Amazon Simple Notification Service (SNS) topics <br>&emsp; + Connect SNS to our internal NeuraX Discord webhook | 19/02/2026 | 19/02/2026 | [Messaging Systems with SNS](https://000077.awsstudygroup.com) |
-| 5 | - Security Triggers <br>&emsp; + Configure EventBridge rules to route GuardDuty high-severity findings to SNS <br>&emsp; + Set CloudWatch alarms for an unusual number of 4xx/5xx API Gateway errors | 20/02/2026 | 20/02/2026 | [CloudWatch Advanced Workshop](https://000036.awsstudygroup.com) |
-| 6-7 | - Penetration Demo <br>&emsp; + Simulated unusual API calls (Port scanning/Brute force) from an external IP <br>&emsp; + Verified alerts triggering | 21/02/2026 | 22/02/2026 | [Internal Testing] |
+| 1 | - Threat Detection Initialization <br>&emsp; + Enable AWS GuardDuty across the specific AWS account <br>&emsp; + Monitor baseline resource behavior | 12/03/2026 | 12/03/2026 | [Threat Detection with GuardDuty](https://000098.awsstudygroup.com) |
+| 2 | - Network Visibility <br>&emsp; + Enable VPC Flow Logs for the primary backend VPC <br>&emsp; + Push Flow Logs data to CloudWatch | 13/03/2026 | 13/03/2026 | [Network Monitoring with VPC Flow Logs](https://000074.awsstudygroup.com) |
+| 3 | ⭐ **EVENT:** AWS Cloud Mastery 1 <br>&emsp; - Advanced Output Formatting <br>&emsp; + Forced Sonnet to return a structured JSON array of recipes including `macros`, `steps`, and `why_this`. | 14/03/2026 | 14/03/2026 | - |
+| 4 | - Alerting Systems <br>&emsp; + Setup Amazon Simple Notification Service (SNS) topics <br>&emsp; + Connect SNS to our internal NeuraX Discord webhook | 15/03/2026 | 15/03/2026 | [Messaging Systems with SNS](https://000077.awsstudygroup.com) |
+| 5 | - Security Triggers <br>&emsp; + Configure EventBridge rules to route GuardDuty high-severity findings to SNS <br>&emsp; + Set CloudWatch alarms for an unusual number of 4xx/5xx API Gateway errors | 16/03/2026 | 16/03/2026 | [CloudWatch Advanced Workshop](https://000036.awsstudygroup.com) |
+| 6-7 | - Penetration Demo <br>&emsp; + Simulated unusual API calls (Port scanning/Brute force) from an external IP <br>&emsp; + Verified alerts triggering | 17/03/2026 | 18/03/2026 | [Internal Testing] |
 
 ### Week 7 Achievements
 

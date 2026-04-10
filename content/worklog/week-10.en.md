@@ -9,12 +9,12 @@
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Test Environment Setup <br>&emsp; + Spin up a cloned isolated environment (Staging) <br>&emsp; + Configured proxy tools (Burp Suite) to intercept traffic | 09/03/2026 | 09/03/2026 | [Burp Suite Config Docs] |
-| 2 | - Authentication & Authorization Testing <br>&emsp; + Attempted Cognito Token manipulation & bypass <br>&emsp; + Tested for Insecure Direct Object Reference (IDOR) on user profiles | 10/03/2026 | 10/03/2026 | [OWASP Auth Testing] |
-| 3 | ⭐ **EVENT:** AWS Cloud Mastery 2 (FPT Uni) <br>&emsp; - Lambda Hook-up <br>&emsp; + Finalized `generate_coaching_tip()` tying Boto3 to Qwen3-VL 235B. <br>&emsp; + Pushed to Amplify. | 11/03/2026 | 11/03/2026 | [Amplify Fullstack Docs](https://docs.amplify.aws/gen2/deploy-and-host/fullstack-branching/) |
-| 4 | - API Logic Flaws <br>&emsp; + Hunted for Business Logic vulnerabilities in the Lambda API endpoints <br>&emsp; + Checked for Excessive Data Exposure in JSON responses | 12/03/2026 | 12/03/2026 | [REST API Security] |
-| 5 | - Privilege Escalation Audit <br>&emsp; + Audited IAM Roles assumed by backend systems <br>&emsp; + Checked for over-permissive `sts:AssumeRole` trusts | 13/03/2026 | 13/03/2026 | [IAM Security Assessment] |
-| 6-7 | - Security Report Generation <br>&emsp; + Compiled findings into a structured Vulnerability Assessment Report <br>&emsp; + Ranked findings by CVSS severity score | 14/03/2026 | 15/03/2026 | [Vulnerability Score Matrix] |
+| 1 | - Test Environment Setup <br>&emsp; + Spin up a cloned isolated environment (Staging) <br>&emsp; + Configured proxy tools (Burp Suite) to intercept traffic | 02/04/2026 | 02/04/2026 | [Burp Suite Config Docs] |
+| 2 | - Authentication & Authorization Testing <br>&emsp; + Attempted Cognito Token manipulation & bypass <br>&emsp; + Tested for Insecure Direct Object Reference (IDOR) on user profiles | 03/04/2026 | 03/04/2026 | [OWASP Auth Testing] |
+| 3 | ⭐ **EVENT:** AWS Cloud Mastery 2 (FPT Uni) <br>&emsp; - Lambda Hook-up <br>&emsp; + Finalized `generate_coaching_tip()` tying Boto3 to Qwen3-VL 235B. <br>&emsp; + Pushed to Amplify. | 04/04/2026 | 04/04/2026 | [Amplify Fullstack Docs](https://docs.amplify.aws/gen2/deploy-and-host/fullstack-branching/) |
+| 4 | - API Logic Flaws <br>&emsp; + Hunted for Business Logic vulnerabilities in the Lambda API endpoints <br>&emsp; + Checked for Excessive Data Exposure in JSON responses | 05/04/2026 | 05/04/2026 | [REST API Security] |
+| 5 | - Privilege Escalation Audit <br>&emsp; + Audited IAM Roles assumed by backend systems <br>&emsp; + Checked for over-permissive `sts:AssumeRole` trusts | 06/04/2026 | 06/04/2026 | [IAM Security Assessment] |
+| 6-7 | - Security Report Generation <br>&emsp; + Compiled findings into a structured Vulnerability Assessment Report <br>&emsp; + Ranked findings by CVSS severity score | 07/04/2026 | 08/04/2026 | [Vulnerability Score Matrix] |
 
 ### Week 10 Achievements
 

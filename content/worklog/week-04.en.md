@@ -9,12 +9,12 @@
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Developer Access Security <br>&emsp; + Setup Identity Federation with AWS Single Sign-On (SSO) <br>&emsp; + Assign permission sets for the Dev team | 26/01/2026 | 26/01/2026 | [Identity Federation with SSO](https://000012.awsstudygroup.com) |
-| 2 | - IAM Guardrails <br>&emsp; + Configure IAM Permission Boundaries <br>&emsp; + Ensure developers cannot elevate their own privileges | 27/01/2026 | 27/01/2026 | [IAM Permission Boundaries](https://000030.awsstudygroup.com) |
-| 3 | - User Authentication Setup <br>&emsp; + Create an Amazon Cognito User Pool for NutriTrack <br>&emsp; + Configure password policies and MFA for end-users | 28/01/2026 | 28/01/2026 | [Auth with Cognito](https://000081.awsstudygroup.com/) |
-| 4 | - Identity Pools & Access <br>&emsp; + Setup Cognito Identity Pool <br>&emsp; + Map IAM roles for authenticated and unauthenticated users | 29/01/2026 | 29/01/2026 | [Cognito Auth Docs] |
-| 5 | - Cross-Domain Identity <br>&emsp; + Test Cross-Domain Authentication with Amazon Cognito <br>&emsp; + Validate JWT tokens issued by Cognito | 30/01/2026 | 30/01/2026 | [Cross-Domain Cognito](https://000141.awsstudygroup.com) |
-| 6-7 | - Security Audit & Sync <br>&emsp; + Audit all current Lambda execution roles and prune excessive permissions <br>&emsp; + Weekly sync with the development team | 31/01/2026 | 01/02/2026 | [Audit Logs] |
+| 1 | - Developer Access Security <br>&emsp; + Setup Identity Federation with AWS Single Sign-On (SSO) <br>&emsp; + Assign permission sets for the Dev team | 10/02/2026 | 10/02/2026 | [Identity Federation with SSO](https://000012.awsstudygroup.com) |
+| 2 | - IAM Guardrails <br>&emsp; + Configure IAM Permission Boundaries <br>&emsp; + Ensure developers cannot elevate their own privileges | 11/02/2026 | 11/02/2026 | [IAM Permission Boundaries](https://000030.awsstudygroup.com) |
+| 3 | - User Authentication Setup <br>&emsp; + Create an Amazon Cognito User Pool for NutriTrack <br>&emsp; + Configure password policies and MFA for end-users | 12/02/2026 | 12/02/2026 | [Auth with Cognito](https://000081.awsstudygroup.com/) |
+| 4 | - Identity Pools & Access <br>&emsp; + Setup Cognito Identity Pool <br>&emsp; + Map IAM roles for authenticated and unauthenticated users | 13/02/2026 | 13/02/2026 | [Cognito Auth Docs] |
+| 5 | - Cross-Domain Identity <br>&emsp; + Test Cross-Domain Authentication with Amazon Cognito <br>&emsp; + Validate JWT tokens issued by Cognito | 14/02/2026 | 14/02/2026 | [Cross-Domain Cognito](https://000141.awsstudygroup.com) |
+| 6-7 | - Security Audit & Sync <br>&emsp; + Audit all current Lambda execution roles and prune excessive permissions <br>&emsp; + Weekly sync with the development team | 15/02/2026 | 16/02/2026 | [Audit Logs] |
 
 ### Week 4 Achievements
 

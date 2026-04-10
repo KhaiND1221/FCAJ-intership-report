@@ -4,6 +4,7 @@ import { Calendar, MapPin, User } from 'lucide-react';
 import { AnimatedPage } from '../components/AnimatedPage';
 import { SectionHeader } from '../components/SectionHeader';
 import { loadEvents } from '../utils/eventLoader';
+import { MarkdownRenderer } from '../components/MarkdownRenderer';
 
 export function EventsPage() {
     const { language } = useLanguage();
@@ -81,8 +82,8 @@ export function EventsPage() {
                                 <h3 className="font-semibold text-text-primary mb-2">
                                     {language === 'en' ? 'Main Content' : 'Nội dung chính'}
                                 </h3>
-                                <div className="text-text-secondary whitespace-pre-line">
-                                    {event.content}
+                                <div className="markdown-content">
+                                    <MarkdownRenderer content={event.content} />
                                 </div>
                             </div>
 

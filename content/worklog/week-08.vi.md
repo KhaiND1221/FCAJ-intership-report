@@ -9,12 +9,12 @@
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Quản trị Quyền riêng tư <br>&emsp; + Kích hoạt Amazon Macie trên tài khoản <br>&emsp; + Lên cấu hình yêu cầu Macie quét các S3 bucket tìm PII | 23/02/2026 | 23/02/2026 | [Data Protection with Amazon Macie](https://000090.awsstudygroup.com) |
-| 2 | - Trinh sát dữ liệu PII <br>&emsp; + Bơm thử data mẫu sinh ảo (Tên, Email, tình trạng bệnh) vào bucket <br>&emsp; + Đọc báo cáo rò rỉ trả về từ Macie | 24/02/2026 | 24/02/2026 | [Macie PII Scan] |
-| 3 | - Sao lưu Tự động <br>&emsp; + Tạo vòng đời duy trì Snapshot thông qua Amazon EBS Data Lifecycle Manager (DLM) <br>&emsp; + Viết luật copy tự động sang vùng (Region) khác đề phòng thảm họa | 25/02/2026 | 25/02/2026 | [Snapshot Automation](https://000088.awsstudygroup.com) |
-| 4 | - Dò tìm mầm mống Ransomware <br>&emsp; + Tìm hiểu Anomaly Detection for EBS Backups <br>&emsp; + Dùng cơ chế khóa không cho phép thao tác xóa bản sao lưu | 26/02/2026 | 26/02/2026 | [Anomaly Detection](https://000089.awsstudygroup.com) |
-| 5 | - Xuất báo cáo Tuân thủ <br>&emsp; + Triển khai AWS Backup làm hub trung tâm backup DynamoDB <br>&emsp; + Trích xuất báo cáo tuân thủ ban đầu gửi cho Dev team | 27/02/2026 | 27/02/2026 | [Data Protection with AWS Backup](https://000013.awsstudygroup.com) |
-| 6-7 | - Củng cố Kiến trúc <br>&emsp; + Duyệt lại sơ đồ luồng dữ liệu (Data flow diagrams) liên quan đến phân tầng PII <br>&emsp; + Cập nhật quy định yêu cầu xóa định danh trước quá trình phân tích số liệu | 28/02/2026 | 01/03/2026 | [Architecture Draft] |
+| 1 | - Quản trị Quyền riêng tư <br>&emsp; + Kích hoạt Amazon Macie trên tài khoản <br>&emsp; + Lên cấu hình yêu cầu Macie quét các S3 bucket tìm PII | 19/03/2026 | 19/03/2026 | [Data Protection with Amazon Macie](https://000090.awsstudygroup.com) |
+| 2 | - Trinh sát dữ liệu PII <br>&emsp; + Bơm thử data mẫu sinh ảo (Tên, Email, tình trạng bệnh) vào bucket <br>&emsp; + Đọc báo cáo rò rỉ trả về từ Macie | 20/03/2026 | 20/03/2026 | [Macie PII Scan] |
+| 3 | - Sao lưu Tự động <br>&emsp; + Tạo vòng đời duy trì Snapshot thông qua Amazon EBS Data Lifecycle Manager (DLM) <br>&emsp; + Viết luật copy tự động sang vùng (Region) khác đề phòng thảm họa | 21/03/2026 | 21/03/2026 | [Snapshot Automation](https://000088.awsstudygroup.com) |
+| 4 | - Dò tìm mầm mống Ransomware <br>&emsp; + Tìm hiểu Anomaly Detection for EBS Backups <br>&emsp; + Dùng cơ chế khóa không cho phép thao tác xóa bản sao lưu | 22/03/2026 | 22/03/2026 | [Anomaly Detection](https://000089.awsstudygroup.com) |
+| 5 | - Xuất báo cáo Tuân thủ <br>&emsp; + Triển khai AWS Backup làm hub trung tâm backup DynamoDB <br>&emsp; + Trích xuất báo cáo tuân thủ ban đầu gửi cho Dev team | 23/03/2026 | 23/03/2026 | [Data Protection with AWS Backup](https://000013.awsstudygroup.com) |
+| 6-7 | - Củng cố Kiến trúc <br>&emsp; + Duyệt lại sơ đồ luồng dữ liệu (Data flow diagrams) liên quan đến phân tầng PII <br>&emsp; + Cập nhật quy định yêu cầu xóa định danh trước quá trình phân tích số liệu | 24/03/2026 | 25/03/2026 | [Architecture Draft] |
 
 ### Kết quả đạt được trong Tuần 8
 

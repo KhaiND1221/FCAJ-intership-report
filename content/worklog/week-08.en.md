@@ -9,12 +9,12 @@
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Data Privacy Management <br>&emsp; + Enable Amazon Macie across the account <br>&emsp; + Configure Macie to scan S3 buckets for sensitive PII | 23/02/2026 | 23/02/2026 | [Data Protection with Amazon Macie](https://000090.awsstudygroup.com) |
-| 2 | - PII Discovery <br>&emsp; + Uploaded mock PII data (Names, Emails, Health statuses) to test buckets <br>&emsp; + Verified Macie findings report | 24/02/2026 | 24/02/2026 | [Macie PII Scan] |
-| 3 | - Automated Backups <br>&emsp; + Implement Snapshot Automation with Amazon EBS Data Lifecycle Manager (DLM) <br>&emsp; + Define cross-region copy rules for disaster recovery | 25/02/2026 | 25/02/2026 | [Snapshot Automation](https://000088.awsstudygroup.com) |
-| 4 | - Backup Anomaly Detection <br>&emsp; + Explore Anomaly Detection for EBS Backups <br>&emsp; + Learn mechanisms for locking backups against ransomware | 26/02/2026 | 26/02/2026 | [Anomaly Detection](https://000089.awsstudygroup.com) |
-| 5 | - Compliance Reporting <br>&emsp; + Use AWS Backup to establish central policies for DynamoDB <br>&emsp; + Generate initial compliance reports for the Dev team | 27/02/2026 | 27/02/2026 | [Data Protection with AWS Backup](https://000013.awsstudygroup.com) |
-| 6-7 | - Architecture Fine-tuning <br>&emsp; + Review Data Flow diagrams regarding PII handling <br>&emsp; + Update the team on required data anonymization prior to analytics | 28/02/2026 | 01/03/2026 | [Architecture Draft] |
+| 1 | - Data Privacy Management <br>&emsp; + Enable Amazon Macie across the account <br>&emsp; + Configure Macie to scan S3 buckets for sensitive PII | 19/03/2026 | 19/03/2026 | [Data Protection with Amazon Macie](https://000090.awsstudygroup.com) |
+| 2 | - PII Discovery <br>&emsp; + Uploaded mock PII data (Names, Emails, Health statuses) to test buckets <br>&emsp; + Verified Macie findings report | 20/03/2026 | 20/03/2026 | [Macie PII Scan] |
+| 3 | - Automated Backups <br>&emsp; + Implement Snapshot Automation with Amazon EBS Data Lifecycle Manager (DLM) <br>&emsp; + Define cross-region copy rules for disaster recovery | 21/03/2026 | 21/03/2026 | [Snapshot Automation](https://000088.awsstudygroup.com) |
+| 4 | - Backup Anomaly Detection <br>&emsp; + Explore Anomaly Detection for EBS Backups <br>&emsp; + Learn mechanisms for locking backups against ransomware | 22/03/2026 | 22/03/2026 | [Anomaly Detection](https://000089.awsstudygroup.com) |
+| 5 | - Compliance Reporting <br>&emsp; + Use AWS Backup to establish central policies for DynamoDB <br>&emsp; + Generate initial compliance reports for the Dev team | 23/03/2026 | 23/03/2026 | [Data Protection with AWS Backup](https://000013.awsstudygroup.com) |
+| 6-7 | - Architecture Fine-tuning <br>&emsp; + Review Data Flow diagrams regarding PII handling <br>&emsp; + Update the team on required data anonymization prior to analytics | 24/03/2026 | 25/03/2026 | [Architecture Draft] |
 
 ### Week 8 Achievements
 

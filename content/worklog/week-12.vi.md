@@ -9,12 +9,12 @@
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Khắc họa Kiến trúc Bảo mật <br>&emsp; + Xuất bản sơ đồ trực quan kết nối WAF, Cognito, và API Gateway <br>&emsp; + Tài liệu hóa mạch luân chuyển khóa mã hóa dữ liệu với AWS KMS | 23/03/2026 | 23/03/2026 | [Draw.io / Visio] |
-| 2 | - Bàn giao Quản trị <br>&emsp; + Thuyết minh mô hình AWS Security Hub dashboard cho team dev <br>&emsp; + Bàn giao sổ tay Incident Response Playbook | 24/03/2026 | 24/03/2026 | [Họp Chuyển giao] |
-| 3 | - Kiểm kê Tài chính <br>&emsp; + Check lại rổ chi phí đánh đổi (Price-to-performance) của bộ tool GuardDuty, Macie <br>&emsp; + Dọn dẹp và reset lại biểu đồ AWS Budgets | 25/03/2026 | 25/03/2026 | [Cost and Usage Management](https://000064.awsstudygroup.com) |
-| 4 | - Soạn và Ghép Báo Cáo <br>&emsp; + Tổng hòa 12 bản báo cáo tuần lẻ tẻ thành văn bản Internship Report cuối cùng <br>&emsp; + Ghi lại cảm nhận dọc hành trình gò ép sang ngành Security | 26/03/2026 | 26/03/2026 | [Mẫu FCAJ] |
-| 5 | - Hiệu đính Mentor <br>&emsp; + Đẩy bản phác thảo cuối cho Mentor đọc kiểm duyệt <br>&emsp; + Gia giảm lại lượng từ ngữ học thuật chuyên ngành theo lời khuyên | 27/03/2026 | 27/03/2026 | [Tài liệu Tương tác] |
-| 6-7 | - Thuyết trình Bế mạc <br>&emsp; + Hoàn thành buổi trình diễn Đồ thị Sinh thái Bảo mật (Security Lifecycle) <br>&emsp; + Ăn mừng bế mạc chương trình Thực tập sinh FCJ | 28/03/2026 | 29/03/2026 | [Slide Deck] |
+| 1 | - Khắc họa Kiến trúc Bảo mật <br>&emsp; + Xuất bản sơ đồ trực quan kết nối WAF, Cognito, và API Gateway <br>&emsp; + Tài liệu hóa mạch luân chuyển khóa mã hóa dữ liệu với AWS KMS | 16/04/2026 | 16/04/2026 | [Draw.io / Visio] |
+| 2 | - Bàn giao Quản trị <br>&emsp; + Thuyết minh mô hình AWS Security Hub dashboard cho team dev <br>&emsp; + Bàn giao sổ tay Incident Response Playbook | 17/04/2026 | 17/04/2026 | [Họp Chuyển giao] |
+| 3 | - Kiểm kê Tài chính <br>&emsp; + Check lại rổ chi phí đánh đổi (Price-to-performance) của bộ tool GuardDuty, Macie <br>&emsp; + Dọn dẹp và reset lại biểu đồ AWS Budgets | 18/04/2026 | 18/04/2026 | [Cost and Usage Management](https://000064.awsstudygroup.com) |
+| 4 | - Soạn và Ghép Báo Cáo <br>&emsp; + Tổng hòa 12 bản báo cáo tuần lẻ tẻ thành văn bản Internship Report cuối cùng <br>&emsp; + Ghi lại cảm nhận dọc hành trình gò ép sang ngành Security | 19/04/2026 | 19/04/2026 | [Mẫu FCAJ] |
+| 5 | - Hiệu đính Mentor <br>&emsp; + Đẩy bản phác thảo cuối cho Mentor đọc kiểm duyệt <br>&emsp; + Gia giảm lại lượng từ ngữ học thuật chuyên ngành theo lời khuyên | 20/04/2026 | 20/04/2026 | [Tài liệu Tương tác] |
+| 6-7 | - Thuyết trình Bế mạc <br>&emsp; + Hoàn thành buổi trình diễn Đồ thị Sinh thái Bảo mật (Security Lifecycle) <br>&emsp; + Ăn mừng bế mạc chương trình Thực tập sinh FCJ | 21/04/2026 | 22/04/2026 | [Slide Deck] |
 
 ### Kết quả đạt được trong Tuần 12
 

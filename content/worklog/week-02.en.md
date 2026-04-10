@@ -9,11 +9,11 @@
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | ⭐ **EVENT:** AWS re:Invent 2025 Recap - Vietnam Edition <br>&emsp; - NutriTrack Proposal Drafting <br>&emsp; + Wrote Problem Statement & AI Solutions <br>&emsp; + Defined my AI-1 scope | 12/01/2026 | 12/01/2026 | - |
-| 2 | - Lab 6: RDS Database & EC2 <br>&emsp; + Install MySQL on EC2 <br>&emsp; + Create Load Balancer & Target Groups <br>&emsp; + Use "Siege" to run load testing (50 concurrent users) on ALBs | 13/01/2026 | 13/01/2026 | [Lab 6](https://000006.awsstudygroup.com/) |
-| 3 | - Lab 5: DB connectivity <br>&emsp; + Fixed missing steps in the provided lab manual regarding connecting RDS to MySQL | 14/01/2026 | 14/01/2026 | [Lab 5](https://000005.awsstudygroup.com/) |
-| 4 | - Participate in **AWS Cloud Day** (Gen AI & Data Track) | 15/01/2026 | 15/01/2026 | [AWS Cloud Day] |
-| 5-6 | - Lab 10: Retry Route 53 hybrid DNS & Microsoft AD <br> - Lab 8: CloudWatch Metrics & Dashboards <br> - Lab 14: Ubuntu config setup <br> - Research: AWS Well-Architected Framework (6 pillars) | 16/01/2026 | 17/01/2026 | [Lab 8](https://000008.awsstudygroup.com/) <br> [Well-Architected Docs] |
+| 1 | ⭐ **EVENT:** AWS re:Invent 2025 Recap - Vietnam Edition <br>&emsp; - NutriTrack Proposal Drafting <br>&emsp; + Wrote Problem Statement & AI Solutions <br>&emsp; + Defined my AI-1 scope | 27/01/2026 | 27/01/2026 | - |
+| 2 | - Lab 6: RDS Database & EC2 <br>&emsp; + Install MySQL on EC2 <br>&emsp; + Create Load Balancer & Target Groups <br>&emsp; + Use "Siege" to run load testing (50 concurrent users) on ALBs | 28/01/2026 | 28/01/2026 | [Lab 6](https://000006.awsstudygroup.com/) |
+| 3 | - Lab 5: DB connectivity <br>&emsp; + Fixed missing steps in the provided lab manual regarding connecting RDS to MySQL | 29/01/2026 | 29/01/2026 | [Lab 5](https://000005.awsstudygroup.com/) |
+| 4 | - Participate in **AWS Cloud Day** (Gen AI & Data Track) | 30/01/2026 | 30/01/2026 | [AWS Cloud Day] |
+| 5-6 | - Lab 10: Retry Route 53 hybrid DNS & Microsoft AD <br> - Lab 8: CloudWatch Metrics & Dashboards <br> - Lab 14: Ubuntu config setup <br> - Research: AWS Well-Architected Framework (6 pillars) | 31/01/2026 | 01/02/2026 | [Lab 8](https://000008.awsstudygroup.com/) <br> [Well-Architected Docs] |
 
 ### Week 2 Achievements
 

@@ -9,12 +9,12 @@
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Bảo mật truy cập cho Developer <br>&emsp; + Thiết lập Identity Federation với AWS Single Sign-On (SSO) <br>&emsp; + Gán các permission sets cho Dev team | 26/01/2026 | 26/01/2026 | [Identity Federation with SSO](https://000012.awsstudygroup.com) |
-| 2 | - Lập rào chắn IAM <br>&emsp; + Cấu hình IAM Permission Boundaries <br>&emsp; + Ngăn chặn lập trình viên tự động leo thang đặc quyền | 27/01/2026 | 27/01/2026 | [IAM Permission Boundaries](https://000030.awsstudygroup.com) |
-| 3 | - Thiết lập Authentication người dùng <br>&emsp; + Khởi tạo Amazon Cognito User Pool cho NutriTrack <br>&emsp; + Đặt chính sách mật khẩu và MFA cho end-users | 28/01/2026 | 28/01/2026 | [Auth with Cognito](https://000081.awsstudygroup.com/) |
-| 4 | - Identity Pools & Cấp quyền <br>&emsp; + Setup Cognito Identity Pool <br>&emsp; + Mapping IAM Roles tương ứng cho user đã đăng nhập và khách | 29/01/2026 | 29/01/2026 | [Cognito Auth Docs] |
-| 5 | - Danh tính xuyên dải mạng (Cross-Domain) <br>&emsp; + Thử nghiệm Cross-Domain Authentication với Amazon Cognito <br>&emsp; + Kiểm chứng token JWT được cấp phát | 30/01/2026 | 30/01/2026 | [Cross-Domain Cognito](https://000141.awsstudygroup.com) |
-| 6-7 | - Audit bảo mật & Đồng bộ <br>&emsp; + Kiểm toán các Lambda execution roles hiện có và cắt giảm đặc quyền dư thừa <br>&emsp; + Họp đồng bộ tiến độ định kỳ với Dev team | 31/01/2026 | 01/02/2026 | [Audit Logs] |
+| 1 | - Bảo mật truy cập cho Developer <br>&emsp; + Thiết lập Identity Federation với AWS Single Sign-On (SSO) <br>&emsp; + Gán các permission sets cho Dev team | 10/02/2026 | 10/02/2026 | [Identity Federation with SSO](https://000012.awsstudygroup.com) |
+| 2 | - Lập rào chắn IAM <br>&emsp; + Cấu hình IAM Permission Boundaries <br>&emsp; + Ngăn chặn lập trình viên tự động leo thang đặc quyền | 11/02/2026 | 11/02/2026 | [IAM Permission Boundaries](https://000030.awsstudygroup.com) |
+| 3 | - Thiết lập Authentication người dùng <br>&emsp; + Khởi tạo Amazon Cognito User Pool cho NutriTrack <br>&emsp; + Đặt chính sách mật khẩu và MFA cho end-users | 12/02/2026 | 12/02/2026 | [Auth with Cognito](https://000081.awsstudygroup.com/) |
+| 4 | - Identity Pools & Cấp quyền <br>&emsp; + Setup Cognito Identity Pool <br>&emsp; + Mapping IAM Roles tương ứng cho user đã đăng nhập và khách | 13/02/2026 | 13/02/2026 | [Cognito Auth Docs] |
+| 5 | - Danh tính xuyên dải mạng (Cross-Domain) <br>&emsp; + Thử nghiệm Cross-Domain Authentication với Amazon Cognito <br>&emsp; + Kiểm chứng token JWT được cấp phát | 14/02/2026 | 14/02/2026 | [Cross-Domain Cognito](https://000141.awsstudygroup.com) |
+| 6-7 | - Audit bảo mật & Đồng bộ <br>&emsp; + Kiểm toán các Lambda execution roles hiện có và cắt giảm đặc quyền dư thừa <br>&emsp; + Họp đồng bộ tiến độ định kỳ với Dev team | 15/02/2026 | 16/02/2026 | [Audit Logs] |
 
 ### Kết quả đạt được trong Tuần 4
 

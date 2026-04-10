@@ -9,12 +9,12 @@
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Khởi tạo Application Protection <br>&emsp; + Khởi tạo AWS WAF Web ACLs <br>&emsp; + Áp dụng Web ACLs lên CloudFront/API Gateway | 02/02/2026 | 02/02/2026 | [Application Protection with AWS WAF](https://000026.awsstudygroup.com) |
-| 2 | - Phòng chống rủi ro lõi <br>&emsp; + Import AWS Managed Rules (Core rule set, SQLi, XSS) <br>&emsp; + Tinh chỉnh rule để giảm thiểu cảnh báo sai (false positive) cho API | 03/02/2026 | 03/02/2026 |  |
-| 3 | - Ngăn chặn DDoS <br>&emsp; + Cấu hình Rate-based rules (VD: 500 requests / 5 mins) <br>&emsp; + Bật AWS Shield Standard chặn tấn công mạng Layer 3/4 | 04/02/2026 | 04/02/2026 |  |
-| 4 | - Lưu trữ Log và Phân tích WAF <br>&emsp; + Định tuyến WAF logs về CloudWatch / S3 <br>&emsp; + Thử nghiệm trực quan hóa lượng request | 05/02/2026 | 05/02/2026 | [CloudWatch Logs] |
-| 5 | - Kiểm thử WAF Policy <br>&emsp; + Giả lập payload độc hại với `curl` và Burp Suite <br>&emsp; + Xác nhận hệ thống trả về mã 403 Forbidden đúng quy trình | 06/02/2026 | 06/02/2026 |  |
-| 6-7 | - Tối ưu hóa Rules <br>&emsp; + Đọc log các requests bị block từ phía Dev <br>&emsp; + Chuyển đổi trạng thái từ Count sang Block ở các rule ổn định | 07/02/2026 | 08/02/2026 | [Audit Logs] |
+| 1 | - Khởi tạo Application Protection <br>&emsp; + Khởi tạo AWS WAF Web ACLs <br>&emsp; + Áp dụng Web ACLs lên CloudFront/API Gateway | 26/02/2026 | 26/02/2026 | [Application Protection with AWS WAF](https://000026.awsstudygroup.com) |
+| 2 | - Phòng chống rủi ro lõi <br>&emsp; + Import AWS Managed Rules (Core rule set, SQLi, XSS) <br>&emsp; + Tinh chỉnh rule để giảm thiểu cảnh báo sai (false positive) cho API | 27/02/2026 | 27/02/2026 |  |
+| 3 | - Ngăn chặn DDoS <br>&emsp; + Cấu hình Rate-based rules (VD: 500 requests / 5 mins) <br>&emsp; + Bật AWS Shield Standard chặn tấn công mạng Layer 3/4 | 28/02/2026 | 28/02/2026 |  |
+| 4 | - Lưu trữ Log và Phân tích WAF <br>&emsp; + Định tuyến WAF logs về CloudWatch / S3 <br>&emsp; + Thử nghiệm trực quan hóa lượng request | 01/03/2026 | 01/03/2026 | [CloudWatch Logs] |
+| 5 | - Kiểm thử WAF Policy <br>&emsp; + Giả lập payload độc hại với `curl` và Burp Suite <br>&emsp; + Xác nhận hệ thống trả về mã 403 Forbidden đúng quy trình | 02/03/2026 | 02/03/2026 |  |
+| 6-7 | - Tối ưu hóa Rules <br>&emsp; + Đọc log các requests bị block từ phía Dev <br>&emsp; + Chuyển đổi trạng thái từ Count sang Block ở các rule ổn định | 03/03/2026 | 04/03/2026 | [Audit Logs] |
 
 ### Kết quả đạt được trong Tuần 5
 

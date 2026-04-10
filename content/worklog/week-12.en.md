@@ -9,12 +9,12 @@
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Architecture Documentation <br>&emsp; + Finalized diagram showcasing the integration of WAF, Cognito, and API Gateway <br>&emsp; + Documented the Data-at-rest encryption flows using AWS KMS | 23/03/2026 | 23/03/2026 | [Draw.io / Visio] |
-| 2 | - Governance Handover <br>&emsp; + Walked the team through the AWS Security Hub dashboard <br>&emsp; + Handed over the Incident Response Playbook | 24/03/2026 | 24/03/2026 | [Internal Meeting] |
-| 3 | - Cost Evaluation <br>&emsp; + Evaluated the price-to-performance ratio for security tools (GuardDuty, Macie) <br>&emsp; + Ensured AWS Budgets were fully clear | 25/03/2026 | 25/03/2026 | [Cost and Usage Management](https://000064.awsstudygroup.com) |
-| 4 | - Report Compilation <br>&emsp; + Synthesized the 12-week worklog into the central Internship Report <br>&emsp; + Wrote reflections regarding the Cloud Security transition | 26/03/2026 | 26/03/2026 | [FCAJ Template] |
-| 5 | - Mentorship Review <br>&emsp; + Sent the final draft of the internship report to the mentor <br>&emsp; + Adjusted the technical verbosity based on feedback | 27/03/2026 | 27/03/2026 | [Feedback Doc] |
-| 6-7 | - Final Presentation <br>&emsp; + Delivered the Security Lifecycle closing presentation <br>&emsp; + Celebrated the completion of the FCJ Internship program | 28/03/2026 | 29/03/2026 | [Slide Deck] |
+| 1 | - Architecture Documentation <br>&emsp; + Finalized diagram showcasing the integration of WAF, Cognito, and API Gateway <br>&emsp; + Documented the Data-at-rest encryption flows using AWS KMS | 16/04/2026 | 16/04/2026 | [Draw.io / Visio] |
+| 2 | - Governance Handover <br>&emsp; + Walked the team through the AWS Security Hub dashboard <br>&emsp; + Handed over the Incident Response Playbook | 17/04/2026 | 17/04/2026 | [Internal Meeting] |
+| 3 | - Cost Evaluation <br>&emsp; + Evaluated the price-to-performance ratio for security tools (GuardDuty, Macie) <br>&emsp; + Ensured AWS Budgets were fully clear | 18/04/2026 | 18/04/2026 | [Cost and Usage Management](https://000064.awsstudygroup.com) |
+| 4 | - Report Compilation <br>&emsp; + Synthesized the 12-week worklog into the central Internship Report <br>&emsp; + Wrote reflections regarding the Cloud Security transition | 19/04/2026 | 19/04/2026 | [FCAJ Template] |
+| 5 | - Mentorship Review <br>&emsp; + Sent the final draft of the internship report to the mentor <br>&emsp; + Adjusted the technical verbosity based on feedback | 20/04/2026 | 20/04/2026 | [Feedback Doc] |
+| 6-7 | - Final Presentation <br>&emsp; + Delivered the Security Lifecycle closing presentation <br>&emsp; + Celebrated the completion of the FCJ Internship program | 21/04/2026 | 22/04/2026 | [Slide Deck] |
 
 ### Week 12 Achievements
 

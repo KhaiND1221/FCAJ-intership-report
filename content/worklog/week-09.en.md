@@ -9,12 +9,12 @@
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Centralized Posture <br>&emsp; + Enable AWS Security Hub <br>&emsp; + Ingest findings from GuardDuty, Macie, and WAF | 02/03/2026 | 02/03/2026 | [Security Compliance with AWS Security Hub](https://000018.awsstudygroup.com) |
-| 2 | - Compliance Benchmarking <br>&emsp; + Run CIS AWS Foundations Benchmark checks <br>&emsp; + Identity critical non-compliant resources (e.g., missing MFA, open security groups) | 03/03/2026 | 03/03/2026 | [CIS Benchmark] |
-| 3 | - Security Governance <br>&emsp; + Explore centralized WAF rule deployment via AWS Firewall Manager <br>&emsp; + Set consistent security policies across potential multi-account setups | 04/03/2026 | 04/03/2026 | [Security Governance with Firewall Manager](https://000097.awsstudygroup.com) |
-| 4 | - Vulnerability Scanning <br>&emsp; + Deploy Amazon Inspector for our EC2 Bastion host / batch containers <br>&emsp; + Review CVE severity rankings | 05/03/2026 | 05/03/2026 | [Systems Patching with EC2 Image Builder](https://000099.awsstudygroup.com) |
-| 5 | - Patch Management <br>&emsp; + Test automated patching pipelines <br>&emsp; + Enforce golden image compliance | 06/03/2026 | 06/03/2026 | [Systems Manager] |
-| 6-7 | - Pre-Audit Prep <br>&emsp; + Discuss Security Hub severity scores with the team <br>&emsp; + Assign remediation tasks for next week | 07/03/2026 | 08/03/2026 | [Internal Meeting] |
+| 1 | - Centralized Posture <br>&emsp; + Enable AWS Security Hub <br>&emsp; + Ingest findings from GuardDuty, Macie, and WAF | 26/03/2026 | 26/03/2026 | [Security Compliance with AWS Security Hub](https://000018.awsstudygroup.com) |
+| 2 | - Compliance Benchmarking <br>&emsp; + Run CIS AWS Foundations Benchmark checks <br>&emsp; + Identity critical non-compliant resources (e.g., missing MFA, open security groups) | 27/03/2026 | 27/03/2026 | [CIS Benchmark] |
+| 3 | - Security Governance <br>&emsp; + Explore centralized WAF rule deployment via AWS Firewall Manager <br>&emsp; + Set consistent security policies across potential multi-account setups | 28/03/2026 | 28/03/2026 | [Security Governance with Firewall Manager](https://000097.awsstudygroup.com) |
+| 4 | - Vulnerability Scanning <br>&emsp; + Deploy Amazon Inspector for our EC2 Bastion host / batch containers <br>&emsp; + Review CVE severity rankings | 29/03/2026 | 29/03/2026 | [Systems Patching with EC2 Image Builder](https://000099.awsstudygroup.com) |
+| 5 | - Patch Management <br>&emsp; + Test automated patching pipelines <br>&emsp; + Enforce golden image compliance | 30/03/2026 | 30/03/2026 | [Systems Manager] |
+| 6-7 | - Pre-Audit Prep <br>&emsp; + Discuss Security Hub severity scores with the team <br>&emsp; + Assign remediation tasks for next week | 31/03/2026 | 01/04/2026 | [Internal Meeting] |
 
 ### Week 9 Achievements
 
