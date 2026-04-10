@@ -20,6 +20,14 @@ Amazon Bedrock hiện cho phép người dùng truy cập trực tiếp các mô
 1.  **Xác định Mã định danh Mô hình (Model ID)**: Chọn mô hình Bedrock bạn muốn sử dụng và ghi nhận mã định danh duy nhất của nó.
 2.  **Sử dụng Thư viện Boto3**: Tích hợp thư viện `boto3` (AWS SDK for Python) vào dự án của bạn để thiết lập kết nối và gọi các API của Bedrock, truyền vào mã định danh mô hình đã xác định để tương tác và gửi yêu cầu đến mô hình.
 
+![Bedrock model access granted for Qwen3-VL](images/qwen3-vl-access.png)
+
+IAM policy được gắn vào Lambda `ai-engine` trong `backend/amplify/backend.ts` chỉ cấp quyền `bedrock:InvokeModel` trên đích danh ARN của mô hình này:
+
+```text
+arn:aws:bedrock:ap-southeast-2::foundation-model/qwen.qwen3-vl-235b-a22b
+```
+
 ### 3. Cảnh báo AWS Budgets
 
 Trước khi chạy bất kỳ lệnh nào, tạo một budget để Bedrock không làm bạn bất ngờ:

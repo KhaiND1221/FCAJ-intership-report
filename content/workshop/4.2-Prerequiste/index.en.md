@@ -20,6 +20,14 @@ Amazon Bedrock now allows users to directly access available models without requ
 1. **Identify the Model ID**: Select the Bedrock model you want to use and note its unique identifier.
 2. **Use the Boto3 Library**: Integrate the `boto3` library (AWS SDK for Python) into your project to establish a connection and call Bedrock APIs, passing the identified model ID to interact and send requests to the model.
 
+![Bedrock model access granted for Qwen3-VL](images/qwen3-vl-access.png)
+
+The IAM policy attached to the `ai-engine` Lambda in `backend/amplify/backend.ts` only grants `bedrock:InvokeModel` on this exact model ARN:
+
+```text
+arn:aws:bedrock:ap-southeast-2::foundation-model/qwen.qwen3-vl-235b-a22b
+```
+
 ### 3. AWS Budgets alert
 
 Before running any commands, create a budget so Bedrock usage does not surprise you:
