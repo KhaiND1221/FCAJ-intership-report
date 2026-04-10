@@ -20,7 +20,7 @@ Amazon Bedrock hiện cho phép người dùng truy cập trực tiếp các mô
 1.  **Xác định Mã định danh Mô hình (Model ID)**: Chọn mô hình Bedrock bạn muốn sử dụng và ghi nhận mã định danh duy nhất của nó.
 2.  **Sử dụng Thư viện Boto3**: Tích hợp thư viện `boto3` (AWS SDK for Python) vào dự án của bạn để thiết lập kết nối và gọi các API của Bedrock, truyền vào mã định danh mô hình đã xác định để tương tác và gửi yêu cầu đến mô hình.
 
-![Bedrock model access granted for Qwen3-VL](images/qwen3-vl-access.png)
+![Bedrock model access granted for Qwen3-VL](/FCAJ-intership-report/workshop-images/4.2-Prerequiste/take_Id_model.png)
 
 IAM policy được gắn vào Lambda `ai-engine` trong `backend/amplify/backend.ts` chỉ cấp quyền `bedrock:InvokeModel` trên đích danh ARN của mô hình này:
 
@@ -88,7 +88,7 @@ Cognito federate sang Google cho đăng nhập xã hội. Bạn cần một OAut
 5. Authorized redirect URIs: bạn sẽ thêm URL callback của Cognito Hosted UI sau khi phần 4.3 tạo user pool. Tạm thời để trống — bạn sẽ quay lại.
 6. Copy lại **Client ID** và **Client secret**.
 
-![Google OAuth Web client credentials](images/google-oauth-client.png)
+![Google OAuth Web client credentials](/FCAJ-intership-report/workshop-images/4.2-Prerequiste/image.png)
 
 Sau này, lưu chúng thành Amplify sandbox secret (chạy trong `backend/`):
 

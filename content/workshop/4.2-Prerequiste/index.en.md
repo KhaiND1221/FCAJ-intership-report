@@ -20,7 +20,7 @@ Amazon Bedrock now allows users to directly access available models without requ
 1. **Identify the Model ID**: Select the Bedrock model you want to use and note its unique identifier.
 2. **Use the Boto3 Library**: Integrate the `boto3` library (AWS SDK for Python) into your project to establish a connection and call Bedrock APIs, passing the identified model ID to interact and send requests to the model.
 
-![Bedrock model access granted for Qwen3-VL](images/take_Id_model.png)
+![Bedrock model access granted for Qwen3-VL](/FCAJ-intership-report/workshop-images/4.2-Prerequiste/take_Id_model.png)
 
 The IAM policy attached to the `ai-engine` Lambda in `backend/amplify/backend.ts` only grants `bedrock:InvokeModel` on this exact model ARN:
 
@@ -88,7 +88,7 @@ Cognito federates to Google for social sign-in. You need a Google OAuth 2.0 Web 
 5. Authorized redirect URIs: you will add the Cognito Hosted UI callback URL after section 4.3 creates the user pool. For now, leave it blank — you will return.
 6. Copy the **Client ID** and **Client secret**.
 
-![Google OAuth Web client credentials](images/image.png)
+![Google OAuth Web client credentials](/FCAJ-intership-report/workshop-images/4.2-Prerequiste/image.png)
 
 Store them as Amplify sandbox secrets later (from `backend/`):
 
