@@ -11,7 +11,7 @@
 | --- | --- | --- | --- | --- |
 | 1 | - Vulnerability Triage <br>&emsp; + Ranked findings and assigned tickets to the team <br>&emsp; + Prioritized the IDOR vulnerability | 16/03/2026 | 16/03/2026 | [Vulnerability Report] |
 | 2 | - IDOR Remediation <br>&emsp; + Modified Lambda logic to compare Cognito JWT Claims against the requested Identity ID <br>&emsp; + Wrote unit tests confirming access denial on mismatch | 17/03/2026 | 17/03/2026 | [AWS Lambda Auth context] |
-| 3 | - API Hardening <br>&emsp; + Removed verbose error tracebacks from API Gateway mapping templates <br>&emsp; + Implemented generic "500 Internal Server Error" responses for exceptions | 18/03/2026 | 18/03/2026 | [API Gateway Models] |
+| 3 | ⭐ **EVENT:** AWS Cloud Mastery 3 (FPT Uni) <br>&emsp; - Presentation Deck Draft <br>&emsp; + Extracted the major architecture flow diagrams built earlier. <br>&emsp; + Summarized our Qwen3-VL 235B multimodal architecture strategy. | 18/03/2026 | 18/03/2026 | - |
 | 4 | - WAF Rules Tuning <br>&emsp; + Reviewed WAF logs from the Pen-test phase <br>&emsp; + Refined rate-limiting IP exclusions for our CI/CD pipelines | 19/03/2026 | 19/03/2026 | [AWS WAF Console] |
 | 5 | - Playbook Drafting <br>&emsp; + Drafted the initial Incident Response (IR) Playbook <br>&emsp; + Documented steps for disabling compromised IAM/Cognito credentials | 20/03/2026 | 20/03/2026 | [IR Playbook Template] |
 | 6-7 | - Remediation Testing <br>&emsp; + Conducted a final re-scan and manual test of the patched endpoints <br>&emsp; + Closed the vulnerabilities on our internal tracker | 21/03/2026 | 22/03/2026 | [Re-validation Logs] |

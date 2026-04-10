@@ -11,7 +11,7 @@
 | --- | --- | --- | --- | --- |
 | 1 | - Khởi tạo Trinh sát Bảo mật <br>&emsp; + Bật AWS GuardDuty cho tài khoản thực tập <br>&emsp; + Thiết lập mức baseline cho hành vi tài nguyên | 16/02/2026 | 16/02/2026 | [Threat Detection with GuardDuty](https://000098.awsstudygroup.com) |
 | 2 | - Giám sát luồng mạng <br>&emsp; + Bật VPC Flow Logs cho Backend VPC chính yếu <br>&emsp; + Đẩy dữ liệu Flow Logs về CloudWatch | 17/02/2026 | 17/02/2026 | [Network Monitoring with VPC Flow Logs](https://000074.awsstudygroup.com) |
-| 3 | - Đo đạc Nâng cao <br>&emsp; + Thiết lập Advanced Monitoring với CloudWatch Metrics <br>&emsp; + Dựng Dashboard quan sát tổng thể | 18/02/2026 | 18/02/2026 | [Advanced Monitoring with CloudWatch](https://000029.awsstudygroup.com) |
+| 3 | ⭐ **SỰ KIỆN:** AWS Cloud Mastery 1 <br>&emsp; - Advanced Output Formatting <br>&emsp; + Trí mạng Sonnet phải trả về array chứa các trường JSON gắt gao gồm `macros`, `steps`, và `why_this`. | 18/02/2026 | 18/02/2026 | - |
 | 4 | - Hệ thống Báo động <br>&emsp; + Triển khai Amazon Simple Notification Service (SNS) <br>&emsp; + Nối SNS với webhook của NeuraX Discord nội bộ | 19/02/2026 | 19/02/2026 | [Messaging Systems with SNS](https://000077.awsstudygroup.com) |
 | 5 | - Căng bẫy sự kiện <br>&emsp; + Viết luật EventBridge định tuyến các phát hiện nghiêm trọng của GuardDuty sang SNS <br>&emsp; + Cài báo động CloudWatch nếu API Gateway trả về quá nhiều lỗi 4xx/5xx | 20/02/2026 | 20/02/2026 | [CloudWatch Advanced Workshop](https://000036.awsstudygroup.com) |
 | 6-7 | - Thử nghiệm Mô phỏng <br>&emsp; + Chạy các lệnh API bất thường (Quét cổng/Brute force) từ một IP ngoài <br>&emsp; + Xác nhận tin nhắn báo động nổ về kênh chat | 21/02/2026 | 22/02/2026 | [Kiểm thử Nội bộ] |

@@ -209,4 +209,4 @@ aws s3 ls "s3://$BUCKET/incoming/<IDENTITY_ID>/" --region ap-southeast-2
 
 The file should appear. Twenty-four hours later, the lifecycle rule removes it — you can verify by checking the object's `Expires` header via `head-object`.
 
-With the bucket in place and verified, phase 4.3 is complete. Continue to [`../../4.4-Monitoring-Setup/`](../../4.4-Monitoring-Setup/) to wire up the GraphQL API and DynamoDB models.
+With the bucket in place and verified, phase 4.3 is complete. Continue to [4.4 Monitoring Setup](/workshop/4.4-Monitoring-Setup) to wire up the GraphQL API and DynamoDB models.

@@ -1,63 +1,63 @@
-## Giai đoạn 5: Frontend React Native
+# 4.7 Frontend — Expo, UI, Giọng Nói & Camera
 
-Trong giai đoạn này, bạn sẽ xây dựng ứng dụng di động React Native (Expo) — giao diện người dùng của NutriTrack với hỗ trợ song ngữ, phân tích đồ ăn AI, và gamification.
+Frontend mobile của NutriTrack được xây dựng với Expo SDK 54, React Native 0.81, và React 19. Sử dụng file-based routing qua Expo Router 6, Zustand 5 cho state, và Amplify JS client (`aws-amplify` ^6.16) cho tất cả lệnh gọi backend. Cài đặt yêu cầu `--legacy-peer-deps` (được enforce bởi `frontend/.npmrc`) do xung đột peer dependency giữa React 19 và một số package transitional.
 
-#### Bước 1: Khởi tạo Expo Project
+## Cấu trúc thư mục
+
+```text
+frontend/
+  app/                     # Expo Router — mỗi file là một route
+    _layout.tsx            # Root: LanguageProvider, GestureHandlerRootView, auth guard
+    (tabs)/
+      _layout.tsx          # Tab bar với 6 tab + nút "+" ở giữa
+      home.tsx             # Dashboard: macro ngày, streak, pet Ollie
+      kitchen.tsx          # Tủ lạnh + gợi ý công thức AI
+      battle.tsx           # Bảng xếp hạng bạn bè + thử thách
+      ai-coach.tsx         # Chat với Ollie
+      progress.tsx         # Biểu đồ dinh dưỡng tuần/tháng
+      add.tsx              # Log bữa ăn: ảnh, giọng nói, thủ công
+    welcome.tsx            # Onboarding / landing
+    login.tsx              # Email+password + Google OAuth
+    signup.tsx             # Form đăng ký
+    verify-otp.tsx         # Xác thực OTP email
+  src/
+    store/                 # Zustand stores (authStore, userStore, mealStore, ...)
+    services/              # Business logic (authService, aiService, audioService, ...)
+    lib/amplify.ts         # Amplify.configure() — import side-effect trong _layout
+    i18n/                  # LanguageProvider + translations (vi/en)
+    security/              # Xác thực sinh trắc, chống chụp màn hình, validation đầu vào
+    constants/             # colors.ts, typography.ts
+  assets/                  # Hình ảnh, fonts
+  MANHINH/                 # Video pet evolution 1.mp4–5.mp4
+  amplify_outputs.json     # Tự động tạo theo môi trường — KHÔNG sửa thủ công
+  package.json
+  .npmrc                   # legacy-peer-deps=true
+```
+
+## Khởi động nhanh
 
 ```bash
-cd NutriTrack
-npx create-expo-app frontend --template blank-typescript
 cd frontend
-npm install --legacy-peer-deps
+npm install                # --legacy-peer-deps đã được .npmrc enforce
+npm start                  # Khởi động Metro; scan QR bằng Expo Go
 ```
 
-#### Bước 2: Cấu hình Amplify Client
-
-Tạo `frontend/src/lib/amplify.ts` và import trong root layout.
-
-#### Bước 3: Kiến trúc App (Expo Router)
-
-```
-frontend/app/
-├── _layout.tsx           # Root: Auth guard + LanguageProvider
-├── (tabs)/
-│   ├── home.tsx          # Dashboard: macros hàng ngày, streak, thú cưng
-│   ├── kitchen.tsx       # Quản lý tủ lạnh + gợi ý công thức AI
-│   ├── battle.tsx        # Thử thách & bảng xếp hạng
-│   ├── ai-coach.tsx      # Chat với AI coach "Ollie"
-│   └── progress.tsx      # Biểu đồ dinh dưỡng tuần/tháng
-├── add.tsx               # Ghi nhật ký: ảnh, giọng nói, thủ công, mã vạch
-├── welcome.tsx           # Màn hình giới thiệu
-├── login.tsx             # Email/mật khẩu + Google OAuth
-└── verify-otp.tsx        # Xác nhận OTP email
-```
-
-#### Bước 4: Quản lý State (Zustand)
-
-Tạo stores trong `frontend/src/store/`: `authStore`, `userStore`, `foodStore`, `mealStore`, `fridgeStore`, `settingsStore`.
-
-#### Bước 5: Tích hợp Dịch vụ AI
-
-Tạo `frontend/src/services/aiService.ts` với 10 actions thông qua AppSync client.
-
-#### Bước 6: Hỗ trợ Song ngữ (i18n)
-
-Vietnamese làm ngôn ngữ mặc định, toggle English qua `LanguageProvider`.
-
-#### Bước 7: Design System
-
-- Primary: Dark Navy `#1B2838`
-- Accent: Green `#2ECC71`
-- Font: Inter, Roboto
-
-#### Xác nhận
+Cho native dev build (cần thiết cho xác thực sinh trắc — Expo Go sandbox không hỗ trợ):
 
 ```bash
-cd frontend && npm start
+npm run android            # expo run:android
+npm run ios                # expo run:ios
 ```
 
-1. Xác nhận luồng auth: Welcome → Login → Home
-2. Test phân tích ảnh đồ ăn: Camera → Chụp → Kiểm tra AI response
-3. Xác nhận toggle song ngữ hoạt động trên tất cả màn hình
+Cho web:
 
-> 🎯 **Checkpoint:** App di động chạy, xác thực qua Cognito, và phân tích ảnh đồ ăn thành công qua AI engine.
+```bash
+npm run web                # expo start --web
+npm run build              # expo export --platform web → dist/
+```
+
+## Các trang con
+
+- [4.7.1 Cài Đặt Expo](/workshop/4.7.1-ReactNative) — khởi tạo dự án, cấu hình Amplify, auth guard, routing.
+- [4.7.2 UI Components](/workshop/4.7.2-UIComponents) — design token, cấu trúc tab, pattern Zustand, i18n, pet evolution.
+- [4.7.3 Giọng Nói & Camera](/workshop/4.7.3-Voice-Camera) — camera → S3 → resizeImage → aiEngine, giọng nói → Transcribe → food log.

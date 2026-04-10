@@ -252,7 +252,7 @@ Khi không có mục nào trong trang này khớp, đi theo list dưới đây, 
 3. **Set CloudWatch log retention** cho mọi log group (mặc định *Never expire*, vừa tốn tiền vừa vô ích). Hai tuần là default tốt cho non-production.
 4. **Tag mọi resource** với `Project=NutriTrack` và `Environment=sandbox|staging|prod`. Giúp track cost và cleanup dễ hơn.
 5. **Chạy AWS CLI với `--debug`** khi một call hành xử bất thường. Full signed request và raw response giúp phân biệt lỗi policy hay lỗi config.
-6. **So sánh IAM statement** với [4.11.2 IAM Policies](../4.11.2-IAM-Policies/). Nếu một statement bị thiếu, retry ở tầng code không cứu được.
+6. **So sánh IAM statement** với [4.11.2 IAM Policies](/workshop/4.11.2-IAM-Policies). Nếu một statement bị thiếu, retry ở tầng code không cứu được.
 7. **Check region** hai lần. NutriTrack pin Bedrock vào `ap-southeast-2` — service khác có thể theo region khác, Bedrock thì không.
 
 Nếu làm hết checklist vẫn stuck, capture lại lỗi, lệnh chính xác, region và Lambda request ID rồi file issue.

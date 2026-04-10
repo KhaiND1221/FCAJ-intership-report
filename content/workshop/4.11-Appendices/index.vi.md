@@ -6,10 +6,10 @@ Mọi phụ lục đều có thể truy ngược về một file trong `backend/
 
 ## Nội dung
 
-- [4.11.1 Budget Breakdown](4.11.1-Budget-Breakdown/) — Bảng dự toán chi phí hàng tháng chi tiết cho triển khai 1.000 người dùng, chia theo từng dịch vụ AWS, có cấn trừ free tier và ghi chú khi scale. *(Nội dung được duy trì riêng — đang chờ export CSV từ worksheet pricing.)*
-- [4.11.2 IAM Policies](4.11.2-IAM-Policies/) — Toàn bộ JSON policy cho từng Lambda execution role và bucket resource policy trên S3, trích nguyên văn từ `backend.ts`.
-- [4.11.3 Troubleshooting](4.11.3-Troubleshooting/) — Runbook phân loại theo nhóm: triệu chứng lỗi thường gặp, nguyên nhân gốc, và chính xác lệnh hoặc file cần sửa.
-- [4.11.4 Prompt Templates](4.11.4-Prompt-Templates/) — Các system prompt thực tế đang chạy trong `ai-engine/handler.ts`, mỗi prompt ứng với một action, kèm input variables và output schema.
+- [4.11.1 Budget Breakdown](/workshop/4.11.1-Budget-Breakdown) — Bảng dự toán chi phí hàng tháng chi tiết cho triển khai 1.000 người dùng, chia theo từng dịch vụ AWS, có cấn trừ free tier và ghi chú khi scale. *(Nội dung được duy trì riêng — đang chờ export CSV từ worksheet pricing.)*
+- [4.11.2 IAM Policies](/workshop/4.11.2-IAM-Policies) — Toàn bộ JSON policy cho từng Lambda execution role và bucket resource policy trên S3, trích nguyên văn từ `backend.ts`.
+- [4.11.3 Troubleshooting](/workshop/4.11.3-Troubleshooting) — Runbook phân loại theo nhóm: triệu chứng lỗi thường gặp, nguyên nhân gốc, và chính xác lệnh hoặc file cần sửa.
+- [4.11.4 Prompt Templates](/workshop/4.11.4-Prompt-Templates) — Các system prompt thực tế đang chạy trong `ai-engine/handler.ts`, mỗi prompt ứng với một action, kèm input variables và output schema.
 
 ## Cách đọc các trang này
 

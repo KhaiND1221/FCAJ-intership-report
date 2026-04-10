@@ -4,7 +4,7 @@ Giai đoạn này cắm backend vào CI/CD quản lý của Amplify Hosting và 
 
 ## Ba môi trường
 
-NutriTrack chạy ba backend Amplify song song. Mỗi môi trường có Cognito pool, AppSync API, bảng DynamoDB, Lambda function và S3 bucket riêng. Tên chính xác lấy từ deployment thật được ghi lại trong `TEMPLATE/neurax-web-app/CLAUDE.md`.
+NutriTrack chạy ba backend Amplify song song. Mỗi môi trường có Cognito pool, AppSync API, bảng DynamoDB, Lambda function và S3 bucket riêng. Tên chính xác lấy từ deployment thật được ghi lại trong `CLAUDE.md` ([view](https://github.com/NeuraX-HQ/neurax-web-app/blob/main/CLAUDE.md)).
 
 | Môi trường             | Kích hoạt                          | Tiền tố tên Lambda           | Hậu tố tên bảng DynamoDB     |
 | ---------------------- | ---------------------------------- | ---------------------------- | ---------------------------- |
@@ -22,7 +22,7 @@ Mỗi model DynamoDB (`Food`, `user`, `FoodLog`, …) tồn tại ba lần, mỗ
 
 ## File `amplify.yml`
 
-Amplify Hosting đọc `amplify.yml` ở gốc repo. File thật nằm tại `TEMPLATE/neurax-web-app/amplify.yml`:
+Amplify Hosting đọc `amplify.yml` ở gốc repo. File thật nằm tại `amplify.yml` ([view](https://github.com/NeuraX-HQ/neurax-web-app/blob/main/amplify.yml)):
 
 ```yaml
 version: 1
@@ -77,7 +77,7 @@ frontend:
 ### Những điểm quan trọng cần chú ý
 
 1. **Mỗi Lambda subfolder có `package.json` riêng.** Build spec đi vào từng thư mục và chạy `npm install --include=dev` trước khi Amplify CLI đóng gói function. Nếu bạn thêm Lambda thứ năm, phải thêm khối `cd / npm install / cd ../..` tương ứng ở đây, nếu không build sẽ lỗi "Cannot find module" lúc deploy.
-2. **`--legacy-peer-deps` là bắt buộc** cho cả `backend/` và `frontend/`. Expo SDK 54 + React 19 + `@react-three/fiber` tạo ra xung đột peer-dep mà resolver mặc định từ chối. Ràng buộc này được enforce trong `frontend/.npmrc`.
+2. **`--legacy-peer-deps` là bắt buộc** cho cả `backend/` và `frontend/`. Expo SDK 54 + React 19 tạo ra xung đột peer-dep mà npm resolver mặc định từ chối. Ràng buộc này được enforce trong `frontend/.npmrc`.
 3. **`npx ampx pipeline-deploy`** là lệnh CI của Gen 2. Nó đọc `$AWS_BRANCH` và `$AWS_APP_ID` (Amplify Hosting inject) và deploy CDK app trong `backend/amplify/` vào CloudFormation stack của môi trường.
 4. **`--outputs-out-dir ../frontend`** ghi `amplify_outputs.json` ngay cạnh app Expo. Bước build frontend sau đó tự pick lên — không cần thao tác tay.
 5. **`cache.paths`** giữ ấm cả bảy `node_modules/` giữa các lần build. Lần build đầu của một branch chậm; các lần sau chỉ tính bằng phút, không phải hàng chục phút.
@@ -173,6 +173,79 @@ aws cloudformation list-stacks \
 ```
 
 Nếu deploy lỗi, đọc log Amplify Console từ đầu đến cuối. Hai lỗi phổ biến nhất: (a) thiếu `npm install` cho Lambda mới, và (b) Bedrock chưa được cấp quyền ở `ap-southeast-2` — IAM policy trong `backend.ts` vẫn deploy được, nhưng runtime sẽ lỗi `AccessDeniedException`.
+
+## Mobile CI/CD với EAS
+
+Trong khi Amplify Hosting xử lý pipeline web và backend, native mobile app (`.apk` cho Android, `.ipa` cho iOS) được build và phân phối thông qua **EAS (Expo Application Services)** — dịch vụ build cloud được quản lý bởi Expo.
+
+### EAS Build Profile
+
+EAS dùng ba build profile được định nghĩa trong `eas.json` tại gốc `frontend/`:
+
+| Profile | Loại build | Mục tiêu |
+| --- | --- | --- |
+| `development` | `developmentClient` | Thiết bị developer — test với sandbox local |
+| `preview` | `apk` / `ad-hoc` | Nhóm QA — phân phối nội bộ |
+| `production` | `store` | Nộp App Store / Google Play |
+
+#### Development
+
+Profile `development` build kèm `expo-dev-client`, tích hợp developer menu và cho phép app kết nối đến Metro bundler local của bạn. Đây là profile bạn cài lên thiết bị khi test với `npx ampx sandbox`:
+
+```json
+// eas.json
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    }
+  }
+}
+```
+
+Build và cài lên thiết bị Android đã kết nối:
+
+```bash
+cd frontend
+eas build --profile development --platform android
+```
+
+EAS trả về link tải `.apk`. Cài một lần — sau đó chạy `npx expo start --dev-client` để kết nối với Metro server local cho fast refresh mà không cần build lại.
+
+#### Preview và Production
+
+Profile `preview` và `production` bật **auto-increment versioning** — EAS đọc `versionCode` / `buildNumber` hiện tại và tự nâng lên mỗi lần build để không bao giờ ship trùng version code:
+
+```json
+"preview": {
+  "distribution": "internal",
+  "android": { "buildType": "apk" }
+},
+"production": {
+  "autoIncrement": true
+}
+```
+
+**OTA (Over The Air) update** qua `expo-updates` cho phép push bản vá JavaScript lên thiết bị mà không cần qua vòng xét duyệt app store. Sau khi merge fix chỉ liên quan JS vào `main`:
+
+```bash
+eas update --branch production --message "Fix nutrition calculation"
+```
+
+Thiết bị chạy production build tự kiểm tra update khi mở app tiếp theo và áp dụng bundle mới trong im lặng. OTA update giới hạn ở thay đổi JavaScript — thêm native module yêu cầu build EAS đầy đủ và nộp lên store.
+
+### EAS vs Amplify Hosting
+
+| Mối quan tâm | Amplify Hosting | EAS |
+| --- | --- | --- |
+| Build web dashboard | ✅ | — |
+| Backend (Lambda, DynamoDB) | ✅ | — |
+| Android `.apk` / iOS `.ipa` | — | ✅ |
+| OTA cập nhật JS | — | ✅ |
+| Quản lý secret | Amplify Console Secrets | EAS Secrets |
+
+Hai pipeline chạy độc lập. Push lên `main` kích hoạt Amplify Hosting cho backend và web; EAS build được kích hoạt thủ công hoặc qua `eas build` trong CI workflow riêng.
 
 ## Rollback
 

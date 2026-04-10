@@ -1,10 +1,10 @@
 # 4.5 Compute & AI — Lambda và Bedrock
 
-Phần này nói về tầng compute của NutriTrack: bốn Lambda function cộng Amazon Bedrock. Kết hợp lại, chúng biến tấm ảnh tô phở thành một bản ghi nutrition có cấu trúc, trả lời câu hỏi coaching tiếng Việt, và giữ bucket ảnh gọn gàng.
+Phần này nói về tầng compute của NutriTrack: năm Lambda function cộng Amazon Bedrock. Kết hợp lại, chúng biến tấm ảnh tô phở thành một bản ghi nutrition có cấu trúc, trả lời câu hỏi coaching tiếng Việt, proxy phân tích ảnh qua ECS, và giữ bucket ảnh gọn gàng.
 
-## Bốn Lambda
+## Năm Lambda
 
-Cả bốn nằm dưới `backend/amplify/*` và được đăng ký trong `defineBackend` ở `backend.ts`. Tất cả chạy **Node.js 22 trên ARM64** — không ngoại lệ.
+Cả năm nằm dưới `backend/amplify/*` và được đăng ký trong `defineBackend` ở `backend.ts`. Tất cả chạy **Node.js 22 trên ARM64** — không ngoại lệ.
 
 | Function | Entry | Memory | Timeout | Resource group | Trigger |
 | --- | --- | --- | --- | --- | --- |
@@ -12,6 +12,7 @@ Cả bốn nằm dưới `backend/amplify/*` và được đăng ký trong `defi
 | `process-nutrition` | `process-nutrition/handler.ts` | 512 MB | 30 s | `data` | AppSync query `processNutrition` |
 | `friend-request` | `friend-request/handler.ts` | (mặc định) | (mặc định) | (mặc định) | AppSync mutation `friendRequest` |
 | `resize-image` | `resize-image/handler.ts` | 512 MB | (mặc định) | `storage` | S3 `ObjectCreated` trên `incoming/` |
+| `scan-image` | `scan-image/handler.ts` | 512 MB | 30 s | (mặc định) | AppSync query `scanImage` |
 
 `resourceGroupName` rất quan trọng: nó cho Amplify biết Lambda thuộc stack CloudFormation nào. `storage` = cùng stack với S3 bucket (tránh circular dep), `data` = cùng stack với bảng DynamoDB. `friend-request` và `ai-engine` nằm ở stack gốc.
 
@@ -34,6 +35,7 @@ flowchart LR
     ProcNut[process-nutrition<br/>Node 22 / 512 MB / 30s]
     FriendReq[friend-request<br/>Node 22]
     ResizeImg[resize-image<br/>Node 22 / 512 MB]
+    ScanImg[scan-image<br/>Node 22 / 512 MB / 30s]
   end
 
   subgraph AI
@@ -41,15 +43,21 @@ flowchart LR
     Transcribe[Amazon Transcribe<br/>vi-VN]
   end
 
+  subgraph Container
+    ECS[ECS Fargate FastAPI<br/>/analyze-food<br/>/analyze-label<br/>/scan-barcode]
+  end
+
   subgraph Storage
     S3[(S3 bucket)]
     DDB[(DynamoDB<br/>Food, user, Friendship)]
+    SecretsManager[(Secrets Manager)]
   end
 
   App --> AppSync
   AppSync --> AiEngine
   AppSync --> ProcNut
   AppSync --> FriendReq
+  AppSync --> ScanImg
   S3 -->|ObjectCreated incoming/*| ResizeImg
 
   AiEngine --> Bedrock
@@ -59,6 +67,9 @@ flowchart LR
   ProcNut --> Bedrock
   FriendReq --> DDB
   ResizeImg --> S3
+  ScanImg --> S3
+  ScanImg --> SecretsManager
+  ScanImg -->|JWT Bearer| ECS
 ```
 
 ## Model Bedrock chuẩn
@@ -80,9 +91,10 @@ Mỗi system prompt trong `ai-engine/handler.ts` đều bắt đầu bằng `You
 
 ## Trang con
 
-- [4.5.1 Bedrock — model access, pricing, IAM, cấu trúc invoke](4.5.1-Bedrock/)
-- [4.5.2 AIEngine — Lambda orchestrator 10 action](4.5.2-AIEngine/)
-- [4.5.3 ProcessNutrition — hybrid DB + Bedrock fuzzy lookup](4.5.3-ProcessNutrition/)
-- [4.5.4 ResizeImage — resize ảnh bằng sharp, trigger từ S3](4.5.4-ResizeImage/)
+- [4.5.1 Bedrock — model access, pricing, IAM, cấu trúc invoke](/workshop/4.5.1-Bedrock)
+- [4.5.2 AIEngine — Lambda orchestrator 9 action](/workshop/4.5.2-AIEngine)
+- [4.5.3 ProcessNutrition — hybrid DB + Bedrock fuzzy lookup](/workshop/4.5.3-ProcessNutrition)
+- [4.5.4 ResizeImage — resize ảnh bằng sharp, trigger từ S3](/workshop/4.5.4-ResizeImage)
+- [4.5.5 ScanImage — proxy xử lý ảnh đến ECS FastAPI](/workshop/4.5.5-ScanImage)
 
-Kế tiếp: [4.6 Automation Setup](../4.6-Automation-Setup/).
+Kế tiếp: [4.6 Automation Setup](/workshop/4.6-Automation-Setup).

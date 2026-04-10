@@ -252,4 +252,4 @@ Fix: install the Windows build toolchain or use WSL2. The workshop assumes WSL2 
 Symptom: stack enters `ROLLBACK_COMPLETE`.
 Fix: read the failure reason in the console. The most common cause is an IAM permission gap in your profile — the profile must be able to create User Pools, IAM roles, S3 buckets, and Lambda functions. `AdministratorAccess` (sandbox only) avoids the problem.
 
-When all checks pass, continue to [4.3.2 Cognito Auth](../4.3.2-Cognito-Auth/).
+When all checks pass, continue to [4.3.2 Cognito Auth](/workshop/4.3.2-Cognito-Auth).

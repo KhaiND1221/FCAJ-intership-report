@@ -27,10 +27,10 @@ Amplify CLI chạy TypeScript, bên dưới synth thành một CDK app, và subm
 
 ## Điều kiện tiên quyết
 
-Trước khi bắt đầu 4.3, hãy xác nhận các mục trong [`../4.2-Prerequiste/`](../4.2-Prerequiste/) đều đã xong:
+Trước khi bắt đầu 4.3, hãy xác nhận các mục trong [4.2 Điều Kiện Tiên Quyết](/workshop/4.2-Prerequiste) đều đã xong:
 
 - AWS CLI v2 đã cấu hình profile có quyền `AdministratorAccess` (chỉ sandbox).
-- Node.js 20 LTS trở lên. Lambda runtime của Amplify Gen 2 là Node.js 22, nhưng bản thân CLI chạy trên Node của máy bạn.
+- Node.js 22 trở lên. Lambda runtime của Amplify Gen 2 là Node.js 22, nhưng bản thân CLI chạy trên Node của máy bạn.
 - `npm` 10+.
 - Một AWS account ở region hỗ trợ Bedrock Qwen3-VL. Workshop này ghim toàn bộ về `ap-southeast-2` (Sydney).
 - Một Google Cloud project đã cấu hình OAuth consent screen (OAuth client sẽ tạo ở 4.3.2).
@@ -39,9 +39,9 @@ Trước khi bắt đầu 4.3, hãy xác nhận các mục trong [`../4.2-Prereq
 
 | Mục | Nội dung | Thời gian |
 | --- | --- | --- |
-| [4.3.1 Amplify Init](4.3.1-Amplify-Init/) | Tạo `backend/`, cài dependencies, chạy sandbox lần đầu | 30 phút |
-| [4.3.2 Cognito Auth](4.3.2-Cognito-Auth/) | Email + Google OAuth, callback URL, luồng OTP | 45 phút |
-| [4.3.3 S3 Storage](4.3.3-S3-Storage/) | Bốn prefix, lifecycle escape hatch, test upload | 30 phút |
+| [4.3.1 Amplify Init](/workshop/4.3.1-Amplify-Init) | Tạo `backend/`, cài dependencies, chạy sandbox lần đầu | 30 phút |
+| [4.3.2 Cognito Auth](/workshop/4.3.2-Cognito-Auth) | Email + Google OAuth, callback URL, luồng OTP | 45 phút |
+| [4.3.3 S3 Storage](/workshop/4.3.3-S3-Storage) | Bốn prefix, lifecycle escape hatch, test upload | 30 phút |
 
 Tổng thời gian dự kiến: **90 đến 120 phút** trên máy mới, khoảng một nửa nếu AWS CLI đã đăng nhập sẵn.
 
@@ -51,4 +51,4 @@ Tổng thời gian dự kiến: **90 đến 120 phút** trên máy mới, khoả
 - Một CloudFormation stack trong console `ap-southeast-2` với status `CREATE_COMPLETE` và khoảng 25 đến 35 resource.
 - `aws s3 ls` hiển thị một bucket có tên bắt đầu bằng `amplify-nutritracktdtp2-...-nutritrackmediabucket...`.
 
-Nếu thiếu bất kỳ mục nào khi hoàn thành 4.3.3, hãy dừng lại và xử lý trước khi sang [`../4.4-Monitoring-Setup/`](../4.4-Monitoring-Setup/) — các phase data và Lambda đều giả định cả ba đã tồn tại.
+Nếu thiếu bất kỳ mục nào khi hoàn thành 4.3.3, hãy dừng lại và xử lý trước khi sang [4.4 Monitoring Setup](/workshop/4.4-Monitoring-Setup) — các phase data và Lambda đều giả định cả ba đã tồn tại.

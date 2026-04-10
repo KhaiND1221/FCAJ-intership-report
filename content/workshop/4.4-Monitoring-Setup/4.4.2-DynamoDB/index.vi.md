@@ -185,5 +185,5 @@ Chạy một lần mỗi môi trường sau khi `npx ampx sandbox` provision xon
 
 ## Liên kết
 
-- Schema sinh ra các bảng: [4.4.1 AppSync](../4.4.1-AppSync/)
-- Lambda truy cập bảng trực tiếp: [4.5.3 ProcessNutrition](../../4.5-Processing-Setup/4.5.3-ProcessNutrition/)
+- Schema sinh ra các bảng: [4.4.1 AppSync](/workshop/4.4.1-AppSync)
+- Lambda truy cập bảng trực tiếp: [4.5.3 ProcessNutrition](/workshop/4.5.3-ProcessNutrition)

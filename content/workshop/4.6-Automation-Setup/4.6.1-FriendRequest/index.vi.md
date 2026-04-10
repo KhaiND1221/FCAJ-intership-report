@@ -464,4 +464,4 @@ async function acceptFriendRequest(friendshipId: string) {
 
 ## Tiếp theo
 
-- [4.6.2 — Realtime Subscriptions](../4.6.2-Realtime-Subscriptions/)
+- [4.6.2 — Realtime Subscriptions](/workshop/4.6.2-Realtime-Subscriptions)

@@ -209,4 +209,4 @@ aws s3 ls "s3://$BUCKET/incoming/<IDENTITY_ID>/" --region ap-southeast-2
 
 File sẽ xuất hiện. Sau 24 giờ lifecycle rule sẽ xóa — bạn có thể verify bằng cách xem header `Expires` của object qua `head-object`.
 
-Bucket đã có và đã verify, phase 4.3 hoàn tất. Tiếp tục sang [`../../4.4-Monitoring-Setup/`](../../4.4-Monitoring-Setup/) để wire up GraphQL API và các model DynamoDB.
+Bucket đã có và đã verify, phase 4.3 hoàn tất. Tiếp tục sang [4.4 Monitoring Setup](/workshop/4.4-Monitoring-Setup) để wire up GraphQL API và các model DynamoDB.

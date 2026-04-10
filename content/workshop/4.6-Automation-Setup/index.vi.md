@@ -53,8 +53,8 @@ Trường `linked_id` là mảnh ghép quan trọng: mỗi hàng lưu UUID của
 
 ## Nội dung trong mục này
 
-- [4.6.1 — FriendRequest Lambda](4.6.1-FriendRequest/) — custom resolver, inject env var qua CDK escape hatch, năm action, IAM.
-- [4.6.2 — Realtime Subscriptions](4.6.2-Realtime-Subscriptions/) — subscription của AppSync, các flow dùng, chi phí và cách giới hạn phạm vi.
+- [4.6.1 — FriendRequest Lambda](/workshop/4.6.1-FriendRequest) — custom resolver, inject env var qua CDK escape hatch, năm action, IAM.
+- [4.6.2 — Realtime Subscriptions](/workshop/4.6.2-Realtime-Subscriptions) — subscription của AppSync, các flow dùng, chi phí và cách giới hạn phạm vi.
 
 ## Điều kiện tiên quyết
 

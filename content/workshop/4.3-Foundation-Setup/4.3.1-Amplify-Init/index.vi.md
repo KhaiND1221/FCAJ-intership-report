@@ -252,4 +252,4 @@ Cách sửa: cài toolchain build của Windows hoặc dùng WSL2. Workshop này
 Triệu chứng: stack vào trạng thái `ROLLBACK_COMPLETE`.
 Cách sửa: đọc lý do lỗi trong console. Thường là do profile thiếu quyền IAM — profile phải tạo được User Pool, IAM role, S3 bucket, Lambda. `AdministratorAccess` (chỉ sandbox) tránh vấn đề này.
 
-Khi mọi kiểm tra pass, tiếp tục [4.3.2 Cognito Auth](../4.3.2-Cognito-Auth/).
+Khi mọi kiểm tra pass, tiếp tục [4.3.2 Cognito Auth](/workshop/4.3.2-Cognito-Auth).

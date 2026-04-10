@@ -252,7 +252,7 @@ When nothing on this page matches, work through the list in order — cheapest f
 3. **Set CloudWatch log retention** on every log group (default is *Never expire*, which is both expensive and unhelpful). Two weeks is a good default for non-production.
 4. **Tag every resource** with `Project=NutriTrack` and `Environment=sandbox|staging|prod`. Makes cost tracking and cleanup trivial.
 5. **Run the AWS CLI with `--debug`** when a call behaves unexpectedly. The full signed request and raw response help identify policy vs. configuration issues.
-6. **Compare IAM statements** against [4.11.2 IAM Policies](../4.11.2-IAM-Policies/). If a statement is missing, no amount of code-level retries will save you.
+6. **Compare IAM statements** against [4.11.2 IAM Policies](/workshop/4.11.2-IAM-Policies). If a statement is missing, no amount of code-level retries will save you.
 7. **Check the region** twice. NutriTrack pins Bedrock to `ap-southeast-2` — every other service can be regional, Bedrock is not.
 
 If you are still stuck after the checklist, capture the error, the exact command, the region, and the Lambda request ID, and file an issue.

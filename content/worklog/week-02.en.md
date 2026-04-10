@@ -9,7 +9,7 @@
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Module 4 Theory: Storage services <br> - Learn S3 Bucket Access Point & Storage Classes | 12/01/2026 | 12/01/2026 | - |
+| 1 | ⭐ **EVENT:** AWS re:Invent 2025 Recap - Vietnam Edition <br>&emsp; - NutriTrack Proposal Drafting <br>&emsp; + Wrote Problem Statement & AI Solutions <br>&emsp; + Defined my AI-1 scope | 12/01/2026 | 12/01/2026 | - |
 | 2 | - Lab 6: RDS Database & EC2 <br>&emsp; + Install MySQL on EC2 <br>&emsp; + Create Load Balancer & Target Groups <br>&emsp; + Use "Siege" to run load testing (50 concurrent users) on ALBs | 13/01/2026 | 13/01/2026 | [Lab 6](https://000006.awsstudygroup.com/) |
 | 3 | - Lab 5: DB connectivity <br>&emsp; + Fixed missing steps in the provided lab manual regarding connecting RDS to MySQL | 14/01/2026 | 14/01/2026 | [Lab 5](https://000005.awsstudygroup.com/) |
 | 4 | - Participate in **AWS Cloud Day** (Gen AI & Data Track) | 15/01/2026 | 15/01/2026 | [AWS Cloud Day] |

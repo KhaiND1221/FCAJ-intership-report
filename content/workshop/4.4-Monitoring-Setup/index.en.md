@@ -49,7 +49,7 @@ Alongside models, the schema defines **12 `customType` blocks** (`Portions`, `Se
 
 ## Sub-pages
 
-- [4.4.1 AppSync — GraphQL schema, resolvers, auth modes](4.4.1-AppSync/)
-- [4.4.2 DynamoDB — tables, indexes, item shapes, seeding](4.4.2-DynamoDB/)
+- [4.4.1 AppSync — GraphQL schema, resolvers, auth modes](/workshop/4.4.1-AppSync)
+- [4.4.2 DynamoDB — tables, indexes, item shapes, seeding](/workshop/4.4.2-DynamoDB)
 
-Next section: [4.5 Compute & AI — Lambda functions and Bedrock](../4.5-Processing-Setup/).
+Next section: [4.5 Compute & AI — Lambda functions and Bedrock](/workshop/4.5-Processing-Setup).

@@ -11,7 +11,7 @@
 | --- | --- | --- | --- | --- |
 | 1 | - Khởi tạo Môi trường Test <br>&emsp; + Cấp mới một bản sao môi trường (Staging environment) tách biệt <br>&emsp; + Setup Burp Suite làm cọc rào chặn luồng traffic (Proxy) | 09/03/2026 | 09/03/2026 | [Burp Suite Config Docs] |
 | 2 | - Nhắm bắn vào Định danh & Phân quyền <br>&emsp; + Sửa đổi cắt ghép Token do Cognito cung cấp <br>&emsp; + Săn lỗi IDOR (Quyền tham chiếu đối tượng trực tiếp) tại API hồ sơ user | 10/03/2026 | 10/03/2026 | [OWASP Auth Testing] |
-| 3 | - Vượt rào WAF & Bơm mã độc <br>&emsp; + Dùng payload mã hóa tinh vi để dụ WAF bỏ qua các cú SQLi <br>&emsp; + Kích trần bộ rate-limiting để xem độ nảy chặn DDoS | 11/03/2026 | 11/03/2026 | [WAF Vulnerability testing] |
+| 3 | ⭐ **SỰ KIỆN:** AWS Cloud Mastery 2 (ĐH FPT) <br>&emsp; - Bắn Code lên mây <br>&emsp; + Chốt cấu trúc `generate_coaching_tip()`. <br>&emsp; + Deploy qua Amplify. | 11/03/2026 | 11/03/2026 | [Amplify Fullstack Docs](https://docs.amplify.aws/gen2/deploy-and-host/fullstack-branching/) |
 | 4 | - Lỗ hổng Logic API <br>&emsp; + Dò xét điểm yếu nghiệp vụ (Business Logic flaws) dính trên file code Lambda <br>&emsp; + Săn lỗi Phơi bày Thông tin dữ liệu nhạy cảm (Excessive Data Exposure) trên format trả về JSON | 12/03/2026 | 12/03/2026 | [REST API Security] |
 | 5 | - Soi xét Đặc quyền Leo thang <br>&emsp; + Thẩm định chéo (Audit) tất cả IAM Roles của chuỗi Backend <br>&emsp; + Cảnh cáo các Policy cho phép kết nối `sts:AssumeRole` quá tùy tiện | 13/03/2026 | 13/03/2026 | [IAM Security Assessment] |
 | 6-7 | - Xuất bản Báo cáo Xâm nhập <br>&emsp; + Tóm gọn đống tàn tích vào biên bản Vulnerability Assessment Report <br>&emsp; + Xếp hạng "màu cờ" ưu tiên sửa đổi theo khung điểm CVSS | 14/03/2026 | 15/03/2026 | [Vulnerability Score Matrix] |

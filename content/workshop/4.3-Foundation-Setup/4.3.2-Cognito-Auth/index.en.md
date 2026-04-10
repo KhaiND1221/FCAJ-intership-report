@@ -231,4 +231,4 @@ Then test the Google path:
 
 If either path fails, check the browser devtools network tab for the `/oauth2/idpresponse` or `/oauth2/token` call and inspect the error body. Most failures at this stage are either a missing redirect URI in Google, or a wrong Cognito domain in Google's console.
 
-Continue to [4.3.3 S3 Storage](../4.3.3-S3-Storage/).
+Continue to [4.3.3 S3 Storage](/workshop/4.3.3-S3-Storage).

@@ -6,10 +6,10 @@ Every appendix is traceable to a file in `backend/amplify/`. If you find a discr
 
 ## Contents
 
-- [4.11.1 Budget Breakdown](4.11.1-Budget-Breakdown/) — Detailed monthly cost estimate for a 1,000-user deployment, broken down by AWS service, with free-tier offsets and scaling notes. *(Content maintained separately — pending CSV export from the pricing worksheet.)*
-- [4.11.2 IAM Policies](4.11.2-IAM-Policies/) — Full policy JSON for every Lambda execution role and the S3 bucket resource policy, extracted verbatim from `backend.ts`.
-- [4.11.3 Troubleshooting](4.11.3-Troubleshooting/) — A categorised runbook: common errors, root causes, and the exact command or file change that fixes them.
-- [4.11.4 Prompt Templates](4.11.4-Prompt-Templates/) — The actual system prompts shipped in `ai-engine/handler.ts`, one per aiEngine action, with input variables and output schemas.
+- [4.11.1 Budget Breakdown](/workshop/4.11.1-Budget-Breakdown) — Detailed monthly cost estimate for a 1,000-user deployment, broken down by AWS service, with free-tier offsets and scaling notes. *(Content maintained separately — pending CSV export from the pricing worksheet.)*
+- [4.11.2 IAM Policies](/workshop/4.11.2-IAM-Policies) — Full policy JSON for every Lambda execution role and the S3 bucket resource policy, extracted verbatim from `backend.ts`.
+- [4.11.3 Troubleshooting](/workshop/4.11.3-Troubleshooting) — A categorised runbook: common errors, root causes, and the exact command or file change that fixes them.
+- [4.11.4 Prompt Templates](/workshop/4.11.4-Prompt-Templates) — The actual system prompts shipped in `ai-engine/handler.ts`, one per aiEngine action, with input variables and output schemas.
 
 ## How to read these pages
 

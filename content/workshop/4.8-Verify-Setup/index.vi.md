@@ -1,48 +1,32 @@
-## Giai đoạn 6: Triển Khai ECS Fargate Container
+# 4.8 Triển Khai ECS — VPC, ECR, Fargate, ALB
 
-Trong giai đoạn này, bạn sẽ triển khai backend FastAPI tự lưu trữ trên Amazon ECS Fargate trong VPC, với Application Load Balancer và Auto Scaling.
+Tầng ECS Fargate chạy một FastAPI service containerized song song với serverless Amplify backend. Nó xử lý workload không phù hợp với Lambda: tác vụ dài, custom ML inference, proxy API bên thứ ba, hoặc tác vụ cần tiến trình persistent.
 
-#### Tổng quan Kiến trúc
+## Kiến trúc
 
-Tầng container chạy song song với backend serverless Amplify, cung cấp thêm khả năng tính toán cho AI inference tùy chỉnh hoặc các tác vụ xử lý nặng vượt giới hạn 15 phút của Lambda.
-
-```
-Internet → ALB (Public Subnet) → ECS Fargate (Private Subnet) → VPC Endpoints → AWS Services
-```
-
-#### Bước 1: Tạo Dockerfile
-
-```dockerfile
-FROM python:3.11-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-EXPOSE 8000
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+```mermaid
+graph LR
+  Dev["Máy tính<br/>Developer"] -->|docker push| ECR
+  ECR --> Task["ECS Fargate<br/>Task (FastAPI)"]
+  Task --> ALB["Application<br/>Load Balancer"]
+  ALB --> Internet
+  Task --> DDB["DynamoDB"]
+  Task --> Bedrock["Amazon Bedrock<br/>ap-southeast-2"]
+  Task --> S3["S3 Bucket"]
 ```
 
-#### Bước 2: Tạo ECR Repository & Push Image
+Fargate task chạy trong private subnet; ALB nằm trong public subnet và terminate TLS. Task tiếp cận AWS service qua NAT Gateway hoặc VPC endpoint.
 
-```bash
-aws ecr create-repository --repository-name nutritrack-api --region ap-southeast-2
-docker build -t nutritrack-api .
-# Tag và push lên ECR...
-```
+## Lưu ý chi phí
 
-#### Bước 3: Tạo VPC và Tài nguyên ECS
+Tầng ECS là chi phí cố định lớn nhất trong kiến trúc NutriTrack. Hai task ở 0.5 vCPU / 1 GB RAM cộng một NAT Gateway ở ap-southeast-2 tốn khoảng **$60–80 USD/tháng** dù không có traffic. Nếu use case có thể dùng Lambda, hãy ở lại đó. Tầng ECS có giá trị khi bạn cần:
 
-- **VPC** trong `ap-southeast-2` với 2 AZ
-- **Public subnets** cho ALB
-- **Private subnets** cho Fargate tasks
-- **VPC Endpoints** truy cập dịch vụ AWS an toàn
-- **Auto Scaling** dựa trên CPU/memory
+- Kết nối WebSocket persistent.
+- Hơn 15 phút compute (giới hạn Lambda).
+- Tiến trình pre-warmed để tránh Lambda cold start trên đường dẫn nhạy cảm về latency.
+- Mô hình triển khai Python/FastAPI quen thuộc.
 
-#### Xác nhận
+## Các trang con
 
-```bash
-curl http://YOUR-ALB-DNS.ap-southeast-2.elb.amazonaws.com/health
-# Kỳ vọng: {"status": "healthy"}
-```
-
-> 🎯 **Checkpoint:** Container FastAPI đang chạy trên ECS Fargate, truy cập được qua ALB, Auto Scaling đã cấu hình.
+- [4.8.1 VPC & ECR](/workshop/4.8.1-VPC-ECR) — thiết lập mạng và container registry.
+- [4.8.2 Fargate & ALB](/workshop/4.8.2-Fargate-ALB) — task definition, service, load balancer, triển khai.

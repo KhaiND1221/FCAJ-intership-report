@@ -2,7 +2,7 @@
 
 Phụ lục này ghi lại từng statement IAM được gắn vào các execution role của Lambda và resource policy của S3 bucket trong workshop. Toàn bộ JSON bên dưới được trích ra từ `backend/amplify/backend.ts` — đây là điểm CDK entry point duy nhất nơi Amplify Gen 2 gắn thêm quyền lên trên các role tự sinh.
 
-Amplify Gen 2 mặc định tạo cho mỗi Lambda một managed execution role (có sẵn `AWSLambdaBasicExecutionRole` cho CloudWatch logs). Mọi thứ khác — Bedrock, Transcribe, DynamoDB, S3 — đều được thêm tường minh qua CDK escape hatch:
+Amplify Gen 2 mặc định tạo cho mỗi Lambda một managed execution role (có sẵn `AWSLambdaBasicExecutionRole` cho CloudWatch logs). Mọi thứ khác — Bedrock, Transcribe, DynamoDB, S3, Secrets Manager — đều được thêm tường minh qua CDK escape hatch:
 
 ```typescript
 backend.<fn>.resources.lambda.addToRolePolicy(new iam.PolicyStatement({ ... }))
@@ -201,6 +201,56 @@ Mở rộng thành:
 - `s3:DeleteObject*` để cleanup
 
 Lambda này **không** có Bedrock, **không** DynamoDB, **không** Transcribe. Nếu build của bạn thêm service khác, nguyên tắc least-privilege nói: **tạo statement mới**, không nới statement sẵn có.
+
+## Role của scanImage
+
+Lambda `scanImage` tải ảnh từ S3 và xác thực với ECS FastAPI qua JWT được ký bằng secret từ Secrets Manager. Không có quyền Bedrock, DynamoDB hay Transcribe.
+
+### S3: đọc ảnh để chuyển tiếp sang ECS
+
+```json
+{
+  "Effect": "Allow",
+  "Action": ["s3:GetObject"],
+  "Resource": ["arn:aws:s3:::<bucket-name>/incoming/*",
+               "arn:aws:s3:::<bucket-name>/media/*"]
+}
+```
+
+Trong CDK:
+
+```typescript
+s3Bucket.grantRead(scanImageLambda);
+```
+
+Mở rộng thành `s3:GetObject`, `s3:GetObject*`, `s3:List*` trên bucket ARN và `bucket/*`. Lambda đọc ảnh đã upload (từ `incoming/`) và truyền dưới dạng form-data sang ECS — không ghi vào S3.
+
+### Secrets Manager: lấy API key ECS
+
+```json
+{
+  "Effect": "Allow",
+  "Action": ["secretsmanager:GetSecretValue"],
+  "Resource": [
+    "arn:aws:secretsmanager:<region>:<account>:secret:nutritrack/prod/api-keys*"
+  ]
+}
+```
+
+Lưu ý:
+
+- Dấu `*` cuối bao phủ hậu tố tự động mà Secrets Manager thêm vào mỗi ARN secret (ví dụ `-AbCdEf`). Thiếu nó, lệnh `GetSecretValue` sẽ lỗi `ResourceNotFoundException`.
+- Lambda dùng key này để tạo JWT HS256 1 phút và đính kèm dưới dạng `Authorization: Bearer` khi gọi ALB. Xem 4.8.2 về luồng JWT.
+- Không có Lambda nào khác có quyền này — least-privilege được giữ nguyên.
+
+### Inject biến môi trường cho scanImage
+
+```typescript
+const cfnScanImageFn = scanImageLambda.node.defaultChild as cdk.aws_lambda.CfnFunction;
+cfnScanImageFn.addPropertyOverride('Environment.Variables.STORAGE_BUCKET_NAME', s3Bucket.bucketName);
+cfnScanImageFn.addPropertyOverride('Environment.Variables.ECS_API_URL', ecsAlbDns);
+cfnScanImageFn.addPropertyOverride('Environment.Variables.NUTRITRACK_API_KEY_SECRET_ID', apiKeySecret.secretName);
+```
 
 ## S3 bucket resource policy
 

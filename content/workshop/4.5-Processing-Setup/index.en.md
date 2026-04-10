@@ -1,10 +1,10 @@
 # 4.5 Compute & AI — Lambdas and Bedrock
 
-This section covers the compute layer of NutriTrack: four Lambda functions plus Amazon Bedrock. Together they turn a photo of phở into a structured nutrition log, answer Vietnamese-language coaching questions, and keep the image bucket tidy.
+This section covers the compute layer of NutriTrack: five Lambda functions plus Amazon Bedrock. Together they turn a photo of phở into a structured nutrition log, answer Vietnamese-language coaching questions, proxy image analysis through ECS, and keep the image bucket tidy.
 
-## The four Lambdas
+## The five Lambdas
 
-All four are defined under `backend/amplify/*` and registered in `defineBackend` at `backend.ts`. Every one runs **Node.js 22 on ARM64** — no exceptions.
+All five are defined under `backend/amplify/*` and registered in `defineBackend` at `backend.ts`. Every one runs **Node.js 22 on ARM64** — no exceptions.
 
 | Function | Entry | Memory | Timeout | Resource group | Trigger |
 | --- | --- | --- | --- | --- | --- |
@@ -12,6 +12,7 @@ All four are defined under `backend/amplify/*` and registered in `defineBackend`
 | `process-nutrition` | `process-nutrition/handler.ts` | 512 MB | 30 s | `data` | AppSync query `processNutrition` |
 | `friend-request` | `friend-request/handler.ts` | (default) | (default) | (default) | AppSync mutation `friendRequest` |
 | `resize-image` | `resize-image/handler.ts` | 512 MB | (default) | `storage` | S3 `ObjectCreated` on `incoming/` |
+| `scan-image` | `scan-image/handler.ts` | 512 MB | 30 s | (default) | AppSync query `scanImage` |
 
 The `resourceGroupName` matters: it tells Amplify which CloudFormation stack the Lambda belongs to. `storage` = grouped with the S3 bucket (no circular deps), `data` = grouped with the DynamoDB tables. `friend-request` and `ai-engine` sit in the root stack.
 
@@ -34,6 +35,7 @@ flowchart LR
     ProcNut[process-nutrition<br/>Node 22 / 512 MB / 30s]
     FriendReq[friend-request<br/>Node 22]
     ResizeImg[resize-image<br/>Node 22 / 512 MB]
+    ScanImg[scan-image<br/>Node 22 / 512 MB / 30s]
   end
 
   subgraph AI
@@ -41,15 +43,21 @@ flowchart LR
     Transcribe[Amazon Transcribe<br/>vi-VN]
   end
 
+  subgraph Container
+    ECS[ECS Fargate FastAPI<br/>/analyze-food<br/>/analyze-label<br/>/scan-barcode]
+  end
+
   subgraph Storage
     S3[(S3 bucket)]
     DDB[(DynamoDB<br/>Food, user, Friendship)]
+    SecretsManager[(Secrets Manager)]
   end
 
   App --> AppSync
   AppSync --> AiEngine
   AppSync --> ProcNut
   AppSync --> FriendReq
+  AppSync --> ScanImg
   S3 -->|ObjectCreated incoming/*| ResizeImg
 
   AiEngine --> Bedrock
@@ -59,6 +67,9 @@ flowchart LR
   ProcNut --> Bedrock
   FriendReq --> DDB
   ResizeImg --> S3
+  ScanImg --> S3
+  ScanImg --> SecretsManager
+  ScanImg -->|JWT Bearer| ECS
 ```
 
 ## Ground-truth Bedrock model
@@ -80,9 +91,10 @@ Every system prompt in `ai-engine/handler.ts` begins with `You are Ollie...`. Ol
 
 ## Sub-pages
 
-- [4.5.1 Bedrock — model access, pricing, IAM, invocation shape](4.5.1-Bedrock/)
-- [4.5.2 AIEngine — the 10-action Lambda orchestrator](4.5.2-AIEngine/)
-- [4.5.3 ProcessNutrition — hybrid DB + Bedrock fuzzy lookup](4.5.3-ProcessNutrition/)
-- [4.5.4 ResizeImage — S3-triggered sharp resizer](4.5.4-ResizeImage/)
+- [4.5.1 Bedrock — model access, pricing, IAM, invocation shape](/workshop/4.5.1-Bedrock)
+- [4.5.2 AIEngine — the 9-action Lambda orchestrator](/workshop/4.5.2-AIEngine)
+- [4.5.3 ProcessNutrition — hybrid DB + Bedrock fuzzy lookup](/workshop/4.5.3-ProcessNutrition)
+- [4.5.4 ResizeImage — S3-triggered sharp resizer](/workshop/4.5.4-ResizeImage)
+- [4.5.5 ScanImage — image processing proxy to ECS FastAPI](/workshop/4.5.5-ScanImage)
 
-Next: [4.6 Automation Setup](../4.6-Automation-Setup/).
+Next: [4.6 Automation Setup](/workshop/4.6-Automation-Setup).

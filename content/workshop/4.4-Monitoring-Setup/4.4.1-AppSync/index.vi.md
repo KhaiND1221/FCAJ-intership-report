@@ -248,9 +248,21 @@ friendRequest: a
   .returns(a.string())
   .handler(a.handler.function(friendRequest))
   .authorization((allow) => [allow.authenticated()]),
+
+scanImage: a
+  .query()
+  .arguments({
+    action: a.string().required(),
+    payload: a.string(),
+  })
+  .returns(a.string())
+  .handler(a.handler.function(scanImage))
+  .authorization((allow) => [allow.authenticated()]),
 ```
 
-`.handler(a.handler.function(aiEngine))` gắn direct Lambda data source. AppSync bỏ qua DynamoDB hoàn toàn với ba operation này và gọi Lambda đồng bộ, truyền `event.arguments` bằng input args. Lambda trả về string (chúng ta cố tình stringify JSON để giữ schema GraphQL đơn giản — xem 4.5.2).
+`.handler(a.handler.function(aiEngine))` gắn direct Lambda data source. AppSync bỏ qua DynamoDB hoàn toàn với các operation này và gọi Lambda đồng bộ, truyền `event.arguments` bằng input args. Lambda trả về string (stringify JSON để giữ schema GraphQL đơn giản — xem 4.5.2).
+
+`scanImage` dùng cùng interface `action` + `payload` như `aiEngine`, nhưng route đến Lambda xử lý ảnh chuyên dụng — proxy request đến ECS FastAPI (xem 4.5.5).
 
 ## Sử dụng ở frontend
 
@@ -276,9 +288,9 @@ await client.models.FoodLog.create({
   portion: 1,
 });
 
-// Gọi Lambda ai-engine qua custom query
-const result = await client.queries.aiEngine({
-  action: 'analyzeFoodImage',
+// Gọi Lambda scanImage để phân tích ảnh thực phẩm qua camera
+const result = await client.queries.scanImage({
+  action: 'analyze-food',
   payload: JSON.stringify({ s3Key: 'incoming/user-abc/img-1.jpg' }),
 });
 ```
@@ -307,7 +319,7 @@ Sau khi `npx ampx sandbox` xong, AppSync console hiển thị:
 
 - Tab **Schema** — SDL GraphQL đã nở (lớn hơn `resource.ts` nhiều vì Amplify sinh input/filter/connection type).
 - Tab **Queries** — playground. Paste query, gắn Cognito token từ Amplify Studio, chạy.
-- Tab **Data sources** — một entry `AMAZON_DYNAMODB` cho mỗi model, và ba entry `AWS_LAMBDA` cho các custom resolver.
+- Tab **Data sources** — một entry `AMAZON_DYNAMODB` cho mỗi model, và bốn entry `AWS_LAMBDA` cho các custom resolver (`aiEngine`, `processNutrition`, `friendRequest`, `scanImage`).
 
 ![AppSync console schema view](images/appsync-console-schema.png)
 
@@ -322,6 +334,6 @@ Sau khi `npx ampx sandbox` xong, AppSync console hiển thị:
 
 ## Liên kết
 
-- Bảng và cấu trúc item: [4.4.2 DynamoDB](../4.4.2-DynamoDB/)
-- Lambda resolver: [4.5.2 AIEngine](../../4.5-Processing-Setup/4.5.2-AIEngine/), [4.5.3 ProcessNutrition](../../4.5-Processing-Setup/4.5.3-ProcessNutrition/)
-- Subscription thực chiến: [4.6 Automation Setup](../../4.6-Automation-Setup/)
+- Bảng và cấu trúc item: [4.4.2 DynamoDB](/workshop/4.4.2-DynamoDB)
+- Lambda resolver: [4.5.2 AIEngine](/workshop/4.5.2-AIEngine), [4.5.3 ProcessNutrition](/workshop/4.5.3-ProcessNutrition)
+- Subscription thực chiến: [4.6 Automation Setup](/workshop/4.6-Automation-Setup)

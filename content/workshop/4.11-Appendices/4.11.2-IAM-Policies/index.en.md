@@ -2,7 +2,7 @@
 
 This appendix documents every IAM statement attached to the workshop's Lambda execution roles and the S3 bucket resource policy. All JSON below is extracted from `backend/amplify/backend.ts` — the single CDK entry point where Amplify Gen 2 layers additional permissions on top of the auto-generated roles.
 
-Amplify Gen 2 gives each Lambda a managed execution role by default (with `AWSLambdaBasicExecutionRole` for CloudWatch logs). Everything else — Bedrock, Transcribe, DynamoDB, S3 — is added explicitly via the CDK escape hatch:
+Amplify Gen 2 gives each Lambda a managed execution role by default (with `AWSLambdaBasicExecutionRole` for CloudWatch logs). Everything else — Bedrock, Transcribe, DynamoDB, S3, Secrets Manager — is added explicitly via the CDK escape hatch:
 
 ```typescript
 backend.<fn>.resources.lambda.addToRolePolicy(new iam.PolicyStatement({ ... }))
@@ -17,7 +17,7 @@ If a statement is not in `backend.ts`, the Lambda does not have it. There is no 
 
 ## aiEngine role
 
-The `aiEngine` Lambda handles all Bedrock calls, voice transcription, and image reads from S3. It is the most privileged of the four workshop Lambdas.
+The `aiEngine` Lambda handles all Bedrock calls and voice transcription. It is the most privileged of the five workshop Lambdas for text/voice operations; `scanImage` holds complementary privileges for image-to-ECS routing.
 
 ### Bedrock: invoke the Qwen3-VL model
 
@@ -201,6 +201,56 @@ Which expands to:
 - `s3:DeleteObject*` for cleanup
 
 The Lambda has **no** Bedrock, **no** DynamoDB, **no** Transcribe. If your build adds another service, the least-privilege rule says: create a new statement, do not expand one of the existing ones.
+
+## scanImage role
+
+The `scanImage` Lambda fetches images from S3 and authenticates with ECS FastAPI via a JWT signed with a secret from Secrets Manager. It has no Bedrock, DynamoDB, or Transcribe access.
+
+### S3: read images for forwarding to ECS
+
+```json
+{
+  "Effect": "Allow",
+  "Action": ["s3:GetObject"],
+  "Resource": ["arn:aws:s3:::<bucket-name>/incoming/*",
+               "arn:aws:s3:::<bucket-name>/media/*"]
+}
+```
+
+In CDK:
+
+```typescript
+s3Bucket.grantRead(scanImageLambda);
+```
+
+Which expands to `s3:GetObject`, `s3:GetObject*`, `s3:List*` on the bucket ARN and `bucket/*`. The Lambda reads the uploaded image (from `incoming/`) and passes it as form-data to ECS — it does not write to S3.
+
+### Secrets Manager: retrieve the ECS API key
+
+```json
+{
+  "Effect": "Allow",
+  "Action": ["secretsmanager:GetSecretValue"],
+  "Resource": [
+    "arn:aws:secretsmanager:<region>:<account>:secret:nutritrack/prod/api-keys*"
+  ]
+}
+```
+
+Notes:
+
+- The trailing `*` covers the auto-appended suffix that Secrets Manager adds to every secret ARN (e.g., `-AbCdEf`). Without it the `GetSecretValue` call returns `ResourceNotFoundException`.
+- The Lambda uses this key to generate a 1-minute HS256 JWT and attach it as `Authorization: Bearer` when calling the ALB. See 4.8.2 for the JWT flow.
+- No other Lambda has this permission — least-privilege is preserved.
+
+### scanImage environment variable injection
+
+```typescript
+const cfnScanImageFn = scanImageLambda.node.defaultChild as cdk.aws_lambda.CfnFunction;
+cfnScanImageFn.addPropertyOverride('Environment.Variables.STORAGE_BUCKET_NAME', s3Bucket.bucketName);
+cfnScanImageFn.addPropertyOverride('Environment.Variables.ECS_API_URL', ecsAlbDns);
+cfnScanImageFn.addPropertyOverride('Environment.Variables.NUTRITRACK_API_KEY_SECRET_ID', apiKeySecret.secretName);
+```
 
 ## S3 bucket resource policy
 

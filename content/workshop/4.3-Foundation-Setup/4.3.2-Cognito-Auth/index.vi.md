@@ -231,4 +231,4 @@ Rồi test luồng Google:
 
 Nếu một trong hai luồng fail, mở devtools trình duyệt tab network xem call `/oauth2/idpresponse` hoặc `/oauth2/token` và đọc error body. Phần lớn lỗi ở đây là thiếu redirect URI trong Google, hoặc sai domain Cognito bên phía Google.
 
-Tiếp tục sang [4.3.3 S3 Storage](../4.3.3-S3-Storage/).
+Tiếp tục sang [4.3.3 S3 Storage](/workshop/4.3.3-S3-Storage).

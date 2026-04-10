@@ -165,5 +165,5 @@ If nothing arrives on B:
 
 ## Back to the index
 
-- [Section 4.6 — API & Social](../)
-- [4.6.1 — FriendRequest Lambda](../4.6.1-FriendRequest/)
+- [Section 4.6 — API & Social](/workshop/4.6-Automation-Setup)
+- [4.6.1 — FriendRequest Lambda](/workshop/4.6.1-FriendRequest)

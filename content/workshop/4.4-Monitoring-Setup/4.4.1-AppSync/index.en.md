@@ -248,9 +248,21 @@ friendRequest: a
   .returns(a.string())
   .handler(a.handler.function(friendRequest))
   .authorization((allow) => [allow.authenticated()]),
+
+scanImage: a
+  .query()
+  .arguments({
+    action: a.string().required(),
+    payload: a.string(),
+  })
+  .returns(a.string())
+  .handler(a.handler.function(scanImage))
+  .authorization((allow) => [allow.authenticated()]),
 ```
 
-`.handler(a.handler.function(aiEngine))` attaches a direct Lambda data source. AppSync bypasses DynamoDB entirely for these three operations and synchronously invokes the Lambda, passing `event.arguments` equal to the input args. The Lambda returns a string (we stringify JSON on purpose to keep the GraphQL schema simple — see 4.5.2).
+`.handler(a.handler.function(aiEngine))` attaches a direct Lambda data source. AppSync bypasses DynamoDB entirely for these operations and synchronously invokes the Lambda, passing `event.arguments` equal to the input args. The Lambda returns a string (we stringify JSON on purpose to keep the GraphQL schema simple — see 4.5.2).
+
+`scanImage` uses the same `action` + `payload` interface as `aiEngine`, but routes to the dedicated image-processing Lambda that proxies requests to ECS FastAPI (see 4.5.5).
 
 ## Frontend usage
 
@@ -276,9 +288,9 @@ await client.models.FoodLog.create({
   portion: 1,
 });
 
-// Call the ai-engine Lambda via the custom query
-const result = await client.queries.aiEngine({
-  action: 'analyzeFoodImage',
+// Call scanImage Lambda for camera food analysis
+const result = await client.queries.scanImage({
+  action: 'analyze-food',
   payload: JSON.stringify({ s3Key: 'incoming/user-abc/img-1.jpg' }),
 });
 ```
@@ -307,7 +319,7 @@ After `npx ampx sandbox` finishes, the AppSync console shows:
 
 - **Schema** tab — the fully expanded GraphQL SDL (much larger than `resource.ts` because Amplify generates input/filter/connection types).
 - **Queries** tab — a playground. Paste a query, attach a Cognito token from Amplify Studio, and run.
-- **Data sources** tab — one `AMAZON_DYNAMODB` entry per model, and three `AWS_LAMBDA` entries for the custom resolvers.
+- **Data sources** tab — one `AMAZON_DYNAMODB` entry per model, and four `AWS_LAMBDA` entries for the custom resolvers (`aiEngine`, `processNutrition`, `friendRequest`, `scanImage`).
 
 ![AppSync console schema view](images/appsync-console-schema.png)
 
@@ -322,6 +334,6 @@ After `npx ampx sandbox` finishes, the AppSync console shows:
 
 ## Cross-links
 
-- Tables and item shapes: [4.4.2 DynamoDB](../4.4.2-DynamoDB/)
-- Lambda resolvers: [4.5.2 AIEngine](../../4.5-Processing-Setup/4.5.2-AIEngine/), [4.5.3 ProcessNutrition](../../4.5-Processing-Setup/4.5.3-ProcessNutrition/)
-- Subscriptions in anger: [4.6 Automation Setup](../../4.6-Automation-Setup/)
+- Tables and item shapes: [4.4.2 DynamoDB](/workshop/4.4.2-DynamoDB)
+- Lambda resolvers: [4.5.2 AIEngine](/workshop/4.5.2-AIEngine), [4.5.3 ProcessNutrition](/workshop/4.5.3-ProcessNutrition)
+- Subscriptions in anger: [4.6 Automation Setup](/workshop/4.6-Automation-Setup)

@@ -53,8 +53,8 @@ The `linked_id` field is the critical piece: each row stores the UUID of its mir
 
 ## What's in this section
 
-- [4.6.1 — FriendRequest Lambda](4.6.1-FriendRequest/) — custom resolver, env-var injection via CDK escape hatch, the five actions, IAM.
-- [4.6.2 — Realtime Subscriptions](4.6.2-Realtime-Subscriptions/) — AppSync subscriptions, which flows use them, cost and scoping.
+- [4.6.1 — FriendRequest Lambda](/workshop/4.6.1-FriendRequest) — custom resolver, env-var injection via CDK escape hatch, the five actions, IAM.
+- [4.6.2 — Realtime Subscriptions](/workshop/4.6.2-Realtime-Subscriptions) — AppSync subscriptions, which flows use them, cost and scoping.
 
 ## Prerequisites
 

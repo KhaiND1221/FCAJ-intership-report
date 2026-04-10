@@ -27,10 +27,10 @@ The Amplify CLI runs TypeScript, synthesizes a CDK app under the hood, and submi
 
 ## Prerequisites
 
-Before starting 4.3, confirm the items in [`../4.2-Prerequiste/`](../4.2-Prerequiste/) are green:
+Before starting 4.3, confirm the items in [4.2 Prerequisites](/workshop/4.2-Prerequiste) are green:
 
 - AWS CLI v2 configured with a profile that has `AdministratorAccess` (sandbox only).
-- Node.js 20 LTS or newer. Amplify Gen 2 Lambda runtime is Node.js 22, but the CLI itself runs on your host Node.
+- Node.js 22 or newer. Amplify Gen 2 Lambda runtime is Node.js 22, but the CLI itself runs on your host Node.
 - `npm` 10+.
 - An AWS account in a region that supports Bedrock Qwen3-VL. This workshop pins everything to `ap-southeast-2` (Sydney).
 - A Google Cloud project with the OAuth consent screen configured (we will create the OAuth client in 4.3.2).
@@ -39,9 +39,9 @@ Before starting 4.3, confirm the items in [`../4.2-Prerequiste/`](../4.2-Prerequ
 
 | Section | Topic | Est. time |
 | --- | --- | --- |
-| [4.3.1 Amplify Init](4.3.1-Amplify-Init/) | Scaffold `backend/`, install deps, run first sandbox | 30 min |
-| [4.3.2 Cognito Auth](4.3.2-Cognito-Auth/) | Email + Google OAuth, callback URLs, OTP flow | 45 min |
-| [4.3.3 S3 Storage](4.3.3-S3-Storage/) | Four prefixes, lifecycle escape hatch, upload test | 30 min |
+| [4.3.1 Amplify Init](/workshop/4.3.1-Amplify-Init) | Scaffold `backend/`, install deps, run first sandbox | 30 min |
+| [4.3.2 Cognito Auth](/workshop/4.3.2-Cognito-Auth) | Email + Google OAuth, callback URLs, OTP flow | 45 min |
+| [4.3.3 S3 Storage](/workshop/4.3.3-S3-Storage) | Four prefixes, lifecycle escape hatch, upload test | 30 min |
 
 Total time budget: **90 to 120 minutes** on a cold machine, about half that if you already have the AWS CLI signed in.
 
@@ -51,4 +51,4 @@ Total time budget: **90 to 120 minutes** on a cold machine, about half that if y
 - A CloudFormation stack in the `ap-southeast-2` console with status `CREATE_COMPLETE` and roughly 25 to 35 resources.
 - `aws s3 ls` showing a bucket whose name starts with `amplify-nutritracktdtp2-...-nutritrackmediabucket...`.
 
-If any of those are missing at the end of 4.3.3, stop and resolve before moving to [`../4.4-Monitoring-Setup/`](../4.4-Monitoring-Setup/) — the data and Lambda phases assume all three exist.
+If any of those are missing at the end of 4.3.3, stop and resolve before moving to [4.4 Monitoring Setup](/workshop/4.4-Monitoring-Setup) — the data and Lambda phases assume all three exist.

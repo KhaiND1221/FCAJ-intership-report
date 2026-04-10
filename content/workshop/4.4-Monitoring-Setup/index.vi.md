@@ -49,7 +49,7 @@ Ngoài model, schema còn có **12 khối `customType`** (`Portions`, `Serving`,
 
 ## Trang con
 
-- [4.4.1 AppSync — GraphQL schema, resolver, auth mode](4.4.1-AppSync/)
-- [4.4.2 DynamoDB — bảng, index, cấu trúc item, seeding](4.4.2-DynamoDB/)
+- [4.4.1 AppSync — GraphQL schema, resolver, auth mode](/workshop/4.4.1-AppSync)
+- [4.4.2 DynamoDB — bảng, index, cấu trúc item, seeding](/workshop/4.4.2-DynamoDB)
 
-Phần kế tiếp: [4.5 Compute & AI — Lambda và Bedrock](../4.5-Processing-Setup/).
+Phần kế tiếp: [4.5 Compute & AI — Lambda và Bedrock](/workshop/4.5-Processing-Setup).

@@ -185,5 +185,5 @@ Run it once per environment after `npx ampx sandbox` provisions the table. `Batc
 
 ## Cross-links
 
-- Schema that produced these tables: [4.4.1 AppSync](../4.4.1-AppSync/)
-- Lambdas that touch tables directly: [4.5.3 ProcessNutrition](../../4.5-Processing-Setup/4.5.3-ProcessNutrition/)
+- Schema that produced these tables: [4.4.1 AppSync](/workshop/4.4.1-AppSync)
+- Lambdas that touch tables directly: [4.5.3 ProcessNutrition](/workshop/4.5.3-ProcessNutrition)

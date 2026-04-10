@@ -1,6 +1,8 @@
-# 4.5.2 AIEngine — The 10-Action Lambda Orchestrator
+# 4.5.2 AIEngine — The 9-Action Lambda Orchestrator
 
-`ai-engine` is a single Lambda that handles every AI-powered interaction in NutriTrack. Rather than one Lambda per feature (which would multiply cold starts and IAM policies), we ship one orchestrator with a top-level `action` switch. The AppSync custom query forwards the `action` string and a JSON `payload`; the handler dispatches to the right branch.
+`ai-engine` is a single Lambda that handles every text and voice AI interaction in NutriTrack. Rather than one Lambda per feature (which would multiply cold starts and IAM policies), we ship one orchestrator with a top-level `action` switch. The AppSync custom query forwards the `action` string and a JSON `payload`; the handler dispatches to the right branch.
+
+> **Image analysis has moved**: photo food scanning, nutrition label reading, and barcode scanning are no longer handled here. They route through the dedicated `scan-image` Lambda which proxies to ECS FastAPI. See [4.5.5 ScanImage](/workshop/4.5.5-ScanImage).
 
 ## Resource definition
 
@@ -50,9 +52,8 @@ The handler routes on `event.arguments.action`. Every branch parses `event.argum
 
 | Action | Purpose | Services used |
 | --- | --- | --- |
-| `analyzeFoodImage` | Photo of food → structured nutrition JSON | S3 get, Bedrock (vision) |
 | `generateCoachResponse` | Conversational Ollie replies with card delimiters | Bedrock (text) |
-| `searchFoodNutrition` | Food name lookup when DB misses | Bedrock (text) |
+| `generateFoodNutrition` | Food name lookup when DB misses | Bedrock (text) |
 | `fixFood` | User correction to a logged food item | Bedrock (text) |
 | `voiceToFood` | Audio upload → transcript → parsed food JSON | Transcribe, S3, Bedrock |
 | `ollieCoachTip` | One-sentence daily nudge based on stats | Bedrock (text) |
@@ -61,11 +62,13 @@ The handler routes on `event.arguments.action`. Every branch parses `event.argum
 | `challengeSummary` | Leaderboard blurb | Bedrock (text) |
 | `weeklyInsight` | 3-sentence weekly progress summary | Bedrock (text) |
 
+Image analysis (`analyze-food`, `analyze-label`, `scan-barcode`) was previously the `analyzeFoodImage` action here. It has been extracted to the `scan-image` Lambda, which proxies to ECS FastAPI for heavier vision workloads.
+
 ## System prompts — the Ollie persona
 
 Every action ships with a dedicated system prompt, all starting with `You are Ollie`. The five foundational prompts:
 
-1. **`GEN_FOOD_SYSTEM_PROMPT`** — used by `analyzeFoodImage` and `searchFoodNutrition`. Forces a rigid JSON schema (`food_id`, `name_vi`, `name_en`, `macros`, `micronutrients`, `serving`, `ingredients`, `verified`, `source`) and enforces the caloric-consistency rule `Protein*4 + Carbs*4 + Fat*9 ≈ calories`.
+1. **`GEN_FOOD_SYSTEM_PROMPT`** — used by `analyzeFoodImage` and `generateFoodNutrition`. Forces a rigid JSON schema (`food_id`, `name_vi`, `name_en`, `macros`, `micronutrients`, `serving`, `ingredients`, `verified`, `source`) and enforces the caloric-consistency rule `Protein*4 + Carbs*4 + Fat*9 ≈ calories`.
 2. **`FIX_FOOD_SYSTEM_PROMPT`** — used by `fixFood`. Same output schema but `"source": "AI Fixed"`. Recalculates all macros when weights change.
 3. **`VOICE_SYSTEM_PROMPT`** — used by `voiceToFood` after Transcribe. Returns `action: "log" | "clarify"` so the client knows whether to prompt the user or log immediately.
 4. **`OLLIE_COACH_SYSTEM_PROMPT`** — used by `ollieCoachTip`. Max 2 sentences, 1-2 emojis, references actual streak/calorie stats.
@@ -100,48 +103,6 @@ async function callQwen(messages: any[], maxTokens = 1000): Promise<string> {
 
 The fallback chain for reading the text exists because the Bedrock Qwen response schema has shifted between model revisions. Always parse defensively.
 
-## Deep dive: `analyzeFoodImage`
-
-This is the headline feature — point the camera at phở, get back structured nutrition. Full handler branch:
-
-```typescript
-if (action === 'analyzeFoodImage') {
-  const { s3Key } = data;
-  if (!STORAGE_BUCKET) throw new Error('STORAGE_BUCKET_NAME not configured');
-  if (!s3Key || s3Key.includes('..')) throw new Error('Invalid s3Key');
-
-  // Read image from S3, convert to base64
-  const s3Obj = await s3Client.send(new GetObjectCommand({
-    Bucket: STORAGE_BUCKET,
-    Key: s3Key,
-  }));
-  const chunks: Uint8Array[] = [];
-  for await (const chunk of s3Obj.Body as any) chunks.push(chunk);
-  const imageBuffer = Buffer.concat(chunks);
-  const base64 = imageBuffer.toString('base64');
-  const contentType = s3Obj.ContentType || 'image/jpeg';
-
-  const text = await callQwen([
-    { role: "system", content: GEN_FOOD_SYSTEM_PROMPT },
-    {
-      role: "user",
-      content: [
-        { type: "image_url", image_url: { url: `data:${contentType};base64,${base64}` } },
-        { type: "text", text: "Analyze this food image and estimate its nutritional profile. Use Vietnamese for name_vi and all ingredient name_vi fields. Return ONLY the JSON object." },
-      ],
-    },
-  ]);
-
-  return JSON.stringify({ success: true, text });
-}
-```
-
-Security notes:
-
-- `s3Key.includes('..')` blocks path traversal attempts.
-- The Lambda has IAM read on the whole bucket (granted in `backend.ts` via `s3Bucket.grantRead(aiEngineLambda)`), so the caller cannot escalate by passing an arbitrary key — they still need AppSync auth.
-- The image is base64-encoded and sent inline in the Bedrock payload, avoiding a second round trip through AppSync.
-
 ## Deep dive: `voiceToFood` + Transcribe
 
 This is the longest-running branch. Flow:
@@ -150,22 +111,22 @@ This is the longest-running branch. Flow:
 2. Client calls the `aiEngine` query with `action: 'voiceToFood'` and the `s3Key`.
 3. Lambda starts an Amazon Transcribe job:
 
-```typescript
-const jobName = `nutritrack-voice-${randomUUID()}`;
-const ext = s3Key.split('.').pop()?.toLowerCase() || 'm4a';
-const mediaFormat = ext === 'webm' ? 'webm'
-  : ext === 'mp3'  ? 'mp3'
-  : ext === 'wav'  ? 'wav'
-  : ext === 'flac' ? 'flac'
-  : 'mp4'; // m4a, mp4 → 'mp4'
+   ```typescript
+   const jobName = `nutritrack-voice-${randomUUID()}`;
+   const ext = s3Key.split('.').pop()?.toLowerCase() || 'm4a';
+   const mediaFormat = ext === 'webm' ? 'webm'
+     : ext === 'mp3'  ? 'mp3'
+     : ext === 'wav'  ? 'wav'
+     : ext === 'flac' ? 'flac'
+     : 'mp4'; // m4a, mp4 → 'mp4'
 
-await transcribeClient.send(new StartTranscriptionJobCommand({
-  TranscriptionJobName: jobName,
-  LanguageCode: 'vi-VN',
-  MediaFormat: mediaFormat as any,
-  Media: { MediaFileUri: `s3://${STORAGE_BUCKET}/${s3Key}` },
-}));
-```
+   await transcribeClient.send(new StartTranscriptionJobCommand({
+     TranscriptionJobName: jobName,
+     LanguageCode: 'vi-VN',
+     MediaFormat: mediaFormat as any,
+     Media: { MediaFileUri: `s3://${STORAGE_BUCKET}/${s3Key}` },
+   }));
+   ```
 
 4. `waitForTranscription(jobName)` polls every 2 seconds, up to 25 iterations. When `COMPLETED`, it fetches the transcript JSON from the URL Transcribe writes to a managed S3 location.
 5. The transcript string is fed to Qwen with `VOICE_SYSTEM_PROMPT`, which returns a food-log JSON.
@@ -231,6 +192,7 @@ CloudWatch Logs group: `/aws/lambda/amplify-*-ai-engine-*`. Enable the `DEBUG=tr
 
 ## Cross-links
 
-- Bedrock prereqs: [4.5.1 Bedrock](../4.5.1-Bedrock/)
-- The other Lambdas: [4.5.3 ProcessNutrition](../4.5.3-ProcessNutrition/), [4.5.4 ResizeImage](../4.5.4-ResizeImage/)
-- Alerting on errors: [4.6 Automation Setup](../../4.6-Automation-Setup/)
+- Bedrock prereqs: [4.5.1 Bedrock](/workshop/4.5.1-Bedrock)
+- Image processing proxy: [4.5.5 ScanImage](/workshop/4.5.5-ScanImage)
+- The other Lambdas: [4.5.3 ProcessNutrition](/workshop/4.5.3-ProcessNutrition), [4.5.4 ResizeImage](/workshop/4.5.4-ResizeImage)
+- Alerting on errors: [4.6 Automation Setup](/workshop/4.6-Automation-Setup)
