@@ -22,19 +22,16 @@
 
 * **Triển khai Lưu trữ Đám mây:**
   * Nắm bắt cách khởi tạo và quản lý hệ quản trị cơ sở dữ liệu trên RDS, thao tác tích hợp thành công MySQL Client từ EC2 vào môi trường ảo (Lab 6).
-  * Tự chủ khắc phục lỗi kết nối bằng cách điều tra và bổ sung các mã lệnh bị thiếu trong tài liệu hướng dẫn (Lab 5).
 
 * **Thiết lập Mạng & Đo lường:**
   * Khảo sát thiết lập mô hình DNS lai (Hybrid DNS) thông qua Route 53 kết hợp dịch vụ Microsoft AD (Lab 10).
   * Khai thác Amazon CloudWatch để xây dựng các biểu đồ giám sát và hệ thống cảnh báo tự động, theo dõi trực quan hiệu năng hệ thống (Lab 8).
 
-* **Tư duy Kiến trúc Hệ thống:**
-  * Đi sâu vào bộ quy chuẩn AWS Well-Architected Framework. Nắm bắt cách áp dụng thực tiễn 6 khía cạnh cốt yếu (Bảo mật, Chi phí, Độ tin cậy, Hiệu suất, Vận hành, và Bền vững) vào thiết kế cloud.
 
 ### Thách thức & Bài học kinh nghiệm:
 
 * **Thách thức:** Bài thực hành sử dụng rất nhiều tool / mã nguồn ngoài đã quá cũ không còn chạy được.
-* **Bài học:** Không được nhắm mắt làm theo tài liệu blindly. Luôn cần khả năng debug cơ bản (Ví dụ: Đọc lỗi thiếu file thì phải tự `cd` chuyển thư mục).
+* **Bài học:** Phải check lại nội dung trong tài liệu do có nhiều dịch vụ đã được cập nhật, làm theo tài liệu khiến bị lỗi.
 
 ### Kế hoạch Tuần 3:
 

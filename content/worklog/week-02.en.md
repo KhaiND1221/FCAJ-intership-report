@@ -23,7 +23,6 @@
 
 * **Cloud Data Management:**
   * Gained hands-on experience in provisioning Relational Database instances on AWS (Lab 6) and ensuring secure connectivity with EC2 instances running MySQL.
-  * Overcame documentation gaps by independently troubleshooting and resolving database communication issues (Lab 5).
 
 * **Infrastructure & Security Optimization:**
   * Navigated complex networking setups by establishing a hybrid DNS architecture using Route 53 in conjunction with Microsoft AD (Lab 10).
@@ -39,10 +38,10 @@
   * Incomplete instructions during Lab 5 caused DB connection strings to fail initially.
 
 * **Lessons Learned:**
-  * You cannot blindly follow cloud tutorials. Technical intuition (such as manually CD'ing into the application directory or adjusting the connection string protocol) is mandatory to succeed in real engineering tasks.
+  * Must review and verify documentation contents carefully, as many services have been updated; blindly following outdated tutorials can result in errors.
 
 ### Next Week Plan
 
-* Complete Module 5 (Advanced Storage & IAM Concepts).
-* Restrict IAM and EC2 behaviors.
+* Complete Module 5.
+* Implement IAM role restrictions and KMS encryption.
 * Participate in Lab 18 (AWS Security Hub).
