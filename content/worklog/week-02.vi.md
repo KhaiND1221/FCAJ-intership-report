@@ -39,6 +39,5 @@
 ### Kế hoạch Tuần 3:
 
 * Hoàn thành Module 5.
-* Làm mạnh về quản trị lưu trữ FSx.
 * Giới hạn quyền hạn IAM và triển khai KMS mã hóa.
 * Quét lỗi tự động với AWS Security Hub.
