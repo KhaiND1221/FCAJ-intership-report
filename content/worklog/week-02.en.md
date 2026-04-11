@@ -28,8 +28,6 @@
   * Navigated complex networking setups by establishing a hybrid DNS architecture using Route 53 in conjunction with Microsoft AD (Lab 10).
   * Developed a strong understanding of system observability by deploying CloudWatch alarms and custom dashboards to track real-time performance indicators (Lab 8).
 
-* **Cloud Best Practices:**
-  * Extensively studied the AWS Well-Architected Framework, gaining a foundational understanding of its six pillars (Security, Cost, Reliability, Performance, Operational Excellence, and Sustainability) to guide future structural designs.
 
 ### Challenges & Lessons
 
