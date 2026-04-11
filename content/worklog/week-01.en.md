@@ -9,7 +9,7 @@
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Setup Discord Server and Organizational spaces <br> - Join NeuraX HQ Discord server and pick role IA_2 | 20/01/2026 | 21/01/2026 | - |
+| 1 | - Join NeuraX HQ Discord server and pick role IA_2 | 20/01/2026 | 21/01/2026 | - |
 | 2 | - Join GitHub Organization <br> - Read internship rules <br> - Create AWS Account <br>&emsp; + Lab 1: Create AWS account and manage user groups <br>&emsp; + Lab 7: Set up Usage Budgets <br>&emsp; + Lab 9: Learn about AWS Support Services | 21/01/2026 | 22/01/2026 | [Lab 1](https://000001.awsstudygroup.com/) <br> [NeuraX-HQ](https://github.com/NeuraX-HQ) |
 | 3 | - Prepare Kick-off Meeting Agenda and participate in the first group meeting with roles IA_2 (Me), AI-2 — Ngo Hoai Nam, DEV — Chu Anh Quan, IA-1 — Tran Dang Thien Phuoc, AI_1 — Le Nguyen Gia Hung <br> - Begin Module 2 Theory: <br>&emsp; + VPC, Subnets, Routetable, Security Groups <br>&emsp; + VPC Peering, Load Balancing, EC2 <br> - Init personal report with Hugo | 22/01/2026 | 23/01/2026 | [Cloud Journey](https://cloudjourney.awsstudygroup.com/) |
 | 4 | - Complete Module 2 Labs: <br>&emsp; + Lab 3: EC2 Instances and NAT Gateway <br>&emsp; + Lab 10: Key pairs, Security Groups, and RDP <br>&emsp; + Lab 19: VPC Peering Connection & Network ACLs <br>  | 23/01/2026 | 24/01/2026 | [Lab 3](https://000003.awsstudygroup.com/) <br> [Lab 10](https://000010.awsstudygroup.com/) <br> [Lab 19](https://000019.awsstudygroup.com/) |
