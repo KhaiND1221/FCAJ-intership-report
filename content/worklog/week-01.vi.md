@@ -18,16 +18,16 @@
 ### Kết quả đạt được trong Tuần 1:
 
 * Đã tạo và bảo vệ tài khoản AWS an toàn, bao gồm cả thiết lập báo động ngân sách (Lab 7).
-* Triển khai và kết nối thành công với EC2 (MobaXTerm/PuTTY), cấu hình NAT Gateway và quản lý mạng VPC Peering, Transit Gateway (Lab 3, 19, 20).
+* Triển khai và kết nối thành công với EC2, cấu hình NAT Gateway và quản lý mạng VPC Peering, Transit Gateway (Lab 3, 19, 20).
 * Có kinh nghiệm thực hành lưu trữ (S3, Storage Gateway) và thiết lập sao lưu (Lab 13, 24, 57).
-* Sửa thành công một Template CloudFormation bị lỗi thời trong quá trình cấu hình (chuyển sang `t3.micro`).
+
 
 ### Thách thức & Bài học kinh nghiệm:
 
-* **Thách thức:** Bài học đắt giá về việc dọn dẹp tài nguyên (bị tính phí 12$ credits do quên tắt các tài nguyên chạy nền).
+* **Thách thức:** Bài học đắt giá về việc dọn dẹp tài nguyên (bị tính phí 5$ credits do quên tắt EC2 và NAT Gateway).
 * **Bài học:** Việc đầu tiên cần làm trên AWS là giám sát Resource và hiểu rõ Billing Alarm để không bị trừ tiền ngoài ý muốn.
 
 ### Kế hoạch Tuần 2:
 
 * Đi sâu vào Module 3 & 4 (Database và nâng cao Storage).
-* Tham gia Sự kiện AWS Cloud Day.
+* Lên ý tưởng dần cho dự án.

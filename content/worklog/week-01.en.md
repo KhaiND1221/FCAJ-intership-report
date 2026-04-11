@@ -12,7 +12,7 @@
 | 1 | - Setup Discord Server and Organizational spaces | 20/01/2026 | 21/01/2026 | - |
 | 2 | - Read internship rules <br> - Create AWS Account <br>&emsp; + Lab 1: Create AWS account and manage user groups <br>&emsp; + Lab 7: Set up Usage Budgets <br>&emsp; + Lab 9: Learn about AWS Support Services | 21/01/2026 | 22/01/2026 | [Lab 1](https://000001.awsstudygroup.com/) |
 | 3 | - Begin Module 2 Theory: <br>&emsp; + VPC, Subnets, Routetable, Security Groups <br>&emsp; + VPC Peering, Load Balancing, EC2 <br> - Init personal report with Hugo | 22/01/2026 | 23/01/2026 | [Cloud Journey](https://cloudjourney.awsstudygroup.com/) |
-| 4 | - Complete Module 2 Labs: <br>&emsp; + Lab 3: EC2 Instances and NAT Gateway <br>&emsp; + Lab 10: Key pairs, Security Groups, and RDP <br>&emsp; + Lab 19: VPC Peering Connection & Network ACLs <br> - Download MobaXTerm & PuTTY | 23/01/2026 | 24/01/2026 | [Lab 3](https://000003.awsstudygroup.com/) <br> [Lab 10](https://000010.awsstudygroup.com/) <br> [Lab 19](https://000019.awsstudygroup.com/) |
+| 4 | - Complete Module 2 Labs: <br>&emsp; + Lab 3: EC2 Instances and NAT Gateway <br>&emsp; + Lab 10: Key pairs, Security Groups, and RDP <br>&emsp; + Lab 19: VPC Peering Connection & Network ACLs <br>  | 23/01/2026 | 24/01/2026 | [Lab 3](https://000003.awsstudygroup.com/) <br> [Lab 10](https://000010.awsstudygroup.com/) <br> [Lab 19](https://000019.awsstudygroup.com/) |
 | 5 | - Lab 20: Create AWS Transit Gateway <br>&emsp; + Fixed Template (changed instance to t3.micro) <br> - Cleanup resources to avoid charges | 24/01/2026 | 25/01/2026 | [Lab 20](https://000020.awsstudygroup.com/) |
 | 6-7 | - Begin Module 3 Theory: EBS, EFS, S3 Buckets <br> - Lab 13: AWS Backup (Vaults and Plans) <br> - Lab 24: Storage Gateway <br> - Lab 57: Host static website using S3 Buckets | 25/01/2026 | 26/01/2026 | [Lab 13](https://000013.awsstudygroup.com/) <br> [Lab 24](https://000024.awsstudygroup.com/) <br> [Lab 57](https://000057.awsstudygroup.com/) |
 
@@ -23,7 +23,6 @@
 
 * **Networking & Computing:**
   * Mastered deploying EC2 instances, NAT Gateways, and Peering structures (Lab 3, Lab 19).
-  * Debugged and fixed a broken CloudFormation template in the Transit Gateway lab (Lab 20).
 
 * **Storage and Backups:**
   * Configured reliable File shares using Storage Gateway (Lab 24).
@@ -34,9 +33,9 @@
 * **Challenges:**
   * AWS billing can unexpectedly charge you if Lab resources (like Transit Gateways or NATs) are left running overnight. You must delete the stack immediately after testing.
 * **Lessons Learned:**
-  * Fixing old CloudFormation scripts (such as migrating unsupported instance types to `t3.micro`) is a critical real-world cloud engineering skill.
+  * The first priority on AWS is to implement resource monitoring and configure Billing Alarms to prevent unexpected costs.
 
 ### Next Week Plan
 
 * Dive into advanced compute and database implementations (RDS, Load Balancing).
-* Attend the AWS Cloud Day event in HCMC.
+* Brainstorming ideas for the project.
