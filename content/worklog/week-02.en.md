@@ -3,19 +3,23 @@
 * Complete AWS Module 3 & 4.
 * Research the AWS Well-Architected Framework.
 * Set up advanced load testing and databases.
-* Attend the AWS Cloud Day event.
+* Refine project proposal and research project references.
 
 ### Tasks to be carried out this week
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | ⭐ **EVENT:** AWS re:Invent 2025 Recap - Vietnam Edition <br>&emsp; - NutriTrack Proposal Drafting <br>&emsp; + Wrote Problem Statement & AI Solutions <br>&emsp; + Defined my AI-1 scope | 27/01/2026 | 27/01/2026 | - |
+| 1 | ⭐ **EVENT:** AWS re:Invent 2025 Recap - Vietnam Edition <br>&emsp; - NutriTrack Proposal Drafting <br>&emsp; + Collaborated with Hung to refine the Problem Statement and evaluate the feasibility of the AI solution. | 27/01/2026 | 27/01/2026 | - |
 | 2 | - Lab 6: RDS Database & EC2 <br>&emsp; + Install MySQL on EC2 <br>&emsp; + Create Load Balancer & Target Groups <br>&emsp; + Use "Siege" to run load testing (50 concurrent users) on ALBs | 28/01/2026 | 28/01/2026 | [Lab 6](https://000006.awsstudygroup.com/) |
 | 3 | - Lab 5: DB connectivity <br>&emsp; + Fixed missing steps in the provided lab manual regarding connecting RDS to MySQL | 29/01/2026 | 29/01/2026 | [Lab 5](https://000005.awsstudygroup.com/) |
-| 4 | - Participate in **AWS Cloud Day** (Gen AI & Data Track) | 30/01/2026 | 30/01/2026 | [AWS Cloud Day] |
-| 5-6 | - Lab 10: Retry Route 53 hybrid DNS & Microsoft AD <br> - Lab 8: CloudWatch Metrics & Dashboards <br> - Lab 14: Ubuntu config setup <br> - Research: AWS Well-Architected Framework (6 pillars) | 31/01/2026 | 01/02/2026 | [Lab 8](https://000008.awsstudygroup.com/) <br> [Well-Architected Docs] |
+| 4 | - Researched social media platforms for project references: <br>&emsp; + Discovered Cal AI. <br>&emsp; + Explored new ideas for improving Google Maps. | 30/01/2026 | 30/01/2026 | - |
+| 5-6 | - Lab 10: Retry Route 53 hybrid DNS & Microsoft AD <br> - Lab 8: CloudWatch Metrics & Dashboards <br> - Research: AWS Well-Architected Framework (6 pillars) | 31/01/2026 | 01/02/2026 | [Lab 8](https://000008.awsstudygroup.com/) |
 
 ### Week 2 Achievements
+
+* **Project Preparation:**
+  * Collaborated with team members to refine the NutriTrack problem statement and evaluate AI solution feasibility.
+  * Researched reference platforms (Cal AI, Google Maps) to gather innovative ideas for the project.
 
 * **Database & Load Balancing:**
   * Successfully hosted a database utilizing RDS (Lab 6) and connected a MySQL node on EC2.
