@@ -8,9 +8,9 @@
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Thiết lập Discord Server, GitHub Organization | 20/01/2026 | 21/01/2026 | - |
-| 2 | - Khởi tạo tài khoản AWS <br>&emsp; + Lab 1: Quản lý nhóm người dùng IAM <br>&emsp; + Lab 7: Quản lý ngân sách (Budget) <br>&emsp; + Lab 9: Tìm hiểu AWS Support Services | 21/01/2026 | 22/01/2026 | [Lab 1](https://000001.awsstudygroup.com/) |
-| 3 | - Bắt đầu lý thuyết Module 2: <br>&emsp; + Học về VPC, Subnets, Routetable, Security Groups <br>&emsp; + Cài đặt Hugo để viết worklog bằng Markdown | 22/01/2026 | 23/01/2026 | [Cloud Journey](https://cloudjourney.awsstudygroup.com/) |
+| 1 | - Thiết lập Discord Server, GitHub Organization <br> - Tham gia server discord NeuraX HQ và pick role IA_2 | 20/01/2026 | 21/01/2026 | - |
+| 2 | - Tham gia GitHub Organization <br> - Khởi tạo tài khoản AWS <br>&emsp; + Lab 1: Quản lý nhóm người dùng IAM <br>&emsp; + Lab 7: Quản lý ngân sách (Budget) <br>&emsp; + Lab 9: Tìm hiểu AWS Support Services | 21/01/2026 | 22/01/2026 | [Lab 1](https://000001.awsstudygroup.com/) <br> [NeuraX-HQ](https://github.com/NeuraX-HQ) |
+| 3 | - Prepare Kick-off Meeting Agenda và tham gia buổi họp đầu tiên của nhóm với các vai trò IA_2 (Me), AI-2 — Ngo Hoai Nam, DEV — Chu Anh Quan, IA-1 — Tran Dang Thien Phuoc, AI_1 — Le Nguyen Gia Hung <br> - Bắt đầu lý thuyết Module 2: <br>&emsp; + Học về VPC, Subnets, Routetable, Security Groups <br>&emsp; + Cài đặt Hugo để viết worklog bằng Markdown | 22/01/2026 | 23/01/2026 | [Cloud Journey](https://cloudjourney.awsstudygroup.com/) |
 | 4 | - Hoàn thành Lab Module 2: <br>&emsp; + Lab 3: EC2 Instances và NAT Gateway <br>&emsp; + Lab 10: Key pairs, RDP Security Groups <br>&emsp; + Lab 19: VPC Peering, Network ACLs | 23/01/2026 | 24/01/2026 | [Lab 3](https://000003.awsstudygroup.com/) <br> [Lab 10](https://000010.awsstudygroup.com/) |
 | 5 | - Lab 20: Tạo AWS Transit Gateway <br>&emsp; + Sửa lỗi file yaml CloudFormation (đổi EC2 sang t3.micro) | 24/01/2026 | 25/01/2026 | [Lab 20](https://000020.awsstudygroup.com/) |
 | 6-7 | - Bắt đầu lý thuyết Module 3 (EBS, S3, EFS) <br> - Lab 13: Tạo Backup Plan với AWS Backup <br> - Lab 24: Storage Gateway <br> - Lab 57: Host Static Website bằng S3 | 25/01/2026 | 26/01/2026 | [Lab 13](https://000013.awsstudygroup.com/) <br> [Lab 57](https://000057.awsstudygroup.com/)|
