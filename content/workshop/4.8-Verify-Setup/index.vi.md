@@ -4,16 +4,7 @@ Tầng ECS Fargate chạy một FastAPI service containerized song song với Am
 
 ## Kiến trúc
 
-```mermaid
-graph LR
-  Internet -->|HTTP 80| ALB["Application\nLoad Balancer\n(public subnet)"]
-  ALB -->|TCP 8000| Task["ECS Fargate Task\n(FastAPI)\n(private subnet)"]
-  Task -->|via NAT| Bedrock["Amazon Bedrock\nap-southeast-2"]
-  Task -->|S3 VPCE| S3["S3 Cache Bucket"]
-  Task -->|via NAT| SecretsManager["Secrets Manager"]
-  Dev["Developer"] -->|docker push| DockerHub["Docker Hub"]
-  DockerHub -->|via NAT| Task
-```
+``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
 
 Fargate task chạy trong private subnet; ALB nằm trong public subnet. Task tiếp cận AWS service qua NAT Instance (tiết kiệm 70% so với NAT Gateway) hoặc S3 Gateway VPCE (miễn phí).
 

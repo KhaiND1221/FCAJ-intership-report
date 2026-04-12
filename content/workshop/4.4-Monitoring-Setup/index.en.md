@@ -16,21 +16,7 @@ From a single `amplify/data/resource.ts` file, Amplify Gen 2 produces:
 
 ## Architecture
 
-```mermaid
-flowchart LR
-  App[Expo / React Native app] -->|GraphQL| Client[Amplify JS client<br/>generateClient&lt;Schema&gt;]
-  Client -->|HTTPS + Cognito JWT| AppSync[AWS AppSync<br/>GraphQL API]
-
-  AppSync -->|auto-generated resolvers| DDB[(DynamoDB<br/>8 tables)]
-  AppSync -->|custom resolver| AiEngine[Lambda: ai-engine]
-  AppSync -->|custom resolver| ProcNut[Lambda: process-nutrition]
-  AppSync -->|custom resolver| FriendReq[Lambda: friend-request]
-
-  AiEngine --> Bedrock[Bedrock Qwen3-VL]
-  AiEngine --> Transcribe[Amazon Transcribe]
-  ProcNut --> DDB
-  FriendReq --> DDB
-```
+``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
 
 ## The 8 models at a glance
 

@@ -4,17 +4,7 @@ Run this section the same day you finish the workshop. AWS will happily bill you
 
 ## Order of Operations
 
-```mermaid
-flowchart TD
-  A[1. Delete Amplify sandbox] --> B[2. Delete Amplify branches]
-  B --> C[3. Empty S3 buckets]
-  C --> D[4. Delete remaining CloudFormation stacks]
-  D --> E[5. Destroy ECS Fargate tier]
-  E --> F[6. Remove Docker Hub image]
-  F --> G[7. Revoke Bedrock access]
-  G --> H[8. Delete workshop IAM users/roles]
-  H --> I[9. Verify: list-stacks + Cost Explorer]
-```
+``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
 
 ## 1. Delete the Amplify Sandbox
 

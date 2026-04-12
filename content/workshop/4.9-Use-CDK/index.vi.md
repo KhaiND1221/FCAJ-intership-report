@@ -125,12 +125,7 @@ npx ampx sandbox secret list
 
 Đường promotion cứng theo thứ tự: sandbox → `feat/phase3` → `main`.
 
-```mermaid
-flowchart LR
-  Dev[Laptop developer<br/>npx ampx sandbox] -->|commit + push| Feat[Branch: feat/phase3<br/>Amplify env: fe-]
-  Feat -->|PR + merge| Main[Branch: main<br/>Amplify env: ma-]
-  Main -->|Amplify Hosting| Prod[Production<br/>DynamoDB + AppSync + Lambda]
-```
+``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
 
 ### Vòng lặp hằng ngày
 

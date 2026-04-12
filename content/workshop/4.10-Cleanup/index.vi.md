@@ -4,17 +4,7 @@ Chạy phần này ngay trong ngày bạn kết thúc workshop. AWS sẽ vui v�
 
 ## Thứ tự thao tác
 
-```mermaid
-flowchart TD
-  A[1. Xoa Amplify sandbox] --> B[2. Xoa Amplify branches]
-  B --> C[3. Lam trong S3 buckets]
-  C --> D[4. Xoa CloudFormation stack con lai]
-  D --> E[5. Destroy ECS Fargate]
-  E --> F[6. Xoa image Docker Hub]
-  F --> G[7. Thu hoi quyen Bedrock]
-  G --> H[8. Xoa IAM user/role cua workshop]
-  H --> I[9. Verify: list-stacks + Cost Explorer]
-```
+``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
 
 ## 1. Xóa Amplify Sandbox
 

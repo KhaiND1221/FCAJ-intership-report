@@ -12,18 +12,7 @@ Các phase sau sẽ gắn Lambda, AppSync, DynamoDB lên nền tảng này mà k
 
 ## Kiến trúc của phase này
 
-![Kiến trúc cho Thiết lập Nền tảng](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
-
-```mermaid
-flowchart LR
-    Dev[May dev] -->|npx ampx sandbox| CLI[Amplify Gen 2 CLI]
-    CLI -->|synth| CFN[CloudFormation]
-    CFN --> Cognito[Cognito User Pool<br/>+ Hosted UI]
-    CFN --> S3[S3 Bucket<br/>nutritrack_media_bucket]
-    CFN --> IAM[IAM Roles<br/>authRole / unauthRole]
-    Cognito -.->|identity pool| IAM
-    IAM -.->|scoped access| S3
-```
+``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
 
 Amplify CLI chạy TypeScript, bên dưới synth thành một CDK app, và submit một CloudFormation stack cho mỗi dev (stack sandbox). Tên stack có dạng `amplify-nutritrack-<username>-sandbox-<hash>`.
 
