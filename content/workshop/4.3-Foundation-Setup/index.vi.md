@@ -12,6 +12,8 @@ Các phase sau sẽ gắn Lambda, AppSync, DynamoDB lên nền tảng này mà k
 
 ## Kiến trúc của phase này
 
+![Kiến trúc cho Thiết lập Nền tảng](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
+
 ```mermaid
 flowchart LR
     Dev[May dev] -->|npx ampx sandbox| CLI[Amplify Gen 2 CLI]

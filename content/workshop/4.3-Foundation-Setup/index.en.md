@@ -12,6 +12,8 @@ Later phases bolt Lambdas, AppSync, and DynamoDB onto this foundation without to
 
 ## Architecture for this phase
 
+![Architecture for Foundation Setup](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
+
 ```mermaid
 flowchart LR
     Dev[Developer laptop] -->|npx ampx sandbox| CLI[Amplify Gen 2 CLI]
