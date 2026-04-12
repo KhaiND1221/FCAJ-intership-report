@@ -12,7 +12,7 @@ Later phases bolt Lambdas, AppSync, and DynamoDB onto this foundation without to
 
 ## Architecture for this phase
 
-``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
+![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
 
 The Amplify CLI runs TypeScript, synthesizes a CDK app under the hood, and submits one CloudFormation stack per developer (the sandbox stack). The stack name is of the form `amplify-nutritrack-<username>-sandbox-<hash>`.
 

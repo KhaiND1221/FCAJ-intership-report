@@ -4,7 +4,7 @@ Chạy phần này ngay trong ngày bạn kết thúc workshop. AWS sẽ vui v�
 
 ## Thứ tự thao tác
 
-``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
+![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
 
 ## 1. Xóa Amplify Sandbox
 

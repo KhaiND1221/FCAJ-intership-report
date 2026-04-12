@@ -4,7 +4,7 @@ Run this section the same day you finish the workshop. AWS will happily bill you
 
 ## Order of Operations
 
-``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
+![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
 
 ## 1. Delete the Amplify Sandbox
 

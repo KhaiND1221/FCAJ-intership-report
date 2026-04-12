@@ -125,7 +125,7 @@ npx ampx sandbox secret list
 
 The promotion path is strictly linear: sandbox → `feat/phase3` → `main`.
 
-``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
+![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
 
 ### Day-to-day loop
 

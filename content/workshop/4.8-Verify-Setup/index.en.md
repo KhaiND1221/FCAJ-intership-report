@@ -4,7 +4,7 @@ The ECS Fargate tier runs a containerized FastAPI service alongside the serverle
 
 ## Architecture
 
-``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
+![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
 
 Fargate tasks run in private subnets; the ALB sits in public subnets. Tasks reach AWS services via NAT Instance (70% cheaper than NAT Gateway) or the S3 Gateway VPCE (free).
 

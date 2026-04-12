@@ -16,7 +16,7 @@ Từ một file `amplify/data/resource.ts` duy nhất, Amplify Gen 2 tạo ra:
 
 ## Kiến trúc
 
-``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
+![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
 
 ## Tổng quan 8 model
 

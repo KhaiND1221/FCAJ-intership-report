@@ -20,7 +20,7 @@ Timeout 120 giây của `ai-engine` là bắt buộc vì `voiceToFood` khởi đ
 
 ## Kiến trúc
 
-``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
+![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
 
 ## Model Bedrock chuẩn
 

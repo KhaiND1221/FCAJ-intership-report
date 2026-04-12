@@ -125,7 +125,7 @@ npx ampx sandbox secret list
 
 Đường promotion cứng theo thứ tự: sandbox → `feat/phase3` → `main`.
 
-``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
+![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
 
 ### Vòng lặp hằng ngày
 

@@ -230,7 +230,7 @@ Now that the ECS SG exists, update the ALB SG outbound rule:
 
 ### 4.5 Security Group Chain Diagram
 
-``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
+![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
 
 ---
 

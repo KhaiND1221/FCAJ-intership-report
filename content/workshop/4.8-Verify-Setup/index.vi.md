@@ -4,7 +4,7 @@ Tầng ECS Fargate chạy một FastAPI service containerized song song với Am
 
 ## Kiến trúc
 
-``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
+![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
 
 Fargate task chạy trong private subnet; ALB nằm trong public subnet. Task tiếp cận AWS service qua NAT Instance (tiết kiệm 70% so với NAT Gateway) hoặc S3 Gateway VPCE (miễn phí).
 

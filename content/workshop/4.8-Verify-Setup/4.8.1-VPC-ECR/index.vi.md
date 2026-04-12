@@ -234,7 +234,7 @@ Giờ ECS SG đã có, cập nhật Outbound rule cho ALB SG:
 
 ### 4.5 Sơ đồ Security Group Chain
 
-``![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)``
+![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
 
 ---
 
