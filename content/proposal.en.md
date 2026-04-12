@@ -41,7 +41,7 @@ The platform employs a multi-layer serverless AWS architecture to manage user da
 
 #### NutriTrack Platform Architecture
 
-![NutriTrack Solution Architecture](/hei-FCAJ-intership-report/solution-architect/nutritrack-solution-architecture.drawio.svg)
+![NutriTrack Solution Architecture](/FCAJ-intership-report/solution-architect/nutritrack-solution-architecture.drawio.svg)
 
 **AWS Services Used**
 

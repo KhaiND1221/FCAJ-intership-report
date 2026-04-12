@@ -45,7 +45,7 @@ Sau khi hoàn thành workshop, bạn sẽ có một stack đang chạy gồm:
 
 ## Kiến trúc tổng quan
 
-![Kiến trúc tổng thể NutriTrack](/hei-FCAJ-intership-report/solution-architect/nutritrack-solution-architecture.drawio.svg)
+![Kiến trúc tổng thể NutriTrack](/FCAJ-intership-report/solution-architect/nutritrack-solution-architecture.drawio.svg)
 
 ## Kết quả học tập
 

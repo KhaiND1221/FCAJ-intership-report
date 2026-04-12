@@ -45,7 +45,7 @@ By the end of this workshop you will have a running stack that contains:
 
 ## Architecture at a Glance
 
-![NutriTrack Solution Architecture](/hei-FCAJ-intership-report/solution-architect/nutritrack-solution-architecture.drawio.svg)
+![NutriTrack Solution Architecture](/FCAJ-intership-report/solution-architect/nutritrack-solution-architecture.drawio.svg)
 
 ## Learning Outcomes
 
