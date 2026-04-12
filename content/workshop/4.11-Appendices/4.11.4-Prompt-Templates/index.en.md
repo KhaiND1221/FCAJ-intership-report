@@ -6,8 +6,10 @@ All system prompts used by the `aiEngine` Lambda are defined as module-level con
 
 ## GEN_FOOD_SYSTEM_PROMPT
 
-**Action**: `analyzeFoodImage`, `generateFoodNutrition`
-**Purpose**: Analyze a food photo or name and return a structured nutrition JSON. This is the most-used prompt — every camera log and DB-miss search flows through it.
+**Action**: `generateFoodNutrition`
+**Purpose**: Look up a food name not found in the local DB and return a structured nutrition JSON.
+
+> **Image scanning** (`analyzeFoodImage`, `analyzeFoodLabel`, `scanBarcode`) is handled by the `scan-image` Lambda, which proxies to ECS FastAPI — those routes do **not** use this prompt.
 **Input variables**: None substituted at runtime. The user message carries the image (base64 data URL) or the food name string.
 **Expected output**: Strict JSON. The model must not output markdown code fences, prose, or any text outside the JSON object.
 
@@ -337,7 +339,7 @@ Every Qwen3-VL call in NutriTrack must produce machine-readable data (nutrition 
 
 ### `extractAndParseJSON` approach
 
-Qwen3-VL occasionally wraps its output in a markdown code fence (````json ... ````), especially on first-token generation. Rather than declaring model-level JSON mode (which not all Bedrock model versions support via `InvokeModelCommand`), `aiService.ts` applies a regex strip as a fallback:
+Qwen3-VL occasionally wraps its output in a markdown code fence (` ```json ... ``` `), especially on first-token generation. Rather than declaring model-level JSON mode (which not all Bedrock model versions support via `InvokeModelCommand`), `aiService.ts` applies a regex strip as a fallback:
 
 ```typescript
 function extractAndParseJSON(text: string): any {
@@ -352,7 +354,7 @@ This is more robust than strict JSON mode for a model that may change its defaul
 
 ### "You are Ollie" framing
 
-Every prompt starts with `You are Ollie` to anchor the model to a consistent persona across all 10 action types. Without this anchor, a model fine-tuned on diverse corpora may switch voice mid-conversation (formal → casual, or English → Vietnamese without trigger). The consistent framing also makes tone calibration predictable — if Ollie is too formal in one action, the fix is the same across all prompts.
+Every prompt starts with `You are Ollie` to anchor the model to a consistent persona across all 9 action types. Without this anchor, a model fine-tuned on diverse corpora may switch voice mid-conversation (formal → casual, or English → Vietnamese without trigger). The consistent framing also makes tone calibration predictable — if Ollie is too formal in one action, the fix is the same across all prompts.
 
 ### Temperature tuning
 
@@ -374,18 +376,19 @@ const body = JSON.stringify({
 
 ### Token budgeting for Qwen3-VL
 
-A typical `analyzeFoodImage` call:
+> **Image scanning** (`analyzeFoodImage`, `analyzeFoodLabel`, `scanBarcode`) is **not** billed through Bedrock — those actions route directly to the ECS FastAPI service. No Bedrock token costs are incurred for image analysis.
 
-- System prompt: ~400 tokens.
-- Image (base64 JPEG 1280px @ quality 85): ~800–2000 tokens depending on visual complexity.
-- User message: ~30 tokens.
-- **Input total**: ~1200–2400 tokens.
+A typical `generateFoodNutrition` call (text-only DB miss):
+
+- System prompt (`GEN_FOOD_SYSTEM_PROMPT`): ~400 tokens.
+- User message (food name): ~20 tokens.
+- **Input total**: ~420 tokens.
 - **Output** (nutrition JSON): ~300–500 tokens.
-- **Total**: ~1500–3000 tokens.
+- **Total**: ~700–900 tokens.
 
-At Bedrock Qwen3-VL pricing (~$0.002/1K input tokens, ~$0.006/1K output tokens, ap-southeast-2 2025 rates), each food photo analysis costs roughly $0.003–$0.005. For a user logging 3 meals/day via camera, that's ~$0.40/month in Bedrock costs alone.
+At Bedrock Qwen3-VL pricing (~$0.002/1K input tokens, ~$0.006/1K output tokens, ap-southeast-2 2025 rates), each DB-miss lookup costs roughly $0.003–$0.004. For a user triggering 3–5 DB misses/day, that's well under $0.10/month in Bedrock costs.
 
-Text-only actions (coach tips, macro calculation) consume far fewer tokens — typically $0.001 or less per call.
+Text-only actions (coach tips, macro calculation) consume similar or fewer tokens — typically $0.001 or less per call.
 
 ## Cross-links
 

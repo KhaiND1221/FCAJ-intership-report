@@ -2,7 +2,7 @@
 
 `scan-image` là Lambda thứ năm trong NutriTrack. Nó không phải orchestrator AI đa năng — nó có đúng một nhiệm vụ: nhận S3 object key từ AppSync, tải ảnh, xác thực với cụm ECS FastAPI bằng JWT tự ký, chuyển tiếp ảnh dưới dạng multipart form-data, và poll kết quả.
 
-Container ECS FastAPI chạy vision model thực sự (Qwen3-VL trên endpoint Bedrock hoặc GPU nội bộ). Lambda là cầu nối bảo mật giữa tầng API serverless và tầng suy luận container hóa.
+Container ECS FastAPI chạy pipeline AI inference riêng và có thể truy cập qua Application Load Balancer tại `http://nutritrack-api-vpc-alb-1060755902.ap-southeast-2.elb.amazonaws.com`. Lambda là cầu nối bảo mật giữa tầng AppSync serverless và tầng compute container hóa.
 
 ## Định nghĩa resource
 
@@ -26,17 +26,15 @@ export const scanImage = defineFunction({
 | Biến | Nguồn | Mục đích |
 | --- | --- | --- |
 | `STORAGE_BUCKET_NAME` | CDK property override | S3 bucket để tải ảnh |
-| `ECS_API_URL` | CDK property override | ALB DNS hoặc domain của cụm FastAPI |
-| `NUTRITRACK_API_KEY_SECRET_ID` | CDK property override | Tên secret trong Secrets Manager chứa API key |
+| `ECS_BASE_URL` | CDK property override | ALB DNS hoặc domain của cụm FastAPI |
 
-Cả ba được inject lúc deploy — không bao giờ hard-code:
+Cả hai được inject lúc deploy. Tên secret trong Secrets Manager được hard-code trong handler là `"nutritrack/prod/api-keys"` và không cần env var riêng:
 
 ```typescript
 // backend.ts (trích)
-const cfnScanImageFn = scanImageLambda.node.defaultChild as cdk.aws_lambda.CfnFunction;
+const cfnScanImageFn = backend.scanImage.resources.lambda.node.defaultChild as cdk.aws_lambda.CfnFunction;
 cfnScanImageFn.addPropertyOverride('Environment.Variables.STORAGE_BUCKET_NAME', s3Bucket.bucketName);
-cfnScanImageFn.addPropertyOverride('Environment.Variables.ECS_API_URL', ecsAlbDns);
-cfnScanImageFn.addPropertyOverride('Environment.Variables.NUTRITRACK_API_KEY_SECRET_ID', apiKeySecret.secretName);
+cfnScanImageFn.addPropertyOverride('Environment.Variables.ECS_BASE_URL', ecsAlbDns);
 ```
 
 ## Xác thực JWT với ECS
@@ -54,7 +52,7 @@ function buildJWT(secret: string): string {
   const payload = Buffer.from(JSON.stringify({
     iss: 'nutritrack-scan-image',
     iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 60, // TTL 1 phút
+    exp: Math.floor(Date.now() / 1000) + 300, // TTL 5 phút
   })).toString('base64url');
   const signature = createHmac('sha256', secret)
     .update(`${header}.${payload}`)
@@ -71,9 +69,9 @@ Container FastAPI xác thực JWT trên mỗi request. Request không có token 
 
 | Tham số action | Endpoint ECS | Đầu vào | Kết quả |
 | --- | --- | --- | --- |
-| `analyze-food` | `POST /analyze-food` | Form-data ảnh | JSON dinh dưỡng (food_id, macros, ingredients) |
-| `analyze-label` | `POST /analyze-label` | Form-data ảnh | Nhãn dinh dưỡng đã parse (macro theo khẩu phần) |
-| `scan-barcode` | `POST /scan-barcode` | Form-data ảnh | Số barcode + mặt hàng thực phẩm khớp |
+| `analyzeFoodImage` | `POST /api/ai/analyze-food` | Form-data ảnh | JSON dinh dưỡng (food_id, macros, ingredients) |
+| `analyzeFoodLabel` | `POST /api/ai/analyze-label` | Form-data ảnh | Nhãn dinh dưỡng đã parse (macro theo khẩu phần) |
+| `scanBarcode` | `POST /api/ai/scan-barcode` | Form-data ảnh | Số barcode + mặt hàng thực phẩm khớp |
 
 ## Luồng polling bất đồng bộ
 
@@ -81,7 +79,7 @@ ECS FastAPI xử lý ảnh bất đồng bộ. Một POST trả về `job_id` ng
 
 ```typescript
 async function submitAndPoll(endpoint: string, imageBuffer: Buffer, contentType: string, jwt: string): Promise<string> {
-  const ECS_URL = process.env.ECS_API_URL!;
+  const ECS_URL = process.env.ECS_BASE_URL!;
 
   // 1. Submit ảnh
   const form = new FormData();
@@ -94,8 +92,8 @@ async function submitAndPoll(endpoint: string, imageBuffer: Buffer, contentType:
   });
   const { job_id } = await submitRes.json();
 
-  // 2. Poll mỗi 3 giây, tối đa 9 lần (27 giây)
-  for (let i = 0; i < 9; i++) {
+  // 2. Poll mỗi 3 giây, tối đa 90 lần (270 giây)
+  for (let i = 0; i < 90; i++) {
     await new Promise((r) => setTimeout(r, 3000));
     const pollRes = await fetch(`${ECS_URL}/jobs/${job_id}`, {
       headers: { Authorization: `Bearer ${jwt}` },
@@ -104,7 +102,7 @@ async function submitAndPoll(endpoint: string, imageBuffer: Buffer, contentType:
     if (result.status === 'completed') return JSON.stringify(result.data);
     if (result.status === 'failed') throw new Error(result.error ?? 'ECS job failed');
   }
-  throw new Error('Job timed out after 27 s');
+  throw new Error('Job timed out after 270 s');
 }
 ```
 
@@ -135,9 +133,9 @@ export const handler = async (event: AppSyncResolverEvent<{ action: string; payl
 
     // Route đến endpoint ECS đúng
     const endpointMap: Record<string, string> = {
-      'analyze-food':  '/analyze-food',
-      'analyze-label': '/analyze-label',
-      'scan-barcode':  '/scan-barcode',
+      'analyzeFoodImage': '/api/ai/analyze-food',
+      'analyzeFoodLabel': '/api/ai/analyze-label',
+      'scanBarcode':      '/api/ai/scan-barcode',
     };
     const endpoint = endpointMap[action];
     if (!endpoint) throw new Error(`Unknown action: ${action}`);
@@ -169,7 +167,7 @@ scanImage: a
 
 ```typescript
 const res = await client.queries.scanImage({
-  action: 'analyze-food',
+  action: 'analyzeFoodImage',
   payload: JSON.stringify({ s3Key: 'incoming/user-abc/img-1.jpg' }),
 });
 const outer = JSON.parse(res.data ?? '{}');
@@ -186,7 +184,7 @@ if (outer.success) {
 | AppSync → Lambda | IAM invocation (Amplify quản lý) |
 | Lambda → S3 | IAM policy `s3:GetObject` (least-privilege) |
 | Lambda → Secrets Manager | IAM policy `secretsmanager:GetSecretValue` |
-| Lambda → ECS ALB | `Authorization: Bearer <JWT HS256>` (TTL 1 phút) |
+| Lambda → ECS ALB | `Authorization: Bearer <JWT HS256>` (TTL 5 phút) |
 | ECS ALB | Xác thực chữ ký JWT và hạn sử dụng trước khi forward |
 
 Không có request nào có thể đến thẳng ECS từ internet: listener rule của ALB từ chối mọi request không có JWT hợp lệ, và secret JWT chỉ được truy cập bởi role Lambda `scan-image`.

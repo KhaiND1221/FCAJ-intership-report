@@ -1,29 +1,51 @@
 # 4.1 Overview
 
-NutriTrack is a production-grade, AI-powered nutrition tracking platform built on AWS Amplify Gen 2. This workshop walks you through deploying the exact backend and mobile client that ships in `TEMPLATE/neurax-web-app/`, end to end, in a single working day.
+NutriTrack is a production-grade, AI-powered nutrition tracking platform built on AWS Amplify Gen 2. This workshop walks you through deploying the exact backend and mobile client that — source: [neurax-web-app](https://github.com/NeuraX-HQ/neurax-web-app) — end to end, in a single working day.
 
 ## What You Will Build
 
 By the end of this workshop you will have a running stack that contains:
 
 - **8 DynamoDB models** managed by AppSync (`Food`, `user`, `FoodLog`, `FridgeItem`, `Challenge`, `ChallengeParticipant`, `Friendship`, `UserPublicStats`) defined in `backend/amplify/data/resource.ts`.
-- **4 Lambda functions** on **Node.js 22 / ARM64**:
+- **5 Lambda functions** on **Node.js 22 / ARM64**:
   - `ai-engine` — multi-action AI handler, 512 MB, 120 s timeout.
   - `process-nutrition` — hybrid DynamoDB + AI nutrition lookup.
   - `friend-request` — friend system mutations.
   - `resize-image` — S3 event trigger on the `incoming/` prefix.
-- **10 AI actions** served by the `aiEngine` Lambda: `analyzeFoodImage`, `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`.
+  - `scan-image` — image processing proxy: fetches files from S3, forwards to ECS FastAPI (`/analyze-food`, `/analyze-label`, `/scan-barcode`) via JWT-authenticated requests, and returns results via asynchronous job polling.
+- **9 AI actions** served by the `aiEngine` Lambda: `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`. Image scanning is handled by the dedicated `scan-image` Lambda.
 - **Amazon Bedrock** foundation model `qwen.qwen3-vl-235b-a22b` in **ap-southeast-2** (Sydney), invoked by the AI coach persona **Ollie**.
 - **Amazon S3** storage bucket with `incoming/`, `voice/`, and `media/` prefixes, wired to `resize-image` via an S3 event notification and a 1-day lifecycle rule on `incoming/`.
 - **Amazon Cognito** user pool with email + OTP signup and Google federated identity.
 - **Amazon Transcribe** for voice-to-food logging, invoked from `ai-engine` with a resource-policy grant on `voice/*`.
 - **ECS Fargate** container tier running a FastAPI service (`backend/main.py`) behind an Application Load Balancer, deployed from `infrastructure/` (Terraform) or `ECS/` (Docker + CI/CD).
-- **Expo mobile app** (SDK 54, React Native 0.81, React 19, Expo Router 6, Zustand 5, `@react-three/fiber`) in `frontend/`.
+- **Expo mobile app** (SDK 54, React Native 0.81, React 19, Expo Router 6, Zustand 5) in `frontend/`.
+
+## AWS Services Used
+
+| Service | Role in NutriTrack |
+| --- | --- |
+| **AWS Amplify Gen 2** | Project scaffold, CI/CD pipeline (`amplify.yml`), multi-environment deployments (sandbox → staging → production) |
+| **AWS AppSync** | Managed GraphQL API — all client queries, mutations, and real-time subscriptions route through AppSync |
+| **Amazon DynamoDB** | Primary NoSQL datastore for 8 data models (`Food`, `FoodLog`, `FridgeItem`, `Challenge`, `Friendship`, and more) |
+| **AWS Lambda** | Five Node.js 22 / ARM64 functions: `aiEngine`, `processNutrition`, `friendRequest`, `resizeImage`, `scanImage` |
+| **AWS Secrets Manager** | Secure storage for `NUTRITRACK_API_KEY` — the shared secret used by `scanImage` Lambda to generate HS256 JWT tokens for ECS authentication |
+| **Amazon Bedrock** | Foundation model inference — `qwen.qwen3-vl-235b-a22b` (Qwen3-VL 235B) in `ap-southeast-2` for all 9 AI actions |
+| **Amazon S3** | Media storage with four prefixes (`incoming/`, `voice/`, `avatar/`, `media/`) and a 1-day lifecycle rule on `incoming/` |
+| **Amazon Cognito** | User authentication — email + OTP signup and Google federated identity via the Hosted UI |
+| **Amazon Transcribe** | Speech-to-text for Vietnamese voice food logging (`vi-VN`), invoked from `aiEngine` |
+| **Amazon ECS Fargate** | Containerized FastAPI service behind an Application Load Balancer for high-throughput API routes |
+| **Amazon ECR** | Not used in production — NutriTrack hosts the FastAPI image on Docker Hub free tier to avoid ECR storage costs |
+| **Amazon VPC** | Network isolation for the ECS tier — private subnets, NAT Gateway, VPC endpoints for DynamoDB/S3 |
+| **Amazon CloudWatch** | Logs, metrics, and alarms for Lambda execution, Bedrock latency, and ECS health |
+| **AWS IAM** | Least-privilege execution roles for each Lambda and ECS task; Cognito identity pool roles for mobile client |
+| **Amazon CloudFront** | CDN for the Amplify Hosting frontend (auto-configured by Amplify) |
+| **Amazon Route 53** | DNS routing for the ALB endpoint and CloudFront distribution |
+| **AWS WAF** | Web Application Firewall protecting the CloudFront + ALB layer from malicious traffic |
 
 ## Architecture at a Glance
 
-![Architecture at a Glance](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
-
+![NutriTrack Solution Architecture](/hei-FCAJ-intership-report/solution-architect/nutritrack-solution-architecture.drawio.svg)
 
 ## Learning Outcomes
 
@@ -39,23 +61,15 @@ After completing this workshop you will be able to:
 
 ## Estimated Cost
 
-Based on the actual AWS pricing model **without Free Tier benefits**, here is the updated cost analysis:
+| Service | 1 Day (workshop) | 1 Month (100 DAU) |
+| --- | --- | --- |
+| Amplify Gen 2 (AppSync, DynamoDB, Lambda, S3) | < $1 | ~$13 |
+| Amazon Bedrock (Qwen3-VL 235B) | ~$2–5 | ~$30 |
+| Amazon Transcribe (voice logs) | < $0.50 | ~$6 |
+| ECS Fargate + ALB + NAT Instance | ~$2–5 | ~$44 |
+| **Total** | **~$5–10** | **~$93** |
 
-### 1-Day Workshop (1 User)
-- **Assumption:** 1 developer running smoke tests (approx. 50-100 Bedrock API calls, 1 ECS Fargate task running for 8 hours).
-- **Compute:** ECS Fargate (0.25 vCPU, 0.5 GB RAM) for 8 hours ≈ $0.15.
-- **AI Processing (Bedrock):** ~1M input/output tokens using `qwen3-vl` ≈ $1.00 - $3.00.
-- **Other Services (DynamoDB, AppSync, S3, Cognito):** Minimal standard usage ≈ $0.50.
-- **Total Estimated Cost:** **$2.00 - $5.00 USD/day**.
-
-### 1-Month Production (1,000 Users)
-- **Assumption:** 1,000 daily active users, averaging 5 food logs (Bedrock API calls) per day. Total ≈ 150,000 requests/month.
-- **Compute:** 2 ECS Fargate tasks running 24/7 ≈ $17.50.
-- **AI Processing (Bedrock):** 150k calls × ~2,000 tokens/call ≈ 300 million tokens/month ≈ $300.00 - $600.00.
-- **Data (DynamoDB & S3):** ~50GB storage, read/write units ≈ $15.00.
-- **Total Estimated Cost:** **$350.00 - $650.00 USD/month**.
-
-*(Note: The dominant cost is Amazon Bedrock token usage. Enable AWS Budgets before you begin.)*
+The dominant cost driver is **Amazon Bedrock** — AI coaching and food text lookups account for the majority of Bedrock spend. Image scanning now runs on ECS Fargate (via `scanImage` Lambda proxy to FastAPI), shifting photo-analysis cost to the ECS compute line. Enable AWS Budgets with a **$25/month** alert before starting. See the full breakdown in [4.11.1 Budget Breakdown](/workshop/4.11.1-Budget-Breakdown).
 
 ## Duration and Difficulty
 
@@ -64,23 +78,27 @@ Based on the actual AWS pricing model **without Free Tier benefits**, here is th
 
 ## Workshop Sections
 
-1. [4.2 Prerequisites](../4.2-Prerequiste/) — accounts, tooling, Bedrock access request.
-2. [4.3 Foundation Setup](../4.3-Foundation-Setup/) — repo layout, Amplify sandbox, Cognito.
-3. [4.4 Monitoring Setup](../4.4-Monitoring-Setup/) — AppSync and DynamoDB models.
-4. [4.5 Processing Setup](../4.5-Processing-Setup/) — Bedrock + `ai-engine` Lambda.
-5. [4.6 Automation Setup](../4.6-Automation-Setup/) — S3, resize-image trigger, Transcribe.
-6. [4.7 Dashboard Setup](../4.7-Dashboard-Setup/) — Expo app configuration.
-7. [4.8 Verify Setup](../4.8-Verify-Setup/) — end-to-end smoke tests.
-8. [4.9 CI/CD — Amplify Multi-Environment](../4.9-Use-CDK/) — `amplify.yml`, sandbox → `feat/phase3` → `main`.
-9. [4.10 Cleanup](../4.10-Cleanup/) — destructive-safe teardown.
-10. [4.11 Appendices](../4.11-Appendices/) — cost breakdown, troubleshooting, references.
+1. [4.2 Prerequisites](/workshop/4.2-Prerequiste) — accounts, tooling, Bedrock access request.
+2. [4.3 Foundation Setup](/workshop/4.3-Foundation-Setup) — repo layout, Amplify sandbox, Cognito.
+3. [4.4 Monitoring Setup](/workshop/4.4-Monitoring-Setup) — AppSync and DynamoDB models.
+4. [4.5 Processing Setup](/workshop/4.5-Processing-Setup) — Bedrock + `ai-engine` Lambda.
+5. [4.6 Automation Setup](/workshop/4.6-Automation-Setup) — S3, resize-image trigger, Transcribe.
+6. [4.7 Dashboard Setup](/workshop/4.7-Dashboard-Setup) — Expo app configuration.
+7. [4.8 Verify Setup](/workshop/4.8-Verify-Setup) — end-to-end smoke tests.
+8. [4.9 CI/CD — Amplify Multi-Environment](/workshop/4.9-Use-CDK) — `amplify.yml`, sandbox → `feat/phase3` → `main`.
+9. [4.10 Cleanup](/workshop/4.10-Cleanup) — destructive-safe teardown.
+10. [4.11 Appendices](/workshop/4.11-Appendices) — cost breakdown, troubleshooting, references.
+
+## Team 11 — NeuraX
+
+Built by **Team 11 — NeuraX** during the First Cloud AI Journey (FCAJ) internship at Amazon Web Services Vietnam. See the [proposal](/proposal) for the full member list and role breakdown.
 
 ## Source of Truth
 
-Every claim in this workshop is grounded in the real implementation under `TEMPLATE/neurax-web-app/`. When the documentation and the code disagree, the code wins. Key files to keep open in a second tab:
+Every claim in this workshop is grounded in the real implementation under the [neurax-web-app](https://github.com/NeuraX-HQ/neurax-web-app) repository. When the documentation and the code disagree, the code wins. Key files to keep open in a second tab:
 
-- `TEMPLATE/neurax-web-app/backend/amplify/backend.ts`
-- `TEMPLATE/neurax-web-app/backend/amplify/data/resource.ts`
-- `TEMPLATE/neurax-web-app/backend/amplify/ai-engine/handler.ts`
-- `TEMPLATE/neurax-web-app/amplify.yml`
-- `TEMPLATE/neurax-web-app/CLAUDE.md`
+- `backend/amplify/backend.ts` ([view](https://github.com/NeuraX-HQ/neurax-web-app/blob/main/backend/amplify/backend.ts))
+- `backend/amplify/data/resource.ts` ([view](https://github.com/NeuraX-HQ/neurax-web-app/blob/main/backend/amplify/data/resource.ts))
+- `backend/amplify/ai-engine/handler.ts` ([view](https://github.com/NeuraX-HQ/neurax-web-app/blob/main/backend/amplify/ai-engine/handler.ts))
+- `amplify.yml` ([view](https://github.com/NeuraX-HQ/neurax-web-app/blob/main/amplify.yml))
+- `CLAUDE.md` ([view](https://github.com/NeuraX-HQ/neurax-web-app/blob/main/CLAUDE.md))

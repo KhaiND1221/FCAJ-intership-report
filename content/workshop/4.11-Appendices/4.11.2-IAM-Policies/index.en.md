@@ -120,7 +120,7 @@ This is the risky one. The Lambda's `discoverTableName()` helper falls back to `
 **Recommended**: inject `FOOD_TABLE_NAME` explicitly (mirroring the pattern used for `friendRequest`) and remove `ListTables` from the policy before production:
 
 ```typescript
-const cfnProcessNutritionFn = backend.processNutrition.resources.cfnResources.cfnFunction;
+const cfnProcessNutritionFn = backend.processNutrition.resources.lambda.node.defaultChild as cdk.aws_lambda.CfnFunction;
 cfnProcessNutritionFn.addPropertyOverride(
   'Environment.Variables.FOOD_TABLE_NAME',
   backend.data.resources.tables['Food'].tableName
@@ -129,7 +129,18 @@ cfnProcessNutritionFn.addPropertyOverride(
 
 ### Bedrock: fallback path
 
-The same Bedrock statement as `aiEngine` is attached here as well, because the nutrition lookup falls through to a Qwen3-VL call when no DB row matches. Resource ARN is identical.
+When no DynamoDB row matches the lookup, `processNutrition` falls through to a Qwen3-VL call. The Bedrock statement is attached explicitly in `backend.ts`:
+
+```typescript
+const processNutritionLambda = backend.processNutrition.resources.lambda;
+processNutritionLambda.addToRolePolicy(new iam.PolicyStatement({
+  effect: iam.Effect.ALLOW,
+  actions: ['bedrock:InvokeModel'],
+  resources: ['arn:aws:bedrock:ap-southeast-2::foundation-model/qwen.qwen3-vl-235b-a22b'],
+}));
+```
+
+Resource ARN is identical to the `aiEngine` statement. Without this, the Lambda throws `AccessDeniedException` on every DB miss — the Lambda still runs and returns a `success: false` response, but no nutrition data is generated.
 
 ## friendRequest role
 
@@ -240,17 +251,18 @@ Which expands to `s3:GetObject`, `s3:GetObject*`, `s3:List*` on the bucket ARN a
 Notes:
 
 - The trailing `*` covers the auto-appended suffix that Secrets Manager adds to every secret ARN (e.g., `-AbCdEf`). Without it the `GetSecretValue` call returns `ResourceNotFoundException`.
-- The Lambda uses this key to generate a 1-minute HS256 JWT and attach it as `Authorization: Bearer` when calling the ALB. See 4.8.2 for the JWT flow.
+- The Lambda uses this key to generate a 5-minute HS256 JWT and attach it as `Authorization: Bearer` when calling the ALB. See 4.8.2 for the JWT flow.
 - No other Lambda has this permission — least-privilege is preserved.
 
 ### scanImage environment variable injection
 
 ```typescript
-const cfnScanImageFn = scanImageLambda.node.defaultChild as cdk.aws_lambda.CfnFunction;
+const cfnScanImageFn = backend.scanImage.resources.lambda.node.defaultChild as cdk.aws_lambda.CfnFunction;
 cfnScanImageFn.addPropertyOverride('Environment.Variables.STORAGE_BUCKET_NAME', s3Bucket.bucketName);
-cfnScanImageFn.addPropertyOverride('Environment.Variables.ECS_API_URL', ecsAlbDns);
-cfnScanImageFn.addPropertyOverride('Environment.Variables.NUTRITRACK_API_KEY_SECRET_ID', apiKeySecret.secretName);
+cfnScanImageFn.addPropertyOverride('Environment.Variables.ECS_BASE_URL', ecsAlbDns);
 ```
+
+The Secrets Manager secret name is hard-coded in the handler as `"nutritrack/prod/api-keys"` and does not require an env var override.
 
 ## S3 bucket resource policy
 

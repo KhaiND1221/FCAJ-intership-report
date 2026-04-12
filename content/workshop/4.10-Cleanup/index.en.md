@@ -10,7 +10,7 @@ flowchart TD
   B --> C[3. Empty S3 buckets]
   C --> D[4. Delete remaining CloudFormation stacks]
   D --> E[5. Destroy ECS Fargate tier]
-  E --> F[6. Delete ECR repos]
+  E --> F[6. Remove Docker Hub image]
   F --> G[7. Revoke Bedrock access]
   G --> H[8. Delete workshop IAM users/roles]
   H --> I[9. Verify: list-stacks + Cost Explorer]
@@ -52,8 +52,8 @@ CloudFormation cannot delete a non-empty bucket. Each environment has its own st
 
 - `incoming/` — raw image uploads (should be nearly empty due to 1-day lifecycle rule).
 - `voice/` — voice recordings for Transcribe.
-- `media/` — processed images.
-- `protected/`, `private/`, `public/` — Amplify Auth-scoped uploads (only present if you tested authenticated uploads).
+- `avatar/` — user profile pictures (identity-scoped writes).
+- `media/` — processed/resized images written by the `resizeImage` Lambda.
 
 List buckets:
 
@@ -108,20 +108,28 @@ Delete in **this exact order** or you will hit dependency errors:
 4. ALB listeners, then the ALB itself.
 5. Target groups.
 6. Security groups attached to the ALB and tasks.
-7. NAT Gateway (expensive — kill it early if you are in a hurry, but after the tasks are stopped).
+7. NAT Instance EC2 (terminate the Auto Scaling group first, then the launch template — do this after tasks are stopped).
 8. Elastic IPs released.
 9. VPC (only deletable once everything above is gone).
 
-## 6. Delete ECR Repositories
+## 6. Remove the Docker Hub Image (Optional)
 
-The FastAPI image lives in ECR. List and delete:
+NutriTrack uses **Docker Hub** (not ECR) for the container image — there is no ECR repository to delete and no AWS billing impact from leaving the image up. If you want to clean up Docker Hub:
+
+1. Log in to [hub.docker.com](https://hub.docker.com).
+2. Navigate to **Repositories** → `<your-username>/nutritrack-api`.
+3. Click **Settings** → **Delete repository** and confirm.
+
+Alternatively, delete just the `latest` tag via the Docker Hub API:
 
 ```bash
-aws ecr describe-repositories --query 'repositories[].repositoryName'
-aws ecr delete-repository --repository-name nutritrack-api --force
+# Requires a Docker Hub Personal Access Token with delete scope
+curl -s -X DELETE \
+  -H "Authorization: Bearer <DOCKERHUB_TOKEN>" \
+  "https://hub.docker.com/v2/repositories/<USERNAME>/nutritrack-api/tags/latest/"
 ```
 
-`--force` is required because the repo contains images. Only use it after confirming the repository name.
+Removing the repository does not affect any running ECS tasks — tasks pull the image only on startup. Already-running tasks keep their cached layer until the next deployment.
 
 ## 7. Revoke Bedrock Model Access
 

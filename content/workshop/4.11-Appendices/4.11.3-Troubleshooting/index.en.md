@@ -102,7 +102,7 @@ Re-run whenever the backend schema changes.
 - **Fix**: inject the table name explicitly in `backend/amplify/backend.ts`:
 
 ```typescript
-const cfnProcessNutritionFn = backend.processNutrition.resources.cfnResources.cfnFunction;
+const cfnProcessNutritionFn = backend.processNutrition.resources.lambda.node.defaultChild as cdk.aws_lambda.CfnFunction;
 cfnProcessNutritionFn.addPropertyOverride(
   'Environment.Variables.FOOD_TABLE_NAME',
   backend.data.resources.tables['Food'].tableName
@@ -220,8 +220,8 @@ Reinstall the resulting dev client and the prompt will appear.
 ### Task stuck in `PROVISIONING`
 
 - **Symptom**: ECS tasks never reach `RUNNING`; ECS service events show repeated pull failures.
-- **Root cause**: no network path to ECR (missing NAT Gateway for private subnets), or the task execution role lacks ECR permissions.
-- **Fix**: confirm `AmazonECSTaskExecutionRolePolicy` is attached to the execution role (`ecr:GetAuthorizationToken`, `ecr:BatchGetImage`). If using private subnets, ensure a NAT Gateway or ECR interface endpoints exist.
+- **Root cause**: no network path to Docker Hub from the private subnets — the NAT Instance is unhealthy or its route table entry is stale.
+- **Fix**: NutriTrack uses Docker Hub (not ECR) — no `ecr:*` permissions are needed. Confirm the NAT Instance EC2 is running, its route table entry points the private subnets' `0.0.0.0/0` to the NAT Instance ENI, and the task definition image URI is `<dockerhub-username>/nutritrack-api:latest`.
 
 ### Task stops immediately after start
 
@@ -232,16 +232,16 @@ Reinstall the resulting dev client and the prompt will appear.
 ### ALB returns `502 Bad Gateway`
 
 - **Symptom**: ALB routes traffic but every request is 502.
-- **Root cause**: health check path (default `/health`) is not implemented in the FastAPI app, so the target group marks tasks unhealthy.
-- **Fix**: add a simple handler:
+- **Root cause**: health check path `/api/health` is not implemented in the FastAPI app, or the target group is configured with the wrong path (e.g. `/health`), so tasks are marked unhealthy.
+- **Fix**: ensure the FastAPI app exposes `GET /api/health` returning `200 OK`:
 
 ```python
-@app.get("/health")
+@app.get("/api/health")
 def health():
     return {"status": "ok"}
 ```
 
-Rebuild, push, redeploy. Confirm the target group's health check path in the console.
+Verify the target group's health check path is also set to `/api/health` in the AWS Console. Rebuild, push, and force a new deployment.
 
 ## Generic debugging checklist
 

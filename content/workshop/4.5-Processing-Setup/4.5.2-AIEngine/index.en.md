@@ -46,7 +46,7 @@ cfnAiEngineFn.addPropertyOverride(
 );
 ```
 
-## The 10 actions
+## The 9 actions
 
 The handler routes on `event.arguments.action`. Every branch parses `event.arguments.payload` (a JSON string), calls one or more AWS services, and returns `JSON.stringify({ success, ... })`.
 
@@ -62,13 +62,13 @@ The handler routes on `event.arguments.action`. Every branch parses `event.argum
 | `challengeSummary` | Leaderboard blurb | Bedrock (text) |
 | `weeklyInsight` | 3-sentence weekly progress summary | Bedrock (text) |
 
-Image analysis (`analyze-food`, `analyze-label`, `scan-barcode`) was previously the `analyzeFoodImage` action here. It has been extracted to the `scan-image` Lambda, which proxies to ECS FastAPI for heavier vision workloads.
+Image analysis (`analyzeFoodImage`, `analyzeFoodLabel`, `scanBarcode`) was previously handled here. These three actions have been extracted to the `scan-image` Lambda, which proxies to ECS FastAPI for heavier vision workloads.
 
 ## System prompts — the Ollie persona
 
 Every action ships with a dedicated system prompt, all starting with `You are Ollie`. The five foundational prompts:
 
-1. **`GEN_FOOD_SYSTEM_PROMPT`** — used by `analyzeFoodImage` and `generateFoodNutrition`. Forces a rigid JSON schema (`food_id`, `name_vi`, `name_en`, `macros`, `micronutrients`, `serving`, `ingredients`, `verified`, `source`) and enforces the caloric-consistency rule `Protein*4 + Carbs*4 + Fat*9 ≈ calories`.
+1. **`GEN_FOOD_SYSTEM_PROMPT`** — used by `generateFoodNutrition`. Forces a rigid JSON schema (`food_id`, `name_vi`, `name_en`, `macros`, `micronutrients`, `serving`, `ingredients`, `verified`, `source`) and enforces the caloric-consistency rule `Protein*4 + Carbs*4 + Fat*9 ≈ calories`. (Image scanning uses the `scanImage` Lambda, not this prompt — see [4.5.5](/workshop/4.5.5-ScanImage).)
 2. **`FIX_FOOD_SYSTEM_PROMPT`** — used by `fixFood`. Same output schema but `"source": "AI Fixed"`. Recalculates all macros when weights change.
 3. **`VOICE_SYSTEM_PROMPT`** — used by `voiceToFood` after Transcribe. Returns `action: "log" | "clarify"` so the client knows whether to prompt the user or log immediately.
 4. **`OLLIE_COACH_SYSTEM_PROMPT`** — used by `ollieCoachTip`. Max 2 sentences, 1-2 emojis, references actual streak/calorie stats.
@@ -80,7 +80,7 @@ All are in `handler.ts` at the top of the file — intentionally inlined to keep
 
 ## The Bedrock call helper
 
-All ten actions eventually hit this helper:
+All nine actions eventually hit this helper:
 
 ```typescript
 async function callQwen(messages: any[], maxTokens = 1000): Promise<string> {
@@ -150,12 +150,12 @@ aiEngine: a
   .authorization((allow) => [allow.authenticated()]),
 ```
 
-And the frontend call:
+And the frontend call (using `generateFoodNutrition` as a representative text action):
 
 ```typescript
 const res = await client.queries.aiEngine({
-  action: 'analyzeFoodImage',
-  payload: JSON.stringify({ s3Key: 'incoming/user-abc/photo-1.jpg' }),
+  action: 'generateFoodNutrition',
+  payload: JSON.stringify({ foodName: 'Phở bò' }),
 });
 const parsed = JSON.parse(res.data ?? '{}');
 if (parsed.success) {
@@ -163,6 +163,8 @@ if (parsed.success) {
   // ... render nutrition card
 }
 ```
+
+> **Note on image actions**: `analyzeFoodImage`, `analyzeFoodLabel`, and `scanBarcode` are **not** handled by `aiEngine`. They route through the dedicated `scanImage` query which calls the `scan-image` Lambda. See [4.5.5 ScanImage](/workshop/4.5.5-ScanImage).
 
 Double-stringification is intentional: AppSync returns `String`, Lambda returns `JSON.stringify({ success, text })`, and `text` is itself a JSON string produced by Qwen. The frontend parses twice. This keeps the GraphQL schema simple and avoids declaring every possible Qwen output shape in the schema.
 

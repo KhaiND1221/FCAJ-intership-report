@@ -35,9 +35,10 @@ Qwen3-VL 235B tại `ap-southeast-2` (giá on-demand 2025):
 
 ### Ước tính chi phí mỗi action
 
+> **Lưu ý:** `analyzeFoodImage`, `analyzeFoodLabel`, và `scanBarcode` được xử lý bởi Lambda `scan-image`, chuyển tiếp request đến ECS FastAPI service — các action này **không** gọi Bedrock và không được tính phí ở đây.
+
 | Action | Token input | Token output | Chi phí/lần gọi |
 | --- | --- | --- | --- |
-| `analyzeFoodImage` (chụp ảnh log) | ~1.600 (prompt + ảnh) | ~400 | ~$0.0056 |
 | `generateFoodNutrition` (DB miss) | ~450 (prompt + tên) | ~400 | ~$0.0033 |
 | `voiceToFood` | ~500 | ~350 | ~$0.0031 |
 | `ollieCoachTip` | ~300 | ~100 | ~$0.0009 |
@@ -51,19 +52,17 @@ Qwen3-VL 235B tại `ap-southeast-2` (giá on-demand 2025):
 
 | Action | Lần/ngày | Lần/tháng | Chi phí/tháng |
 | --- | --- | --- | --- |
-| `analyzeFoodImage` | 300 | 9.000 | ~$50 |
 | `generateFoodNutrition` | 100 | 3.000 | ~$10 |
 | `voiceToFood` | 50 | 1.500 | ~$5 |
 | Coach tips + chat | 150 | 4.500 | ~$12 |
 | Khác (recipe, macro, v.v.) | 30 | 900 | ~$3 |
-| **Tổng** | | | **~$80** |
+| **Tổng** | | | **~$30** |
 
-Bedrock là chi phí chủ đạo. Action `analyzeFoodImage` chiếm ~62% tổng chi phí Bedrock do chi phí image token.
+Các action scan ảnh (`analyzeFoodImage`, `analyzeFoodLabel`, `scanBarcode`) được xử lý bởi ECS FastAPI service — chi phí compute nằm trong dòng ECS Fargate bên dưới, không phải Bedrock.
 
 **Các đòn bẩy tối ưu:**
 
 - Cache kết quả `generateFoodNutrition` trong DynamoDB theo tên món — giảm các lần tra cứu lặp lại.
-- Resize ảnh xuống ≤800px trước khi gửi Bedrock (thay vì 1280px hiện tại) — giảm image token ~30%.
 - Dùng `FARGATE_SPOT` cho các action batch/offline (weekly insight) — tiết kiệm ~70% compute.
 
 ---
@@ -90,13 +89,12 @@ Từ [4.8.2 Fargate & ALB](/workshop/4.8.2-Fargate-ALB):
 | Thành phần | Chi phí/tháng |
 | --- | --- |
 | Fargate (2 task, 0.5 vCPU / 1 GB, 730 giờ) | ~$17 |
-| NAT Gateway (1 AZ + data transfer) | ~$32 |
+| NAT Instance (2×t4g.nano, Auto Scaling) | ~$9 |
 | Application Load Balancer | ~$16 |
 | CloudWatch Logs (5 GB, 30 ngày retention) | ~$2 |
-| ECR storage (~2 GB, 10 image tag) | ~$0.20 |
-| **Tổng phụ ECS** | **~$67** |
+| **Tổng phụ ECS** | **~$44** |
 
-NAT Gateway là chi phí cố định lớn nhất trong tầng ECS. Giảm bằng cách thêm VPC endpoint cho DynamoDB và S3 (cả hai đều là Gateway endpoint miễn phí), loại bỏ traffic S3/DynamoDB khỏi hóa đơn NAT.
+NutriTrack dùng NAT Instance (2×t4g.nano) thay NAT Gateway (~$43/tháng ở ap-southeast-2), tiết kiệm ~$34/tháng. Container image được host trên Docker Hub (free tier) — không có chi phí ECR. Xem [4.8.4 NAT Instance](/workshop/4.8.4-NAT-Instance).
 
 ---
 
@@ -105,10 +103,10 @@ NAT Gateway là chi phí cố định lớn nhất trong tầng ECS. Giảm bằ
 | Danh mục | Chi phí/tháng |
 | --- | --- |
 | Amplify Gen 2 backend (AppSync, DynamoDB, Lambda, S3, Cognito) | ~$13 |
-| Amazon Bedrock (Qwen3-VL, 100 DAU) | ~$80 |
+| Amazon Bedrock (Qwen3-VL, 100 DAU, chỉ text/voice) | ~$30 |
 | Amazon Transcribe (voice log) | ~$6 |
-| ECS Fargate + ALB + NAT Gateway | ~$67 |
-| **Tổng cộng** | **~$166/tháng** |
+| ECS Fargate + ALB + NAT Instance | ~$44 |
+| **Tổng cộng** | **~$93/tháng** |
 
 ---
 
@@ -117,8 +115,8 @@ NAT Gateway là chi phí cố định lớn nhất trong tầng ECS. Giảm bằ
 | Môi trường | Mô tả | Ước tính |
 | --- | --- | --- |
 | Sandbox (`npx ampx sandbox`) | Một developer, Amplify backend tạm thời, không có ECS | ~$5–10/tháng |
-| Staging (branch `feat/phase3`) | Amplify backend thường trực, ECS cluster dùng chung (1 task) | ~$60–80/tháng |
-| Production (branch `main`) | Toàn bộ stack như mô tả (100 DAU) | ~$166/tháng |
+| Staging (branch `feat/phase3`) | Amplify backend thường trực, ECS cluster dùng chung (1 task) | ~$50–70/tháng |
+| Production (branch `main`) | Toàn bộ stack như mô tả (100 DAU) | ~$93/tháng |
 
 Sandbox tự dọn dẹp khi thoát — DynamoDB table và Lambda function bị xóa, không phát sinh chi phí khi nhàn rỗi. Chi phí sandbox duy nhất còn lại là các object S3 không bị xóa sau teardown.
 
@@ -126,19 +124,21 @@ Sandbox tự dọn dẹp khi thoát — DynamoDB table và Lambda function bị 
 
 ## Dự báo khi scale
 
-| DAU | Bedrock | Transcribe | ECS (auto-scale) | Tổng |
+| DAU | Bedrock (text/voice) | Transcribe | ECS (auto-scale) | Tổng |
 | --- | --- | --- | --- | --- |
-| 100 | ~$80 | ~$6 | ~$67 | ~$166 |
-| 500 | ~$400 | ~$30 | ~$90 (4 task) | ~$600 |
-| 1.000 | ~$800 | ~$60 | ~$120 (6 task) | ~$1.060 |
-| 5.000 | ~$4.000 | ~$300 | ~$200 (8 task max) | ~$4.600 |
+| 100 | ~$30 | ~$6 | ~$44 | ~$93 |
+| 500 | ~$150 | ~$30 | ~$67 (4 task) | ~$260 |
+| 1.000 | ~$300 | ~$60 | ~$97 (6 task) | ~$470 |
+| 5.000 | ~$1.500 | ~$300 | ~$177 (8 task max) | ~$2.000 |
 
-Ở 5.000 DAU, Bedrock chiếm ~87% tổng chi phí. Các giải pháp nên xem xét:
+Lưu ý: chi phí scan ảnh tăng theo số ECS task (đã phản ánh trong cột ECS ở trên).
+
+Ở 5.000 DAU, Bedrock text/voice chiếm phần lớn tổng chi phí. Các giải pháp nên xem xét:
 
 1. **Reserved Capacity** cho Bedrock (nếu có cho Qwen3-VL) — có thể giảm chi phí/token tới 50%.
 2. **Provisioned Throughput** cho Bedrock — giảm latency khi concurrency cao.
 3. **DynamoDB Provisioned** mode khi vượt ~500 WCU/RCU ổn định — rẻ hơn on-demand ở tải cao liên tục.
-4. **Hai NAT Gateway** (mỗi AZ một cái) để HA — nhân đôi chi phí NAT nhưng chịu được lỗi AZ.
+4. **Hai NAT Instance** (mỗi AZ một cái, mỗi t4g.nano ~$4.50/tháng) để HA — nhân đôi chi phí NAT nhưng chịu được lỗi AZ.
 
 ## Liên kết
 

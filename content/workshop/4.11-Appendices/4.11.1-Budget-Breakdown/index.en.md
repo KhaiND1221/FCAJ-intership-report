@@ -35,9 +35,10 @@ Qwen3-VL 235B in `ap-southeast-2` (2025 on-demand rates):
 
 ### Per-action cost estimate
 
+> **Note:** `analyzeFoodImage`, `analyzeFoodLabel`, and `scanBarcode` are handled by the `scan-image` Lambda, which forwards requests to the ECS FastAPI service — they do **not** invoke Bedrock and are not billed here.
+
 | Action | Input tokens | Output tokens | Cost/call |
 | --- | --- | --- | --- |
-| `analyzeFoodImage` (camera log) | ~1,600 (prompt + image) | ~400 | ~$0.0056 |
 | `generateFoodNutrition` (DB miss) | ~450 (prompt + name) | ~400 | ~$0.0033 |
 | `voiceToFood` | ~500 | ~350 | ~$0.0031 |
 | `ollieCoachTip` | ~300 | ~100 | ~$0.0009 |
@@ -51,19 +52,17 @@ Qwen3-VL 235B in `ap-southeast-2` (2025 on-demand rates):
 
 | Action | Calls/day | Calls/month | Cost/month |
 | --- | --- | --- | --- |
-| `analyzeFoodImage` | 300 | 9,000 | ~$50 |
 | `generateFoodNutrition` | 100 | 3,000 | ~$10 |
 | `voiceToFood` | 50 | 1,500 | ~$5 |
 | Coach tips + chat | 150 | 4,500 | ~$12 |
 | Other (recipe, macro, etc.) | 30 | 900 | ~$3 |
-| **Total** | | | **~$80** |
+| **Total** | | | **~$30** |
 
-Bedrock is the dominant cost driver. The camera log path (`analyzeFoodImage`) accounts for ~62% of Bedrock spend due to image token cost.
+Image scanning (`analyzeFoodImage`, `analyzeFoodLabel`, `scanBarcode`) is processed by the ECS FastAPI service — its compute cost is covered by the ECS Fargate line below, not Bedrock.
 
 **Optimization levers:**
 
 - Cache `generateFoodNutrition` results in DynamoDB by food name — cuts repeat lookups.
-- Resize images to ≤800px before Bedrock (vs the current 1280px) to reduce image tokens by ~30%.
 - Use `FARGATE_SPOT` for batch/offline actions (weekly insight) to save ~70% on compute.
 
 ---
@@ -90,13 +89,12 @@ From [4.8.2 Fargate & ALB](/workshop/4.8.2-Fargate-ALB):
 | Component | Monthly cost |
 | --- | --- |
 | Fargate (2 tasks, 0.5 vCPU / 1 GB, 730 hrs) | ~$17 |
-| NAT Gateway (1 AZ + data transfer) | ~$32 |
+| NAT Instance (2×t4g.nano, Auto Scaling) | ~$9 |
 | Application Load Balancer | ~$16 |
 | CloudWatch Logs (5 GB, 30-day retention) | ~$2 |
-| ECR storage (~2 GB, 10 image tags) | ~$0.20 |
-| **ECS subtotal** | **~$67** |
+| **ECS subtotal** | **~$44** |
 
-NAT Gateway is the largest fixed cost in the ECS tier. Reduce it by adding VPC endpoints for DynamoDB and S3 (both free Gateway endpoints), which removes S3/DynamoDB traffic from NAT billing.
+NutriTrack uses NAT Instance (2×t4g.nano) instead of NAT Gateway (~$43/month in ap-southeast-2), saving ~$34/month. The container image is hosted on Docker Hub (free tier) — no ECR storage cost. See [4.8.4 NAT Instance](/workshop/4.8.4-NAT-Instance).
 
 ---
 
@@ -105,10 +103,10 @@ NAT Gateway is the largest fixed cost in the ECS tier. Reduce it by adding VPC e
 | Category | Monthly cost |
 | --- | --- |
 | Amplify Gen 2 backend (AppSync, DynamoDB, Lambda, S3, Cognito) | ~$13 |
-| Amazon Bedrock (Qwen3-VL, 100 DAU) | ~$80 |
+| Amazon Bedrock (Qwen3-VL, 100 DAU, text/voice only) | ~$30 |
 | Amazon Transcribe (voice logs) | ~$6 |
-| ECS Fargate + ALB + NAT Gateway | ~$67 |
-| **Grand total** | **~$166/month** |
+| ECS Fargate + ALB + NAT Instance | ~$44 |
+| **Grand total** | **~$93/month** |
 
 ---
 
@@ -126,19 +124,21 @@ Sandbox tears down when you exit — DynamoDB tables and Lambda functions are de
 
 ## Scaling projections
 
-| DAU | Bedrock | Transcribe | ECS (auto-scale) | Total |
+| DAU | Bedrock (text/voice) | Transcribe | ECS (auto-scale) | Total |
 | --- | --- | --- | --- | --- |
-| 100 | ~$80 | ~$6 | ~$67 | ~$166 |
-| 500 | ~$400 | ~$30 | ~$90 (4 tasks) | ~$600 |
-| 1,000 | ~$800 | ~$60 | ~$120 (6 tasks) | ~$1,060 |
-| 5,000 | ~$4,000 | ~$300 | ~$200 (8 tasks max) | ~$4,600 |
+| 100 | ~$30 | ~$6 | ~$44 | ~$93 |
+| 500 | ~$150 | ~$30 | ~$67 (4 tasks) | ~$260 |
+| 1,000 | ~$300 | ~$60 | ~$97 (6 tasks) | ~$470 |
+| 5,000 | ~$1,500 | ~$300 | ~$177 (8 tasks max) | ~$2,000 |
 
-At 5,000 DAU, Bedrock costs dominate at ~87% of total. Consider:
+Note: image-scanning compute scales with ECS task count (already reflected in the ECS column above).
+
+At 5,000 DAU, Bedrock text/voice costs dominate. Consider:
 
 1. **Reserved Capacity** for Bedrock (if available for Qwen3-VL) — can cut per-token cost by up to 50%.
 2. **Provisioned Throughput** for Bedrock — reduces latency at high concurrency.
 3. **DynamoDB Provisioned** mode above ~500 WCU/RCU sustained — cheaper than on-demand at high steady load.
-4. **Two NAT Gateways** (one per AZ) for HA — doubles NAT cost but survives AZ failure.
+4. **Two NAT Instances** (one per AZ) for HA — each t4g.nano ~$4.50/month; doubles NAT cost but survives AZ failure.
 
 ## Cross-links
 

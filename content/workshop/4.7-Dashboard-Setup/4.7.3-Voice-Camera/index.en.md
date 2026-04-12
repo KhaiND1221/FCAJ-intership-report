@@ -105,6 +105,10 @@ User taps camera → request permission → CameraView fullscreen
 
 ![Camera capture screen](images/camera-capture.png)
 
+![Barcode scanning mode](images/camera-capture-barcode.png)
+
+![Food label scanning mode](images/camera-capture-label.png)
+
 ## Voice capture flow
 
 ### Mic permissions

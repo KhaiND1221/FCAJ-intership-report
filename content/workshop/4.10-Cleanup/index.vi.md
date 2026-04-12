@@ -10,7 +10,7 @@ flowchart TD
   B --> C[3. Lam trong S3 buckets]
   C --> D[4. Xoa CloudFormation stack con lai]
   D --> E[5. Destroy ECS Fargate]
-  E --> F[6. Xoa ECR repo]
+  E --> F[6. Xoa image Docker Hub]
   F --> G[7. Thu hoi quyen Bedrock]
   G --> H[8. Xoa IAM user/role cua workshop]
   H --> I[9. Verify: list-stacks + Cost Explorer]
@@ -52,8 +52,8 @@ CloudFormation không xóa được bucket không rỗng. Mỗi môi trường c
 
 - `incoming/` — ảnh upload thô (thường gần rỗng do lifecycle rule 1 ngày).
 - `voice/` — bản ghi âm cho Transcribe.
-- `media/` — ảnh đã xử lý.
-- `protected/`, `private/`, `public/` — upload theo scope Amplify Auth (chỉ có nếu bạn đã test upload với user đã đăng nhập).
+- `avatar/` — ảnh đại diện người dùng (write scoped theo identity).
+- `media/` — ảnh đã xử lý/resize do Lambda `resizeImage` ghi vào.
 
 Liệt kê bucket:
 
@@ -108,20 +108,28 @@ Xóa theo **đúng thứ tự sau** nếu không sẽ gặp lỗi dependency:
 4. ALB listener, rồi đến ALB.
 5. Target group.
 6. Security group gắn với ALB và task.
-7. NAT Gateway (tốn tiền — nên diệt sớm nếu vội, nhưng phải sau khi task đã dừng).
+7. NAT Instance EC2 (xóa Auto Scaling group trước, rồi đến launch template — làm sau khi task đã dừng).
 8. Giải phóng Elastic IP.
 9. VPC (chỉ xóa được khi mọi thứ ở trên đã biến mất).
 
-## 6. Xóa ECR repository
+## 6. Xóa image Docker Hub (Tùy chọn)
 
-Image FastAPI nằm ở ECR. Liệt kê và xóa:
+NutriTrack dùng **Docker Hub** (không phải ECR) — không có ECR repository nào để xóa và không phát sinh chi phí AWS khi để image trên Docker Hub. Nếu muốn dọn sạch:
+
+1. Đăng nhập [hub.docker.com](https://hub.docker.com).
+2. Vào **Repositories** → `<username>/nutritrack-api`.
+3. Nhấn **Settings** → **Delete repository** và xác nhận.
+
+Hoặc xóa tag `latest` bằng Docker Hub API:
 
 ```bash
-aws ecr describe-repositories --query 'repositories[].repositoryName'
-aws ecr delete-repository --repository-name nutritrack-api --force
+# Cần Docker Hub Personal Access Token có quyền delete
+curl -s -X DELETE \
+  -H "Authorization: Bearer <DOCKERHUB_TOKEN>" \
+  "https://hub.docker.com/v2/repositories/<USERNAME>/nutritrack-api/tags/latest/"
 ```
 
-`--force` bắt buộc vì repo có image bên trong. Chỉ dùng sau khi đã xác nhận tên repo.
+Xóa repository **không** ảnh hưởng đến task ECS đang chạy — task chỉ pull image lúc khởi động và đã cache layer từ trước.
 
 ## 7. Thu hồi quyền Bedrock
 

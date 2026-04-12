@@ -102,7 +102,7 @@ Chạy lại mỗi khi backend schema đổi.
 - **Fix**: inject tên bảng tường minh trong `backend/amplify/backend.ts`:
 
 ```typescript
-const cfnProcessNutritionFn = backend.processNutrition.resources.cfnResources.cfnFunction;
+const cfnProcessNutritionFn = backend.processNutrition.resources.lambda.node.defaultChild as cdk.aws_lambda.CfnFunction;
 cfnProcessNutritionFn.addPropertyOverride(
   'Environment.Variables.FOOD_TABLE_NAME',
   backend.data.resources.tables['Food'].tableName
@@ -220,8 +220,8 @@ Cài lại dev client và prompt sẽ hiện.
 ### Task kẹt ở `PROVISIONING`
 
 - **Triệu chứng**: ECS task không bao giờ tới `RUNNING`; service event hiện pull fail lặp lại.
-- **Nguyên nhân gốc**: không có network path tới ECR (thiếu NAT Gateway cho private subnet), hoặc task execution role thiếu quyền ECR.
-- **Fix**: xác nhận `AmazonECSTaskExecutionRolePolicy` đã attach lên execution role (`ecr:GetAuthorizationToken`, `ecr:BatchGetImage`). Nếu dùng private subnet, đảm bảo có NAT Gateway hoặc ECR interface endpoint.
+- **Nguyên nhân gốc**: không có network path tới Docker Hub từ private subnet — NAT Instance không healthy hoặc route table entry bị stale.
+- **Fix**: NutriTrack dùng Docker Hub (không phải ECR) — không cần quyền `ecr:*`. Xác nhận EC2 NAT Instance đang running, route table của private subnet có entry `0.0.0.0/0` trỏ về ENI của NAT Instance, và image URI trong task definition là `<dockerhub-username>/nutritrack-api:latest`.
 
 ### Task stop ngay sau khi start
 
@@ -232,16 +232,16 @@ Cài lại dev client và prompt sẽ hiện.
 ### ALB trả `502 Bad Gateway`
 
 - **Triệu chứng**: ALB route traffic nhưng mọi request đều 502.
-- **Nguyên nhân gốc**: health check path (mặc định `/health`) chưa được implement trong app FastAPI, nên target group mark task unhealthy.
-- **Fix**: thêm handler đơn giản:
+- **Nguyên nhân gốc**: health check path `/api/health` chưa được implement trong app FastAPI, hoặc target group cấu hình sai path (ví dụ `/health`), nên task bị mark unhealthy.
+- **Fix**: đảm bảo FastAPI expose `GET /api/health` trả về `200 OK`:
 
 ```python
-@app.get("/health")
+@app.get("/api/health")
 def health():
     return {"status": "ok"}
 ```
 
-Rebuild, push, redeploy. Xác nhận health check path của target group trong console.
+Xác nhận health check path của target group cũng được set thành `/api/health` trong AWS Console. Rebuild, push, và force new deployment.
 
 ## Checklist debug tổng quát
 

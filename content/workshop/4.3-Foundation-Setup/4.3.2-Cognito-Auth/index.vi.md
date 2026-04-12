@@ -212,6 +212,8 @@ Cả ba đều ném từ `aws-amplify/auth` với thuộc tính `name` bằng đ
 
 ![Email OTP do Cognito gửi](images/otp-email.png)
 
+![OTP xác nhận thành công — người dùng vào màn home](images/otp-email-verified.png)
+
 ## Test end to end
 
 Với sandbox đang chạy và Expo web dev server đã bật (`cd ../frontend && npm run web`):

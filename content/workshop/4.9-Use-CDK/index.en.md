@@ -49,6 +49,10 @@ backend:
         - npm install --include=dev
         - cd ../..
 
+        - cd amplify/scan-image
+        - npm install --include=dev
+        - cd ../..
+
         - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID --outputs-out-dir ../frontend
         - cd ..
 frontend:
@@ -72,15 +76,16 @@ frontend:
       - backend/amplify/process-nutrition/node_modules/**/*
       - backend/amplify/friend-request/node_modules/**/*
       - backend/amplify/resize-image/node_modules/**/*
+      - backend/amplify/scan-image/node_modules/**/*
 ```
 
 ### Key things to notice
 
-1. **Every Lambda subfolder has its own `package.json`.** The build spec enters each one and runs `npm install --include=dev` before the Amplify CLI bundles the function. If you add a fifth Lambda, you must add its `cd / npm install / cd ../..` block here, or the build will fail with "Cannot find module" at deploy time.
+1. **Every Lambda subfolder has its own `package.json`.** The build spec enters each one and runs `npm install --include=dev` before the Amplify CLI bundles the function. NutriTrack ships five Lambdas (`ai-engine`, `process-nutrition`, `friend-request`, `resize-image`, `scan-image`). If you add a sixth, add its `cd / npm install / cd ../..` block here and a matching `cache.paths` entry, or the build will fail with "Cannot find module" at deploy time.
 2. **`--legacy-peer-deps` is mandatory** for both `backend/` and `frontend/`. Expo SDK 54 + React 19 produces peer-dep conflicts that the default npm resolver rejects. This is enforced for the frontend in `frontend/.npmrc`.
 3. **`npx ampx pipeline-deploy`** is the Gen 2 CI command. It reads `$AWS_BRANCH` and `$AWS_APP_ID` (injected by Amplify Hosting) and deploys the `backend/amplify/` CDK app into the environment's CloudFormation stack.
 4. **`--outputs-out-dir ../frontend`** writes `amplify_outputs.json` next to the Expo app. The frontend build step then picks it up — no manual step required.
-5. **`cache.paths`** keeps all seven `node_modules/` warm between builds. The first build of a branch is slow; subsequent builds are minutes, not tens of minutes.
+5. **`cache.paths`** keeps all eight `node_modules/` warm between builds. The first build of a branch is slow; subsequent builds are minutes, not tens of minutes.
 
 ## `amplify_outputs.json` — Never Commit Manual Edits
 

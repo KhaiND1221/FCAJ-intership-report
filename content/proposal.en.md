@@ -17,7 +17,7 @@ Current nutrition tracking apps require tedious manual data entry and often lack
 NutriTrack solves these pain points with a fully serverless AWS-native architecture:
 
 - **AWS AppSync (GraphQL)** ingests user dietary data through real-time mutations and subscriptions.
-- **AWS Lambda** (4 specialized functions) handles backend business logic — from AI orchestration to friend management to image processing.
+- **AWS Lambda** (5 specialized functions) handles backend business logic — from AI orchestration to friend management to image processing and image-to-ECS routing.
 - **Amazon DynamoDB** stores 8 data models (user profiles, food logs, challenges, etc.) with automatic scaling.
 - **Amazon Bedrock** (Qwen3-VL 235B model) powers the AI pipeline — analyzing food photos, scanning barcodes/labels, and generating missing nutritional data on-the-fly.
 - **AWS Amplify Gen 2** with React Native/Expo provides a polished bilingual UI (Vietnamese/English).
@@ -33,7 +33,7 @@ Key features include:
 
 **Benefits and Return on Investment**
 
-The solution establishes a foundational ecosystem for users to track their health and for the development team to scale an AI-assisted wellness platform. It reduces manual logging friction via the AI pipeline, simplifying the user experience and improving data reliability. Monthly operational costs are kept at approximately **$60.87/month ($730.44/year)** for 1,000 users by maximizing AWS Free Tier allowances and leveraging the serverless pay-as-you-go model. The break-even target is reached once premium subscriptions (unlimited photo analysis, advanced weekly insights, AI coach priority access) cover operating costs — the exact conversion rate and pricing tier will be validated in the post-launch phase.
+The solution establishes a foundational ecosystem for users to track their health and for the development team to scale an AI-assisted wellness platform. It reduces manual logging friction via the AI pipeline, simplifying the user experience and improving data reliability. Monthly operational costs are estimated at approximately **~$100/month (~$1,200/year)** for 1,000 users, covering the full stack including ECS Fargate for AI image processing, while leveraging AWS Free Tier and the serverless pay-as-you-go model. The break-even target is reached once premium subscriptions (unlimited photo analysis, advanced weekly insights, AI coach priority access) cover operating costs — the exact conversion rate and pricing tier will be validated in the post-launch phase.
 
 ### 3. Solution Architecture
 
@@ -41,7 +41,7 @@ The platform employs a multi-layer serverless AWS architecture to manage user da
 
 #### NutriTrack Platform Architecture
 
-![NutriTrack Solution Architecture](/FCAJ-intership-report/solution-architect/nutritrack-final.drawio.png)
+![NutriTrack Solution Architecture](/hei-FCAJ-intership-report/solution-architect/nutritrack-solution-architecture.drawio.svg)
 
 **AWS Services Used**
 
@@ -49,7 +49,7 @@ The platform employs a multi-layer serverless AWS architecture to manage user da
 |---------|------|
 | **AWS Amplify Gen 2** | Orchestrates backend infrastructure-as-code (TypeScript CDK), CI/CD pipelines, and manages 3 deployment environments (Sandbox, feat/phase3, main). |
 | **AWS AppSync** | Facilitates secure GraphQL API communication between the React Native app and backend Lambda resolvers, with real-time subscriptions. |
-| **AWS Lambda** | Processes business logic via 4 specialized functions: `ai-engine` (10 AI actions), `process-nutrition` (hybrid food lookup), `friend-request` (social features), and `resize-image` (S3 trigger image optimization). |
+| **AWS Lambda** | Processes business logic via 5 specialized functions: `ai-engine` (9 AI actions), `process-nutrition` (hybrid food lookup), `friend-request` (social features), `resize-image` (S3 trigger image optimization), and `scan-image` (image/barcode/label proxy to ECS FastAPI). |
 | **Amazon DynamoDB** | Stores all application data across 8 NoSQL tables: `user`, `Food` (~200 Vietnamese items), `FoodLog`, `FridgeItem`, `Challenge`, `ChallengeParticipant`, `Friendship`, `UserPublicStats`. |
 | **Amazon Bedrock** | Powers AI features using Qwen3-VL 235B (ap-southeast-2) for food image analysis, barcode scanning, label reading, recipe generation, and AI coaching via embedded prompt templates. |
 | **AWS Transcribe** | Converts voice recordings (stored in S3 `/voice` prefix) to text for seamless voice-based food logging. |
@@ -58,7 +58,7 @@ The platform employs a multi-layer serverless AWS architecture to manage user da
 | **Amazon CloudFront** | CDN for edge caching and content delivery acceleration to end users. |
 | **AWS WAF** | Web Application Firewall to protect APIs from common web exploits and DDoS attacks. |
 | **Route 53** | DNS routing for the application domain. |
-| **Amazon ECR** | Container registry for the ECS Fargate self-hosted AI inference containers. |
+| **Amazon ECR** | Container registry (not used in production — NutriTrack hosts the FastAPI image on Docker Hub free tier to avoid ECR storage costs). |
 | **Amazon ECS Fargate** | Serverless container orchestration for the FastAPI backend service, running in a VPC with private subnets across 2 AZs, with ALB and Auto Scaling. |
 | **AWS CloudWatch** | Monitoring and observability with custom metrics (Bedrock_AI_Error_Rate, Image_Processing_Time, User_Daily_Active, Food_Log_Count). |
 | **AWS CloudTrail** | API activity logging for audit and compliance tracking. |
@@ -72,11 +72,12 @@ The platform employs a multi-layer serverless AWS architecture to manage user da
 - **Edge & Security:** Route 53 → WAF → CloudFront provides DNS resolution, DDoS protection, and global content acceleration before requests reach the backend.
 - **Authentication:** Amazon Cognito handles user registration (email/OTP), Google OAuth2 social login, and JWT token management. The app additionally implements local biometric security (FaceID/TouchID) as a second layer.
 - **Data Ingestion:** AppSync receives GraphQL mutations/queries from the mobile client, routing them to appropriate Lambda resolvers.
-- **Compute Layer:** 4 Lambda functions process all business logic:
-  - `aiEngine` — Orchestrates 10 AI actions (analyzeFoodImage, voiceToFood, generateRecipe, generateCoachResponse, searchFoodNutrition, fixFood, ollieCoachTip, calculateMacros, challengeSummary, weeklyInsight)
+- **Compute Layer:** 5 Lambda functions process all business logic:
+  - `aiEngine` — Orchestrates 9 AI actions (voiceToFood, generateRecipe, generateCoachResponse, generateFoodNutrition, fixFood, ollieCoachTip, calculateMacros, challengeSummary, weeklyInsight)
   - `processNutrition` — Hybrid lookup: DynamoDB fuzzy match against ~200 Vietnamese foods first, Bedrock AI fallback if not found
   - `friendRequest` — Social features: send/accept/decline/block requests using DynamoDB TransactWriteItems
   - `resizeImage` — S3 event trigger on `incoming/` prefix, uses the `sharp` library to scale the longest side down to 1280px (keeping aspect ratio, EXIF auto-rotate) and re-encode as progressive JPEG at quality 85; the resized copy is written to `media/{entity_id}/` while the original stays in `incoming/` until the lifecycle rule expires it after 1 day
+  - `scanImage` — Fetches images from S3 and proxies them to the ECS FastAPI service (ECS FastAPI) for food photo analysis, barcode scanning, and nutrition label reading; authenticates via a short-lived JWT signed with a Secrets Manager key
 - **Data Layer:** 8 DynamoDB tables with owner-scoped access and GSI optimization.
 - **AI/ML Services:** Bedrock (Qwen3-VL 235B) + Transcribe provide the core intelligence layer, with all AI calls routed through the `aiEngine` Lambda with structured prompt templates.
 - **Container Layer:** ECS Fargate runs the FastAPI self-hosted backend in a VPC across 2 AZs (ap-southeast-2a) with private subnets, ALB load balancing, Auto Scaling, and VPC Endpoints for secure AWS service access.
@@ -90,15 +91,15 @@ This project follows 4 phases:
 1. **Pre-Phase — Theory & Architecture (Month 0):** Research React Native/Expo with AWS Amplify Gen 2 and design the serverless architecture including the Bedrock AI integration. Draft the solution architecture diagram and define data models.
 2. **Phase 1 — Pricing & Feasibility (Month 1):** Use the AWS Pricing Calculator to estimate costs (Lambda invocations, Bedrock tokens, DynamoDB capacity) for 1,000 users. Validate architecture feasibility with a cost ceiling under $65/month. Set up Amplify Gen 2 sandbox, Cognito + Google federation, and the 8-model GraphQL schema.
 3. **Phase 2 — Core Development (Month 2):** Implement the 4 TypeScript Lambda handlers (`aiEngine`, `processNutrition`, `friendRequest`, `resizeImage`), wire AppSync resolvers, build the React Native UI for the 6 main tab screens, and integrate the S3 upload + resize pipeline.
-4. **Phase 3 — Integration, Test & Launch (Month 3):** Full Bedrock (Qwen3-VL) integration with 10 AI actions, E2E testing across the 3 environments (Sandbox / `feat/phase3` / `main`), resolve edge cases (JWT federation, `discoverTables()` ambiguity, `NoValidAuthTokens`), and production launch.
+4. **Phase 3 — Integration, Test & Launch (Month 3):** Full Bedrock (Qwen3-VL) integration with 9 AI actions, ECS Fargate deployment with FastAPI + ECS FastAPI, E2E testing across the 3 environments (Sandbox / `feat/phase3` / `main`), resolve edge cases (JWT federation, `discoverTables()` ambiguity, `NoValidAuthTokens`), and production launch.
 5. **Post-Launch — Refine & Optimize (Continuous):** Audit UX/UI from user feedback, improve gamification features (pet evolution, challenge mechanics), optimize AI prompt engineering for accuracy, and iterate on the premium subscription tier.
 
 **Technical Requirements**
 
 - **Frontend:** React Native, Expo, TypeScript, Zustand (state management), react-native-reanimated (animations), expo-router (file-based routing), i18n (Vietnamese/English bilingual support).
 - **Backend:** AWS Amplify Gen 2 (TypeScript CDK), Lambda (Node.js 22 — declared via `runtime: 22` in `defineFunction`), AppSync (GraphQL), DynamoDB (8 tables with GSI), Cognito (User Pools + Identity Pools with Google federation), S3 (4 prefixes, lifecycle rule on `incoming/`).
-- **AI Integration:** Amazon Bedrock API (Qwen3-VL 235B, ap-southeast-2 region), AWS Transcribe (async transcription jobs), embedded prompt engineering with JSON schema enforcement. 10 AI actions orchestrated through a single `aiEngine` Lambda.
-- **Infrastructure:** Docker/ECS Fargate for FastAPI backend, VPC with public/private subnets, ALB, Auto Scaling, ECR for container images.
+- **AI Integration:** Amazon Bedrock API (Qwen3-VL 235B, ap-southeast-2 region), AWS Transcribe (async transcription jobs), embedded prompt engineering with JSON schema enforcement. 9 AI actions orchestrated through the `aiEngine` Lambda; image/barcode/label analysis handled by `scanImage` Lambda proxying to ECS FastAPI (ECS FastAPI).
+- **Infrastructure:** Docker/ECS Fargate for FastAPI backend, VPC with public/private subnets, ALB, Auto Scaling, NAT Instance (2×t4g.nano) instead of NAT Gateway, Docker Hub for container images.
 
 ### 5. Timeline & Milestones
 
@@ -109,7 +110,7 @@ This project follows 4 phases:
 | **Pre-Phase (Month 0)** | 1 month | UI/UX planning with Figma, legacy documentation review (migration from Flutter to React Native), architecture drafting with draw.io, and AWS service evaluation. |
 | **Phase 1 (Month 1)** | 1 month | Set up AWS Amplify Gen 2 environment, configure Cognito auth with Google OAuth, define 8 DynamoDB data models via `data/resource.ts`, and build the core React Native UI components (Home, Add Food, Kitchen tabs). |
 | **Phase 2 (Month 2)** | 1 month | Connect AppSync GraphQL APIs, implement `processNutrition` and `friendRequest` Lambdas, build the Fridge/Kitchen inventory UI, and integrate the S3 image upload pipeline with the `resizeImage` trigger. |
-| **Phase 3 (Month 3)** | 1 month | Implement the `aiEngine` Lambda with 10 Bedrock actions (Qwen3-VL), build the gamification system (streaks, pet evolution, challenges), perform E2E testing across the 3 environments (Sandbox / `feat/phase3` / `main`), resolve JWT + `discoverTables()` bugs, and launch to production. |
+| **Phase 3 (Month 3)** | 1 month | Implement the `aiEngine` Lambda with 9 Bedrock actions (Qwen3-VL), deploy `scanImage` Lambda + ECS Fargate (FastAPI + ECS FastAPI), build the gamification system (streaks, pet evolution, challenges), perform E2E testing across the 3 environments (Sandbox / `feat/phase3` / `main`), resolve JWT + `discoverTables()` bugs, and launch to production. |
 | **Post-Launch** | Continuous | Performance optimization, user feedback integration, iOS EAS Build pipeline, and scaling the user base over 1 year. |
 
 ### 6. Budget Estimation
@@ -124,14 +125,15 @@ Budget is calculated for **1,000 active users performing 3 sessions per day over
 | **AWS Lambda** | $0.26/month | 270K requests ($0.054) + compute time ($0.205) — 0.2s avg, 512MB ARM64 |
 | **AppSync GraphQL** | $0.34/month | 270K query/mutation operations at $4/million (production architecture uses AppSync, not REST API Gateway — see §3) |
 | **Amazon DynamoDB** | $0.47/month | 2GB storage ($0.228) + 810K reads ($0.115) + 180K writes ($0.128) |
-| **Amazon Cognito** | $5.50/month | 1,000 MAU on Lite plan at $0.0055/MAU |
+| **Amazon Cognito** | $0/month | 1,000 MAU on Essentials plan at $0.015/MAU — first 10,000 MAU free; 1,000 users falls within free tier |
 | **CloudWatch** | $1.00/month | 5 custom metrics + API request logging |
 | **CloudTrail** | $0.05/month | 50,000 management events |
 | **Secrets Manager** | $1.20/month | 3 secrets (API keys, JWT master key, DB config) |
 | **AWS KMS** | $1.00/month | 1 customer-managed encryption key |
 | **AWS Textract** | $3.60/month | 2,400 label scans (400 users × 6 labels/month) at $0.0015/page |
-| **Amazon Bedrock (AI)** | **$45.42/month** | 90K AI calls: input tokens ($16.70) + output tokens ($28.73) — Qwen3-VL Standard pricing (US East) |
-| **Total Estimation** | **$60.87/month** | **$730.44/12 months** |
+| **Amazon Bedrock (AI)** | **$46.80/month** | 90K AI calls: input tokens ($17.20) + output tokens ($29.59) — Qwen3-VL Standard pricing (Sydney ap-southeast-2, +3% vs US East) |
+| **ECS Fargate + ALB + NAT** | **$44/month** | 2 Fargate tasks (0.5 vCPU/1 GB, ~$17) + ALB (~$16) + 2×t4g.nano NAT Instance (~$9) + CloudWatch Logs (~$2); Docker Hub used instead of ECR (no registry cost) |
+| **Total Estimation** | **~$100/month** | **~$1,200/12 months** |
 
 **Bedrock AI Pricing Detail (Qwen3-VL 235B)**
 
@@ -140,7 +142,9 @@ Budget is calculated for **1,000 active users performing 3 sessions per day over
 | US East (Virginia) | $0.00053/1K tokens | $0.00266/1K tokens | Baseline |
 | Asia Pacific (Tokyo) | $0.00064/1K tokens | $0.00322/1K tokens | +21% |
 | Asia Pacific (Mumbai) | $0.00062/1K tokens | $0.00313/1K tokens | +18% |
-| Asia Pacific (Sydney) | Used in production | Used in production | ap-southeast-2 |
+| Asia Pacific (Sydney) | $0.000546/1K tokens | $0.00274/1K tokens | +3% |
+
+*Sydney rates confirmed via AWS Pricing API (effective 2026-03-01).*
 
 **Software/Licenses:** $0 — All development tools are open-source (VS Code, Expo, Node.js). Apple Developer Account ($99/year) required for iOS distribution.
 
@@ -181,6 +185,18 @@ Budget is calculated for **1,000 active users performing 3 sessions per day over
 
 - **iOS release pipeline:** move Android-first MVP to iOS via EAS Build cloud runners, then enable a managed macOS CI runner once the user base justifies the fixed cost.
 - **Vietnamese food database expansion:** grow the seeded ~200-item `Food` table by capturing AI-generated entries (`"source": "AI Generated"` → `verified=false`) for human review, aiming for 1,000+ verified items by end of Year 1.
-- **Premium subscription tier:** validate the pricing model (target: cover the $60.87/mo baseline with a single-digit conversion rate), ship unlimited photo analysis, weekly AI coach reports, and advanced macro charts as the paid features.
+- **Premium subscription tier:** validate the pricing model (target: cover the ~$100/mo baseline with a single-digit conversion rate), ship unlimited photo analysis, weekly AI coach reports, and advanced macro charts as the paid features.
 - **Observability:** wire the 4 custom CloudWatch metrics (`Bedrock_AI_Error_Rate`, `Image_Processing_Time`, `User_Daily_Active`, `Food_Log_Count`) into a dashboard + Budget alarm at $80/month.
 - **Cross-region Bedrock fallback:** if Qwen3-VL capacity in `ap-southeast-2` becomes constrained, add a secondary model route to `us-east-1` Claude Haiku to maintain SLA.
+
+### 10. Team 11 — NeuraX
+
+Built during the **First Cloud AI Journey (FCAJ)** internship program at **Amazon Web Services Vietnam**. The team is identified as **Team 11** in the AWS program and operates under the internal name **NeuraX**.
+
+| Member | Role | Responsibilities |
+| --- | --- | --- |
+| Le Nguyen Gia Hung | AI/ML Lead (AI-1) | Amazon Bedrock integration, prompt engineering (Ollie coach persona), `aiEngine` Lambda (9 AI actions), `processNutrition` hybrid lookup |
+| Ngo Hoai Nam | AI/ML Engineer (AI-2) | AWS Transcribe pipeline (`vi-VN`), `resizeImage` Lambda, VLM prompt refinement |
+| Tran Dang Thien Phuoc | Security Lead (IA-1) | IAM least-privilege roles, Cognito User Pool + Google OAuth2 federation, AWS WAF, API security |
+| Nguyen Dinh Khai | Security Engineer (IA-2) | Penetration testing, CloudWatch alarms, CloudTrail auditing, ECS infrastructure, S3 |
+| Chu Anh Quan | Frontend & Backend Lead (DEV) | React Native / Expo mobile app, Amplify Gen 2 backend, `friendRequest` Lambda, DynamoDB schema, AppSync resolvers |

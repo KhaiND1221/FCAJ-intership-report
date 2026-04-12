@@ -2,7 +2,7 @@
 
 `scan-image` is the fifth Lambda in NutriTrack. It is not a general AI orchestrator — it has exactly one job: receive an S3 object key from AppSync, fetch the image, authenticate against the ECS FastAPI cluster using a self-signed JWT, forward the image as multipart form-data, and poll for the result.
 
-The ECS FastAPI container runs the actual vision model (Qwen3-VL on an internal Bedrock or GPU endpoint). The Lambda is the secure bridge between the serverless API layer and the containerised inference layer.
+The ECS FastAPI container runs its own AI inference pipeline and is accessible through the Application Load Balancer at `http://nutritrack-api-vpc-alb-1060755902.ap-southeast-2.elb.amazonaws.com`. The Lambda is the secure bridge between the serverless AppSync layer and the containerised compute layer.
 
 ## Resource definition
 
@@ -26,17 +26,15 @@ export const scanImage = defineFunction({
 | Variable | Source | Purpose |
 | --- | --- | --- |
 | `STORAGE_BUCKET_NAME` | CDK property override | The S3 bucket to fetch images from |
-| `ECS_API_URL` | CDK property override | ALB DNS or domain for the FastAPI cluster |
-| `NUTRITRACK_API_KEY_SECRET_ID` | CDK property override | Secrets Manager secret name containing the API key |
+| `ECS_BASE_URL` | CDK property override | ALB DNS or domain for the FastAPI cluster |
 
-All three are injected at deploy time — never hard-coded:
+Both are injected at deploy time. The Secrets Manager secret name is hard-coded in the handler as `"nutritrack/prod/api-keys"` and does not need an env var:
 
 ```typescript
 // backend.ts (excerpt)
-const cfnScanImageFn = scanImageLambda.node.defaultChild as cdk.aws_lambda.CfnFunction;
+const cfnScanImageFn = backend.scanImage.resources.lambda.node.defaultChild as cdk.aws_lambda.CfnFunction;
 cfnScanImageFn.addPropertyOverride('Environment.Variables.STORAGE_BUCKET_NAME', s3Bucket.bucketName);
-cfnScanImageFn.addPropertyOverride('Environment.Variables.ECS_API_URL', ecsAlbDns);
-cfnScanImageFn.addPropertyOverride('Environment.Variables.NUTRITRACK_API_KEY_SECRET_ID', apiKeySecret.secretName);
+cfnScanImageFn.addPropertyOverride('Environment.Variables.ECS_BASE_URL', ecsAlbDns);
 ```
 
 ## JWT authentication against ECS
@@ -54,7 +52,7 @@ function buildJWT(secret: string): string {
   const payload = Buffer.from(JSON.stringify({
     iss: 'nutritrack-scan-image',
     iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 60, // 1-minute TTL
+    exp: Math.floor(Date.now() / 1000) + 300, // 5-minute TTL
   })).toString('base64url');
   const signature = createHmac('sha256', secret)
     .update(`${header}.${payload}`)
@@ -71,9 +69,9 @@ The FastAPI container validates the JWT on each request. Requests without a vali
 
 | Action argument | ECS endpoint | Input | Returns |
 | --- | --- | --- | --- |
-| `analyze-food` | `POST /analyze-food` | Image form-data | Nutrition JSON (food_id, macros, ingredients) |
-| `analyze-label` | `POST /analyze-label` | Image form-data | Parsed nutrition label (per-serving macros) |
-| `scan-barcode` | `POST /scan-barcode` | Image form-data | Barcode number + matched food item |
+| `analyzeFoodImage` | `POST /api/ai/analyze-food` | Image form-data | Nutrition JSON (food_id, macros, ingredients) |
+| `analyzeFoodLabel` | `POST /api/ai/analyze-label` | Image form-data | Parsed nutrition label (per-serving macros) |
+| `scanBarcode` | `POST /api/ai/scan-barcode` | Image form-data | Barcode number + matched food item |
 
 ## Async polling flow
 
@@ -81,7 +79,7 @@ ECS FastAPI processes images asynchronously. A POST returns a `job_id` immediate
 
 ```typescript
 async function submitAndPoll(endpoint: string, imageBuffer: Buffer, contentType: string, jwt: string): Promise<string> {
-  const ECS_URL = process.env.ECS_API_URL!;
+  const ECS_URL = process.env.ECS_BASE_URL!;
 
   // 1. Submit image
   const form = new FormData();
@@ -94,8 +92,8 @@ async function submitAndPoll(endpoint: string, imageBuffer: Buffer, contentType:
   });
   const { job_id } = await submitRes.json();
 
-  // 2. Poll every 3 seconds, up to 9 attempts (27 s total)
-  for (let i = 0; i < 9; i++) {
+  // 2. Poll every 3 seconds, up to 90 attempts (270 s total)
+  for (let i = 0; i < 90; i++) {
     await new Promise((r) => setTimeout(r, 3000));
     const pollRes = await fetch(`${ECS_URL}/jobs/${job_id}`, {
       headers: { Authorization: `Bearer ${jwt}` },
@@ -104,7 +102,7 @@ async function submitAndPoll(endpoint: string, imageBuffer: Buffer, contentType:
     if (result.status === 'completed') return JSON.stringify(result.data);
     if (result.status === 'failed') throw new Error(result.error ?? 'ECS job failed');
   }
-  throw new Error('Job timed out after 27 s');
+  throw new Error('Job timed out after 270 s');
 }
 ```
 
@@ -135,9 +133,9 @@ export const handler = async (event: AppSyncResolverEvent<{ action: string; payl
 
     // Route to correct ECS endpoint
     const endpointMap: Record<string, string> = {
-      'analyze-food':  '/analyze-food',
-      'analyze-label': '/analyze-label',
-      'scan-barcode':  '/scan-barcode',
+      'analyzeFoodImage': '/api/ai/analyze-food',
+      'analyzeFoodLabel': '/api/ai/analyze-label',
+      'scanBarcode':      '/api/ai/scan-barcode',
     };
     const endpoint = endpointMap[action];
     if (!endpoint) throw new Error(`Unknown action: ${action}`);
@@ -169,7 +167,7 @@ scanImage: a
 
 ```typescript
 const res = await client.queries.scanImage({
-  action: 'analyze-food',
+  action: 'analyzeFoodImage',
   payload: JSON.stringify({ s3Key: 'incoming/user-abc/img-1.jpg' }),
 });
 const outer = JSON.parse(res.data ?? '{}');
@@ -186,7 +184,7 @@ if (outer.success) {
 | AppSync → Lambda | IAM invocation (Amplify managed) |
 | Lambda → S3 | `s3:GetObject` IAM policy (least-privilege) |
 | Lambda → Secrets Manager | `secretsmanager:GetSecretValue` IAM policy |
-| Lambda → ECS ALB | `Authorization: Bearer <HS256 JWT>` (1-minute TTL) |
+| Lambda → ECS ALB | `Authorization: Bearer <HS256 JWT>` (5-minute TTL) |
 | ECS ALB | Validates JWT signature and expiry before forwarding |
 
 No request can reach ECS directly from the internet: the ALB's listener rules reject anything without a valid JWT, and the JWT secret is only accessible by the `scan-image` Lambda role.

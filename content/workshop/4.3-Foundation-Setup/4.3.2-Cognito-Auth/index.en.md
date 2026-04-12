@@ -212,6 +212,8 @@ All three come from `aws-amplify/auth` as thrown errors with a `name` property m
 
 ![OTP email sent by Cognito](images/otp-email.png)
 
+![OTP verified — user lands on home screen](images/otp-email-verified.png)
+
 ## Testing end to end
 
 With the sandbox running and the Expo web dev server up (`cd ../frontend && npm run web`):

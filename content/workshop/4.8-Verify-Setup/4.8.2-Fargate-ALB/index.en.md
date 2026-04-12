@@ -46,7 +46,7 @@ Register a task definition. Replace `<ACCOUNT_ID>` and `<IMAGE_URI>` with your v
         }
       },
       "healthCheck": {
-        "command": ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"],
+        "command": ["CMD-SHELL", "curl -f http://localhost:8000/api/health || exit 1"],
         "interval": 30,
         "timeout": 5,
         "retries": 3,
@@ -65,10 +65,10 @@ aws ecs register-task-definition \
   --region ap-southeast-2
 ```
 
-The FastAPI app must expose `GET /health` returning `200 OK`. Add it to `main.py`:
+The FastAPI app must expose `GET /api/health` returning `200 OK`. Add it to `main.py`:
 
 ```python
-@app.get("/health")
+@app.get("/api/health")
 def health():
     return {"status": "healthy"}
 ```
@@ -102,7 +102,15 @@ ALB_ARN=$(aws elbv2 create-load-balancer \
   --region ap-southeast-2 \
   --query 'LoadBalancers[0].LoadBalancerArn' \
   --output text)
+
+# Retrieve the DNS name — this is your ECS_BASE_URL
+aws elbv2 describe-load-balancers \
+  --load-balancer-arns ${ALB_ARN} \
+  --query 'LoadBalancers[0].DNSName' \
+  --output text
 ```
+
+> Copy the DNS name output (e.g. `nutritrack-api-vpc-alb-1060755902.ap-southeast-2.elb.amazonaws.com`). This value is injected into the `scanImage` Lambda as `ECS_BASE_URL` via the CDK property override in `backend.ts`.
 
 ### Create Target Group
 
@@ -113,7 +121,7 @@ TG_ARN=$(aws elbv2 create-target-group \
   --port 8000 \
   --target-type ip \
   --vpc-id <VPC_ID> \
-  --health-check-path /health \
+  --health-check-path /api/health \
   --health-check-interval-seconds 30 \
   --healthy-threshold-count 2 \
   --unhealthy-threshold-count 3 \
@@ -234,7 +242,7 @@ ALB_DNS=$(aws elbv2 describe-load-balancers \
   --region ap-southeast-2)
 
 # Health check
-curl http://${ALB_DNS}/health
+curl http://${ALB_DNS}/api/health
 # Expected: {"status":"healthy"}
 
 # Watch service events
@@ -264,7 +272,7 @@ Before every call to the ALB, `scan-image`:
      const payload = Buffer.from(JSON.stringify({
        iss: 'nutritrack-scan-image',
        iat: Math.floor(Date.now() / 1000),
-       exp: Math.floor(Date.now() / 1000) + 60,  // 1-minute TTL
+       exp: Math.floor(Date.now() / 1000) + 300,  // 5-minute TTL
      })).toString('base64url');
      const sig = createHmac('sha256', secret)
        .update(`${header}.${payload}`)
@@ -287,15 +295,15 @@ Requests that reach the ALB without `Authorization: Bearer` are rejected by the 
 
 ### Why HS256 over asymmetric keys?
 
-The Lambda and the ECS container are both internal AWS services in the same account. Symmetric HS256 is simpler to rotate (update one secret, redeploy both sides) and has no certificate management overhead. The 1-minute TTL limits the blast radius if a token is intercepted.
+The Lambda and the ECS container are both internal AWS services in the same account. Symmetric HS256 is simpler to rotate (update one secret, redeploy both sides) and has no certificate management overhead. The 5-minute TTL limits the blast radius if a token is intercepted.
 
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
-| Task stuck in PROVISIONING | Image pull fails | Check ECR: execution role needs `ecr:GetAuthorizationToken` + `ecr:BatchGetImage`; NAT Gateway route is correct |
+| Task stuck in PROVISIONING | Image pull fails | NutriTrack uses Docker Hub — ensure the NAT Instance route is healthy and the task definition image URI is correct (`docker.io/<user>/<image>:latest`) |
 | Task stops immediately (exit 1) | App crash on startup | `aws logs tail /ecs/nutritrack-api --follow`; usually a missing env var or import error |
-| ALB returns 502 Bad Gateway | `/health` endpoint missing or container not started | Verify `GET /health` returns 200; check health check grace period (`startPeriod: 60`) |
+| ALB returns 502 Bad Gateway | `/api/health` endpoint missing or container not started | Verify `GET /api/health` returns 200; check health check grace period (`startPeriod: 60`) |
 | ALB returns 504 Gateway Timeout | Task-SG blocks ALB-SG | Verify Task-SG inbound rule allows TCP 8000 from ALB-SG specifically |
 | Autoscaling not triggering | Scale-in cooldown | Wait 5 minutes; or check CloudWatch alarm state |
 
@@ -306,12 +314,12 @@ At 2 tasks × 0.5 vCPU / 1 GB RAM in ap-southeast-2 (2025 prices):
 | Component | Monthly cost |
 | --- | --- |
 | Fargate (2 tasks, 730 hrs) | ~$17 |
-| NAT Gateway | ~$32 |
+| NAT Instance (2×t4g.nano) | ~$9 |
 | ALB | ~$16 |
 | CloudWatch logs (30 days, 5 GB) | ~$2 |
-| **Total** | **~$67** |
+| **Total** | **~$44** |
 
-At 0 traffic, the dominant cost is NAT Gateway — consider using VPC endpoints for DynamoDB and S3 to reduce it.
+At 0 traffic, the dominant cost is the ALB — the NAT Instance (2×t4g.nano in an Auto Scaling group) is significantly cheaper than a NAT Gateway (~$43/mo in ap-southeast-2). See [4.8.4 NAT Instance](/workshop/4.8.4-NAT-Instance) for the setup.
 
 ## Cross-links
 

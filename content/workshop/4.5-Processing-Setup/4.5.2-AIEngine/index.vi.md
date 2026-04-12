@@ -62,7 +62,7 @@ Handler điều phối theo `event.arguments.action`. Mỗi nhánh parse `event.
 | `challengeSummary` | Blurb bảng xếp hạng | Bedrock (text) |
 | `weeklyInsight` | Tóm tắt tiến độ tuần 3 câu | Bedrock (text) |
 
-Phân tích ảnh (`analyze-food`, `analyze-label`, `scan-barcode`) trước đây là action `analyzeFoodImage` tại đây. Nó đã được tách ra Lambda `scan-image` để xử lý vision nặng hơn trên ECS FastAPI.
+Phân tích ảnh (`analyzeFoodImage`, `analyzeFoodLabel`, `scanBarcode`) trước đây xử lý ở đây. Ba action này đã được tách ra Lambda `scan-image`, proxy đến ECS FastAPI cho các workload vision nặng hơn.
 
 ## System prompt — nhân vật Ollie
 

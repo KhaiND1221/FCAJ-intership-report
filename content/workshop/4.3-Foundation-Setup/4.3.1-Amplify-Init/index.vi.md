@@ -106,6 +106,7 @@ import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { aiEngine } from './ai-engine/resource';
+import { scanImage } from './scan-image/resource';
 import { processNutrition } from './process-nutrition/resource';
 import { friendRequest } from './friend-request/resource';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -119,6 +120,7 @@ const backend = defineBackend({
   auth,
   data,
   aiEngine,
+  scanImage,
   processNutrition,
   friendRequest,
   storage,

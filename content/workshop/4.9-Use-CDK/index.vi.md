@@ -49,6 +49,10 @@ backend:
         - npm install --include=dev
         - cd ../..
 
+        - cd amplify/scan-image
+        - npm install --include=dev
+        - cd ../..
+
         - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID --outputs-out-dir ../frontend
         - cd ..
 frontend:
@@ -72,15 +76,16 @@ frontend:
       - backend/amplify/process-nutrition/node_modules/**/*
       - backend/amplify/friend-request/node_modules/**/*
       - backend/amplify/resize-image/node_modules/**/*
+      - backend/amplify/scan-image/node_modules/**/*
 ```
 
 ### Những điểm quan trọng cần chú ý
 
-1. **Mỗi Lambda subfolder có `package.json` riêng.** Build spec đi vào từng thư mục và chạy `npm install --include=dev` trước khi Amplify CLI đóng gói function. Nếu bạn thêm Lambda thứ năm, phải thêm khối `cd / npm install / cd ../..` tương ứng ở đây, nếu không build sẽ lỗi "Cannot find module" lúc deploy.
+1. **Mỗi Lambda subfolder có `package.json` riêng.** Build spec đi vào từng thư mục và chạy `npm install --include=dev` trước khi Amplify CLI đóng gói function. NutriTrack có năm Lambda (`ai-engine`, `process-nutrition`, `friend-request`, `resize-image`, `scan-image`). Nếu bạn thêm Lambda thứ sáu, phải thêm khối `cd / npm install / cd ../..` và một dòng `cache.paths` tương ứng, nếu không build sẽ lỗi "Cannot find module" lúc deploy.
 2. **`--legacy-peer-deps` là bắt buộc** cho cả `backend/` và `frontend/`. Expo SDK 54 + React 19 tạo ra xung đột peer-dep mà npm resolver mặc định từ chối. Ràng buộc này được enforce trong `frontend/.npmrc`.
 3. **`npx ampx pipeline-deploy`** là lệnh CI của Gen 2. Nó đọc `$AWS_BRANCH` và `$AWS_APP_ID` (Amplify Hosting inject) và deploy CDK app trong `backend/amplify/` vào CloudFormation stack của môi trường.
 4. **`--outputs-out-dir ../frontend`** ghi `amplify_outputs.json` ngay cạnh app Expo. Bước build frontend sau đó tự pick lên — không cần thao tác tay.
-5. **`cache.paths`** giữ ấm cả bảy `node_modules/` giữa các lần build. Lần build đầu của một branch chậm; các lần sau chỉ tính bằng phút, không phải hàng chục phút.
+5. **`cache.paths`** giữ ấm cả tám `node_modules/` giữa các lần build. Lần build đầu của một branch chậm; các lần sau chỉ tính bằng phút, không phải hàng chục phút.
 
 ## `amplify_outputs.json` — không bao giờ commit sửa tay
 

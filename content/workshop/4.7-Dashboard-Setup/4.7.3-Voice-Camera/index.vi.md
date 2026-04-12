@@ -100,6 +100,10 @@ User tap camera → yêu cầu quyền → CameraView toàn màn hình
 
 ![Màn hình chụp camera](images/camera-capture.png)
 
+![Chế độ quét barcode](images/camera-capture-barcode.png)
+
+![Chế độ quét nhãn thực phẩm](images/camera-capture-label.png)
+
 ## Luồng ghi âm giọng nói
 
 ### Quyền truy cập micro

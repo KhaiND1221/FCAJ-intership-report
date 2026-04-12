@@ -1,22 +1,20 @@
 # 4.5.1 Bedrock — Model Access, IAM, Invocation Shape
 
-Amazon Bedrock is the only foundation-model service used by NutriTrack. This page covers the preflight setup (model access, region, IAM) and the exact invocation shape Qwen3-VL expects. If you skip the model-access step, every subsequent Lambda test will fail with `AccessDeniedException`.
+Amazon Bedrock is the only foundation-model service used by NutriTrack. This page covers the preflight setup (verify model, region, IAM) and the exact invocation shape Qwen3-VL expects.
 
-## Step 1 — Enable model access
+## Step 1 — Verify model access
 
-> WARNING: Bedrock foundation models are **off by default**, even if your account has Bedrock enabled. Access must be explicitly requested per model, per region. Approval is typically instant for Qwen models but can take minutes to hours in fresh accounts.
+> **Note:** AWS removed the explicit model-access request requirement for Qwen3-VL — it does not need to be approved the way Anthropic models do. You only need to verify the model is active and reachable in your account and region.
 
-Procedure:
+**Verify manually in the AWS Console:**
 
-1. Open the AWS console → **Amazon Bedrock** → switch region to **Asia Pacific (Sydney) `ap-southeast-2`**. This is non-negotiable — the Lambda hard-codes the region, and moving models between regions is a separate approval.
-2. Left sidebar → **Model access** → **Modify model access**.
-3. Tick **Qwen3-VL 235B A22B** (model id `qwen.qwen3-vl-235b-a22b`).
-4. Click **Next** → **Submit**.
-5. Wait until the status column shows **Access granted**.
+1. Open **AWS Console** → **Amazon Bedrock** → switch region to **Asia Pacific (Sydney) `ap-southeast-2`**.
+1. Left sidebar → **Test** → **Playground**.
+1. Click **Select model** → search for and select **Qwen3 VL 235B A22B**.
+1. Enter a short prompt (e.g., `Say hello`) → click **Run**.
+1. If you receive a normal text response, the model is ready to invoke.
 
-![Bedrock model access screen](images/bedrock-model-access.png)
-
-Verify from the CLI:
+**Verify from the CLI:**
 
 ```bash
 aws bedrock list-foundation-models \
@@ -28,11 +26,12 @@ If the array is non-empty and `modelLifecycle.status == 'ACTIVE'`, you are good 
 
 ## Step 2 — Why Qwen3-VL and not Claude
 
-Three reasons this workload picks Qwen3-VL:
+Four reasons this workload picks Qwen3-VL:
 
-1. **Multimodal in one call**. The model accepts `type: 'image_url'` and `type: 'text'` in the same `messages[]` array. `analyzeFoodImage` sends a base64-encoded JPEG and a short Vietnamese prompt — one round trip.
-2. **Native Vietnamese**. Ollie's system prompts are full of Gen-Z Vietnamese phrasing (`ê`, `nhé`, `nha`, `nè`). Qwen handles this without a separate translation hop.
-3. **Cost**. For the typical NutriTrack mix (80% text, 20% vision), Qwen3-VL comes in substantially cheaper than Claude 3.5 Sonnet per 1M tokens. Exact per-token pricing moves — check the AWS Bedrock pricing page for current numbers in `ap-southeast-2`.
+1. **Multimodal in one call**. The model accepts `type: 'image_url'` and `type: 'text'` in the same `messages[]` array. `scanImage` sends a base64-encoded JPEG and a short Vietnamese prompt — one round trip, no separate vision pipeline.
+2. **Reasoning + tool calling + OCR + VLM**. Qwen3-VL can reason across multi-step meal context, integrates well with the AI Engine's tool-calling flow, reads text on food packaging or menus (OCR), and is a native VLM for food image analysis tasks.
+3. **Native Vietnamese**. Ollie's system prompts are full of Gen-Z Vietnamese phrasing (`ê`, `nhé`, `nha`, `nè`). Qwen handles this without a separate translation hop.
+4. **Cost**. For the typical NutriTrack mix (80% text, 20% vision), Qwen3-VL comes in substantially cheaper than Claude 3.5 Sonnet per 1M tokens. Exact per-token pricing moves — check the AWS Bedrock pricing page for current numbers in `ap-southeast-2`.
 
 Order-of-magnitude sanity check: per-user per-day cost sits in the single-digit US cents range for an active logger.
 
@@ -98,6 +97,8 @@ Qwen3-VL on Bedrock exposes an **OpenAI-compatible chat-completions schema** rat
 
 ### Text-only request
 
+> **The real system prompt is much longer.** The example below uses a shortened version for illustration. The actual handler in `ai-engine/handler.ts` uses the full `GEN_FOOD_SYSTEM_PROMPT` constant — a multi-paragraph string defining Ollie's character, expected JSON output format, Gen-Z Vietnamese tone, and fallback rules.
+
 ```typescript
 import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 
@@ -105,7 +106,10 @@ const client = new BedrockRuntimeClient({ region: "ap-southeast-2" });
 
 const body = JSON.stringify({
   messages: [
-    { role: "system", content: "You are Ollie, a Vietnamese nutrition coach." },
+    {
+      role: "system",
+      content: GEN_FOOD_SYSTEM_PROMPT, // full constant in ai-engine/handler.ts
+    },
     { role: "user", content: "Phở bò có bao nhiêu calo?" },
   ],
   max_tokens: 500,
@@ -159,7 +163,7 @@ The fallback chain exists because Bedrock has occasionally shipped schema tweaks
 
 ### `ConverseCommand` alternative
 
-AWS ships `ConverseCommand` as a model-agnostic wrapper:
+AWS ships `ConverseCommand` as a model-agnostic wrapper and it **fully supports Qwen3-VL including vision inputs** (AWS API compatibility table: `Converse: Yes`):
 
 ```typescript
 import { ConverseCommand } from "@aws-sdk/client-bedrock-runtime";
@@ -170,7 +174,7 @@ await client.send(new ConverseCommand({
 }));
 ```
 
-It works for text-only but the image-content shape diverges from Qwen's native schema. NutriTrack uses `InvokeModelCommand` directly to keep vision calls straightforward.
+NutriTrack uses `InvokeModelCommand` with the OpenAI-compatible chat-completions schema rather than `ConverseCommand` because the ECS FastAPI service already speaks that protocol, keeping the request shape consistent end-to-end. Either API works for Qwen3-VL.
 
 ## Step 5 — Smoke-test via CLI
 

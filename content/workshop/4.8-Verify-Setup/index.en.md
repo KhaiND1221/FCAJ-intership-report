@@ -1,4 +1,4 @@
-# 4.8 ECS Deployment — VPC, ECR, Fargate, ALB
+# 4.8 ECS Deployment
 
 The ECS Fargate tier runs a containerized FastAPI service alongside the serverless Amplify backend. It handles workloads that don't fit Lambda: long-running operations, custom ML inference, third-party API proxying, or tasks that benefit from a persistent process.
 
@@ -6,20 +6,30 @@ The ECS Fargate tier runs a containerized FastAPI service alongside the serverle
 
 ```mermaid
 graph LR
-  Dev["Developer<br/>laptop"] -->|docker push| ECR
-  ECR --> Task["ECS Fargate<br/>Task (FastAPI)"]
-  Task --> ALB["Application<br/>Load Balancer"]
-  ALB --> Internet
-  Task --> DDB["DynamoDB"]
-  Task --> Bedrock["Amazon Bedrock<br/>ap-southeast-2"]
-  Task --> S3["S3 Bucket"]
+  Internet -->|HTTP 80| ALB["Application\nLoad Balancer\n(public subnet)"]
+  ALB -->|TCP 8000| Task["ECS Fargate Task\n(FastAPI)\n(private subnet)"]
+  Task -->|via NAT| Bedrock["Amazon Bedrock\nap-southeast-2"]
+  Task -->|S3 VPCE| S3["S3 Cache Bucket"]
+  Task -->|via NAT| SecretsManager["Secrets Manager"]
+  Dev["Developer"] -->|docker push| DockerHub["Docker Hub"]
+  DockerHub -->|via NAT| Task
 ```
 
-Fargate tasks run in private subnets; the ALB sits in public subnets and terminates TLS. Tasks reach AWS services via NAT Gateway or VPC endpoints.
+Fargate tasks run in private subnets; the ALB sits in public subnets. Tasks reach AWS services via NAT Instance (70% cheaper than NAT Gateway) or the S3 Gateway VPCE (free).
 
-## Cost note
+## Cost breakdown
 
-The ECS tier is the biggest fixed cost in NutriTrack's architecture. Two tasks at 0.5 vCPU / 1 GB RAM plus one NAT Gateway in ap-southeast-2 runs approximately **$60–80 USD/month** even with zero traffic. If your use case can fit in Lambda, stay there. The ECS tier makes sense when you need:
+| Component | Estimated monthly cost |
+| :--- | :--- |
+| 2× NAT Instance `t4g.nano` | ~$9 |
+| 2× Fargate Task (0.5 vCPU / 1 GB) | ~$17 |
+| ALB | ~$16 |
+| CloudWatch Logs (5 GB, 30 days) | ~$2 |
+| **Total** | **~$44** |
+
+Using NAT Gateway instead of NAT Instance adds ~$32/month (total ~$76).
+
+The ECS tier makes sense when you need:
 
 - Persistent WebSocket connections.
 - More than 15 minutes of compute (Lambda max).
@@ -28,5 +38,7 @@ The ECS tier is the biggest fixed cost in NutriTrack's architecture. Two tasks a
 
 ## Sub-sections
 
-- [4.8.1 VPC & ECR](/workshop/4.8.1-VPC-ECR) — network setup and container registry.
-- [4.8.2 Fargate & ALB](/workshop/4.8.2-Fargate-ALB) — task definition, service, load balancer, deployment.
+- [4.8.1 VPC & Network](/workshop/4.8-Verify-Setup/4.8.1-VPC-ECR) — Network design, VPC, Subnets, Security Groups, S3 VPCE.
+- [4.8.2 Fargate & ALB](/workshop/4.8-Verify-Setup/4.8.2-Fargate-ALB) — ECS Cluster, Task Definition, Service, Load Balancer, JWT auth.
+- [4.8.3 Infrastructure](/workshop/4.8-Verify-Setup/4.8.3-Infrastructure) — S3 Bucket, Secrets Manager, IAM Roles.
+- [4.8.4 NAT Instance](/workshop/4.8-Verify-Setup/4.8.4-NAT-Instance) — NAT Instance setup, Route Table wiring, HA with ASG.

@@ -14,19 +14,32 @@ Bạn cần một tài khoản AWS có thể:
 
 Cho workshop này, dùng tài khoản root hoặc một IAM user có managed policy `AdministratorAccess`. **Không** dùng tài khoản read-only hay sandbox hạn chế — nhiều bước sẽ lỗi do permission boundary.
 
-### 2. Truy cập Mô hình Amazon Bedrock
+### 2. Truy cập Amazon Bedrock Models
 
-Amazon Bedrock hiện cho phép người dùng truy cập trực tiếp các mô hình có sẵn mà không yêu cầu đăng ký trước. Để tích hợp và sử dụng các mô hình AI của Bedrock trong mã nguồn của bạn, hãy thực hiện theo hướng dẫn sau:
-1.  **Xác định Mã định danh Mô hình (Model ID)**: Chọn mô hình Bedrock bạn muốn sử dụng và ghi nhận mã định danh duy nhất của nó.
-2.  **Sử dụng Thư viện Boto3**: Tích hợp thư viện `boto3` (AWS SDK for Python) vào dự án của bạn để thiết lập kết nối và gọi các API của Bedrock, truyền vào mã định danh mô hình đã xác định để tương tác và gửi yêu cầu đến mô hình.
+Amazon Bedrock hiện cho phép người dùng truy cập trực tiếp các model có sẵn mà không cần đăng ký trước. Để tích hợp và sử dụng AI model của Bedrock trong source code, hãy làm theo hướng dẫn sau:
 
-![Bedrock model access granted for Qwen3-VL](/FCAJ-intership-report/workshop-images/4.2-Prerequiste/take_Id_model.png)
+- **Xác định Model ID**: Chọn model Bedrock bạn muốn dùng và ghi lại mã định danh duy nhất của nó.
+- **Sử dụng thư viện Boto3**: Tích hợp thư viện `boto3` (AWS SDK for Python) vào project để kết nối và gọi Bedrock API, truyền Model ID đã xác định để tương tác và gửi request đến model.
 
-IAM policy được gắn vào Lambda `ai-engine` trong `backend/amplify/backend.ts` chỉ cấp quyền `bedrock:InvokeModel` trên đích danh ARN của mô hình này:
+Để bật quyền truy cập model trên AWS Console:
+
+1. Mở AWS Console và chuyển region sang **Asia Pacific (Sydney) — ap-southeast-2**.
+2. Vào **Amazon Bedrock → Model access**.
+3. Nhấn **Modify model access**.
+4. Bật **Qwen 3 VL 235B A22B** (`qwen.qwen3-vl-235b-a22b`).
+5. Submit và chờ trạng thái chuyển sang **Access granted**.
+
+![Bedrock cap quyen cho Qwen3-VL](images/bedrock-model-access.png)
+
+> **Lưu ý:** Không giống Anthropic hay Cohere, **Qwen không được bán qua AWS Marketplace**. Bạn không cần quyền IAM `aws-marketplace:Subscribe`. Bước opt-in trên Console là tất cả những gì cần làm. Lần gọi API đầu tiên sẽ hoàn thành bước tự động cấp phép (cho phép tới 15 phút sau khi nhấn **Save changes**).
+
+IAM policy gắn vào Lambda `ai-engine` và `process-nutrition` trong `backend/amplify/backend.ts` cấp `bedrock:InvokeModel` cho đúng ARN model này:
 
 ```text
 arn:aws:bedrock:ap-southeast-2::foundation-model/qwen.qwen3-vl-235b-a22b
 ```
+
+Nếu bạn đổi region hoặc model, bạn cũng phải sửa `backend.ts` và `ai-engine/handler.ts`.
 
 ### 3. Cảnh báo AWS Budgets
 
@@ -41,8 +54,8 @@ Cài các công cụ sau lên máy. Các phiên bản liệt kê là mức tối
 
 | Công cụ                                          | Phiên bản tối thiểu | Dùng cho                                        |
 | ------------------------------------------------ | ------------------- | ----------------------------------------------- |
-| Node.js                                          | **22 LTS** trở lên  | Chạy `ampx` CLI, build Lambda, Expo             |
-| npm                                              | **10+**             | Cài package (đi kèm Node 20+)                   |
+| Node.js                                          | **22** trở lên  | Chạy `ampx` CLI, build Lambda, Expo             |
+| npm                                              | **10+**             | Cài package (đi kèm Node 22+)                   |
 | AWS CLI                                          | **v2**              | Cấu hình credential, thao tác CloudFormation/S3 |
 | Git                                              | **2.40+**           | Clone template, push branch cho CI              |
 | Docker Desktop                                   | **bản stable mới**  | Build image FastAPI cho ECS                     |
@@ -88,7 +101,7 @@ Cognito federate sang Google cho đăng nhập xã hội. Bạn cần một OAut
 5. Authorized redirect URIs: bạn sẽ thêm URL callback của Cognito Hosted UI sau khi phần 4.3 tạo user pool. Tạm thời để trống — bạn sẽ quay lại.
 6. Copy lại **Client ID** và **Client secret**.
 
-![Google OAuth Web client credentials](/FCAJ-intership-report/workshop-images/4.2-Prerequiste/image.png)
+<img src="images/google-oauth-client.png" alt="Google OAuth Web client credentials" style="width: 60%; max-width: 600px;" />
 
 Sau này, lưu chúng thành Amplify sandbox secret (chạy trong `backend/`):
 
@@ -117,4 +130,4 @@ Nếu bạn dừng ở phần 4.10 Cleanup trong cùng ngày, tổng hóa đơn 
 
 ## Sẵn sàng?
 
-Khi mọi mục phía trên đã xong — Bedrock đã được cấp quyền, CLI đã cài, OAuth client của Google đã tạo, budget alert đã bật — tiếp tục sang [4.3 Foundation Setup](../4.3-Foundation-Setup/).
+Khi mọi mục phía trên đã xong — Bedrock đã được cấp quyền, CLI đã cài, OAuth client của Google đã tạo, budget alert đã bật — tiếp tục sang [4.3 Foundation Setup](/workshop/4.3-Foundation-Setup).

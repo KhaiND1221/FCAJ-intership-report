@@ -1,28 +1,51 @@
 # 4.1 Tổng quan
 
-NutriTrack là nền tảng theo dõi dinh dưỡng tích hợp AI, cấp độ production, xây dựng trên AWS Amplify Gen 2. Workshop này hướng dẫn bạn triển khai đúng backend và mobile client đang có trong `TEMPLATE/neurax-web-app/`, từ đầu đến cuối, trong một ngày làm việc.
+NutriTrack là nền tảng theo dõi dinh dưỡng tích hợp AI, cấp độ production, xây dựng trên AWS Amplify Gen 2. Workshop này hướng dẫn bạn triển khai đúng backend và mobile client đang có — xem source tại [neurax-web-app](https://github.com/NeuraX-HQ/neurax-web-app) — từ đầu đến cuối, trong một ngày làm việc.
 
 ## Bạn sẽ xây dựng gì
 
 Sau khi hoàn thành workshop, bạn sẽ có một stack đang chạy gồm:
 
 - **8 model DynamoDB** do AppSync quản lý (`Food`, `user`, `FoodLog`, `FridgeItem`, `Challenge`, `ChallengeParticipant`, `Friendship`, `UserPublicStats`), định nghĩa trong `backend/amplify/data/resource.ts`.
-- **4 Lambda function** chạy trên **Node.js 22 / ARM64**:
+- **5 Lambda function** chạy trên **Node.js 22 / ARM64**:
   - `ai-engine` — handler AI đa hành động, 512 MB, timeout 120 giây.
   - `process-nutrition` — tra cứu dinh dưỡng lai DynamoDB + AI.
   - `friend-request` — mutation cho hệ thống bạn bè.
   - `resize-image` — trigger S3 event trên prefix `incoming/`.
-- **10 hành động AI** do Lambda `aiEngine` phục vụ: `analyzeFoodImage`, `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`.
+  - `scan-image` — proxy xử lý ảnh: tải file từ S3, chuyển tiếp đến ECS FastAPI (`/analyze-food`, `/analyze-label`, `/scan-barcode`) qua JWT xác thực, trả kết quả bằng cơ chế polling bất đồng bộ.
+- **9 hành động AI** do Lambda `aiEngine` phục vụ: `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`. Phân tích ảnh được xử lý bởi Lambda `scan-image` chuyên dụng.
 - **Amazon Bedrock** với foundation model `qwen.qwen3-vl-235b-a22b` ở **ap-southeast-2** (Sydney), gọi bởi AI coach persona tên **Ollie**.
 - **Amazon S3** bucket với các prefix `incoming/`, `voice/`, `media/`, gắn vào `resize-image` qua S3 event notification và lifecycle rule 1 ngày trên `incoming/`.
 - **Amazon Cognito** user pool với đăng ký email + OTP và Google federated identity.
 - **Amazon Transcribe** cho tính năng voice-to-food, gọi từ `ai-engine` với resource policy cấp quyền trên `voice/*`.
 - **ECS Fargate** container tier chạy service FastAPI (`backend/main.py`) sau một Application Load Balancer, triển khai từ `infrastructure/` (Terraform) hoặc `ECS/` (Docker + CI/CD).
-- **Ứng dụng Expo** (SDK 54, React Native 0.81, React 19, Expo Router 6, Zustand 5, `@react-three/fiber`) trong `frontend/`.
+- **Ứng dụng Expo** (SDK 54, React Native 0.81, React 19, Expo Router 6, Zustand 5) trong `frontend/`.
+
+## Các dịch vụ AWS sử dụng
+
+| Dịch vụ | Vai trò trong NutriTrack |
+| --- | --- |
+| **AWS Amplify Gen 2** | Scaffold project, CI/CD pipeline (`amplify.yml`), triển khai đa môi trường (sandbox → staging → production) |
+| **AWS AppSync** | Managed GraphQL API — toàn bộ query, mutation và real-time subscription của client đều đi qua AppSync |
+| **Amazon DynamoDB** | NoSQL datastore chính cho 8 model dữ liệu (`Food`, `FoodLog`, `FridgeItem`, `Challenge`, `Friendship` và nhiều hơn) |
+| **AWS Lambda** | Năm function Node.js 22 / ARM64: `aiEngine`, `processNutrition`, `friendRequest`, `resizeImage`, `scanImage` |
+| **AWS Secrets Manager** | Lưu trữ bảo mật `NUTRITRACK_API_KEY` — khóa bí mật dùng bởi `scanImage` Lambda để tạo JWT HS256 xác thực với ECS |
+| **Amazon Bedrock** | Inference foundation model — `qwen.qwen3-vl-235b-a22b` (Qwen3-VL 235B) tại `ap-southeast-2` cho cả 9 hành động AI |
+| **Amazon S3** | Lưu trữ media với 4 prefix (`incoming/`, `voice/`, `avatar/`, `media/`) và lifecycle rule 1 ngày trên `incoming/` |
+| **Amazon Cognito** | Xác thực người dùng — đăng ký email + OTP và Google federated identity qua Hosted UI |
+| **Amazon Transcribe** | Speech-to-text cho ghi âm thực phẩm bằng tiếng Việt (`vi-VN`), gọi từ `aiEngine` |
+| **Amazon ECS Fargate** | Service FastAPI đóng gói container sau Application Load Balancer cho các API route thông lượng cao |
+| **Amazon ECR** | Không dùng trong production — NutriTrack host image FastAPI trên Docker Hub free tier để tránh chi phí lưu trữ ECR |
+| **Amazon VPC** | Cách ly mạng cho tầng ECS — private subnet, NAT Gateway, VPC endpoint cho DynamoDB/S3 |
+| **Amazon CloudWatch** | Log, metric và alarm cho Lambda, độ trễ Bedrock và sức khỏe ECS |
+| **AWS IAM** | Execution role theo nguyên tắc least-privilege cho từng Lambda và ECS task; role Cognito identity pool cho mobile client |
+| **Amazon CloudFront** | CDN cho frontend Amplify Hosting (tự cấu hình bởi Amplify) |
+| **Amazon Route 53** | DNS routing cho ALB endpoint và CloudFront distribution |
+| **AWS WAF** | Web Application Firewall bảo vệ tầng CloudFront + ALB khỏi traffic độc hại |
 
 ## Kiến trúc tổng quan
 
-![Kiến trúc tổng quan](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
+![Kiến trúc tổng thể NutriTrack](/hei-FCAJ-intership-report/solution-architect/nutritrack-solution-architecture.drawio.svg)
 
 ## Kết quả học tập
 
@@ -38,23 +61,15 @@ Sau khi hoàn thành workshop này, bạn sẽ có thể:
 
 ## Ước tính chi phí
 
-Dựa trên mô hình giá thức tế của AWS **không áp dụng Free Tier**, dưới đây là phân tích chi phí được cập nhật:
+| Dịch vụ | 1 Ngày (workshop) | 1 Tháng (100 DAU) |
+| --- | --- | --- |
+| Amplify Gen 2 (AppSync, DynamoDB, Lambda, S3) | < $1 | ~$13 |
+| Amazon Bedrock (Qwen3-VL 235B) | ~$2–5 | ~$30 |
+| Amazon Transcribe (ghi âm thực phẩm) | < $0.50 | ~$6 |
+| ECS Fargate + ALB + NAT Instance | ~$2–5 | ~$44 |
+| **Tổng cộng** | **~$5–10** | **~$93** |
 
-### Workshop 1 ngày (1 User)
-- **Giả định:** 1 lập trình viên chạy smoke test (khoảng 50-100 lượt gọi Bedrock API, 1 ECS Fargate task chạy trong 8 tiếng).
-- **Compute:** ECS Fargate (0.25 vCPU, 0.5 GB RAM) trong 8 giờ ≈ $0.15.
-- **AI (Bedrock):** ~1M token input/output dùng `qwen3-vl` ≈ $1.00 - $3.00.
-- **Các dịch vụ khác (DynamoDB, AppSync, S3, Cognito):** Dung lượng tối thiểu ≈ $0.50.
-- **Tổng chi phí ước tính:** **$2.00 - $5.00 USD/ngày**.
-
-### Production 1 tháng (1.000 Users)
-- **Giả định:** 1.000 người dùng tích cực hằng ngày, trung bình 5 lần gọi Bedrock mỗi ngày. Tổng ≈ 150.000 request/tháng.
-- **Compute:** 2 ECS Fargate tasks chạy 24/7 ≈ $17.50.
-- **AI (Bedrock):** 150k lượt gọi × ~2.000 tokens/lần ≈ 300 triệu tokens/tháng ≈ $300.00 - $600.00 (tùy thuộc vào giá token cụ thể).
-- **Data (DynamoDB & S3):** ~50GB lưu trữ, read/write units ≈ $15.00.
-- **Tổng chi phí ước tính:** **$350.00 - $650.00 USD/tháng**.
-
-*(Lưu ý: Yếu tố tốn kém nhất là số lượng token gửi qua Bedrock. Hãy bật AWS Budgets trước khi bắt đầu.)*
+Chi phí chủ yếu đến từ **Amazon Bedrock** — coaching AI và tra cứu dinh dưỡng text chiếm phần lớn chi phí Bedrock. Phân tích ảnh nay chạy trên ECS Fargate (qua proxy `scanImage` Lambda → FastAPI), chuyển chi phí xử lý ảnh sang dòng compute ECS. Hãy bật AWS Budgets với mức cảnh báo **$25/tháng** trước khi bắt đầu. Xem chi tiết tại [4.11.1 Chi tiết ngân sách](/workshop/4.11.1-Budget-Breakdown).
 
 ## Thời lượng và độ khó
 
@@ -63,23 +78,27 @@ Dựa trên mô hình giá thức tế của AWS **không áp dụng Free Tier**
 
 ## Các phần trong workshop
 
-1. [4.2 Điều kiện tiên quyết](../4.2-Prerequiste/) — tài khoản, công cụ, đăng ký truy cập Bedrock.
-2. [4.3 Foundation Setup](../4.3-Foundation-Setup/) — cấu trúc repo, Amplify sandbox, Cognito.
-3. [4.4 Monitoring Setup](../4.4-Monitoring-Setup/) — AppSync và các model DynamoDB.
-4. [4.5 Processing Setup](../4.5-Processing-Setup/) — Bedrock + Lambda `ai-engine`.
-5. [4.6 Automation Setup](../4.6-Automation-Setup/) — S3, trigger resize-image, Transcribe.
-6. [4.7 Dashboard Setup](../4.7-Dashboard-Setup/) — cấu hình app Expo.
-7. [4.8 Verify Setup](../4.8-Verify-Setup/) — smoke test end-to-end.
-8. [4.9 CI/CD — Amplify đa môi trường](../4.9-Use-CDK/) — `amplify.yml`, sandbox → `feat/phase3` → `main`.
-9. [4.10 Dọn dẹp](../4.10-Cleanup/) — teardown an toàn.
-10. [4.11 Phụ lục](../4.11-Appendices/) — bảng chi phí, troubleshooting, tham khảo.
+1. [4.2 Điều kiện tiên quyết](/workshop/4.2-Prerequiste) — tài khoản, công cụ, đăng ký truy cập Bedrock.
+2. [4.3 Foundation Setup](/workshop/4.3-Foundation-Setup) — cấu trúc repo, Amplify sandbox, Cognito.
+3. [4.4 Monitoring Setup](/workshop/4.4-Monitoring-Setup) — AppSync và các model DynamoDB.
+4. [4.5 Processing Setup](/workshop/4.5-Processing-Setup) — Bedrock + Lambda `ai-engine`.
+5. [4.6 Automation Setup](/workshop/4.6-Automation-Setup) — S3, trigger resize-image, Transcribe.
+6. [4.7 Dashboard Setup](/workshop/4.7-Dashboard-Setup) — cấu hình app Expo.
+7. [4.8 Verify Setup](/workshop/4.8-Verify-Setup) — smoke test end-to-end.
+8. [4.9 CI/CD — Amplify đa môi trường](/workshop/4.9-Use-CDK) — `amplify.yml`, sandbox → `feat/phase3` → `main`.
+9. [4.10 Dọn dẹp](/workshop/4.10-Cleanup) — teardown an toàn.
+10. [4.11 Phụ lục](/workshop/4.11-Appendices) — bảng chi phí, troubleshooting, tham khảo.
+
+## Nhóm 11 — NeuraX
+
+Xây dựng bởi **Nhóm 11 — NeuraX** trong chương trình thực tập First Cloud AI Journey (FCAJ) tại Amazon Web Services Vietnam. Xem [proposal](/proposal) để biết danh sách thành viên và phân công vai trò đầy đủ.
 
 ## Nguồn đối chiếu
 
-Mọi phát biểu trong workshop này đều dựa trên code thực tế dưới `TEMPLATE/neurax-web-app/`. Khi tài liệu và code mâu thuẫn, code là đúng. Các file nên mở sẵn ở tab thứ hai:
+Mọi phát biểu trong workshop này đều dựa trên code thực tế dưới repository [neurax-web-app](https://github.com/NeuraX-HQ/neurax-web-app). Khi tài liệu và code mâu thuẫn, code là đúng. Các file nên mở sẵn ở tab thứ hai:
 
-- `TEMPLATE/neurax-web-app/backend/amplify/backend.ts`
-- `TEMPLATE/neurax-web-app/backend/amplify/data/resource.ts`
-- `TEMPLATE/neurax-web-app/backend/amplify/ai-engine/handler.ts`
-- `TEMPLATE/neurax-web-app/amplify.yml`
-- `TEMPLATE/neurax-web-app/CLAUDE.md`
+- `backend/amplify/backend.ts` ([xem](https://github.com/NeuraX-HQ/neurax-web-app/blob/main/backend/amplify/backend.ts))
+- `backend/amplify/data/resource.ts` ([xem](https://github.com/NeuraX-HQ/neurax-web-app/blob/main/backend/amplify/data/resource.ts))
+- `backend/amplify/ai-engine/handler.ts` ([xem](https://github.com/NeuraX-HQ/neurax-web-app/blob/main/backend/amplify/ai-engine/handler.ts))
+- `amplify.yml` ([xem](https://github.com/NeuraX-HQ/neurax-web-app/blob/main/amplify.yml))
+- `CLAUDE.md` ([xem](https://github.com/NeuraX-HQ/neurax-web-app/blob/main/CLAUDE.md))

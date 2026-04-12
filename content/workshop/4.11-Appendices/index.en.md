@@ -25,7 +25,7 @@ Every appendix is traceable to a file in `backend/amplify/`. If you find a discr
 | Lambda runtime | Node.js 22 on ARM64 |
 | Bedrock model | `qwen.qwen3-vl-235b-a22b` |
 | Bedrock region | `ap-southeast-2` |
-| Lambda functions | `aiEngine`, `processNutrition`, `friendRequest`, `resizeImage` |
+| Lambda functions | `aiEngine`, `processNutrition`, `friendRequest`, `resizeImage`, `scanImage` |
 | Coach persona | Ollie |
 | S3 prefixes | `incoming/`, `voice/`, `media/` |
 

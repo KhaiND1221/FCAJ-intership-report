@@ -17,16 +17,29 @@ For the workshop, use either the root account or an IAM user with the `Administr
 ### 2. Accessing Amazon Bedrock Models
 
 Amazon Bedrock now allows users to directly access available models without requiring prior registration. To integrate and use Bedrock's AI models in your source code, follow these instructions:
-1. **Identify the Model ID**: Select the Bedrock model you want to use and note its unique identifier.
-2. **Use the Boto3 Library**: Integrate the `boto3` library (AWS SDK for Python) into your project to establish a connection and call Bedrock APIs, passing the identified model ID to interact and send requests to the model.
 
-![Bedrock model access granted for Qwen3-VL](/FCAJ-intership-report/workshop-images/4.2-Prerequiste/take_Id_model.png)
+- **Identify the Model ID**: Select the Bedrock model you want to use and note its unique identifier.
+- **Use the Boto3 Library**: Integrate the `boto3` library (AWS SDK for Python) into your project to establish a connection and call Bedrock APIs, passing the identified model ID to interact and send requests to the model.
 
-The IAM policy attached to the `ai-engine` Lambda in `backend/amplify/backend.ts` only grants `bedrock:InvokeModel` on this exact model ARN:
+To enable model access in the AWS Console:
+
+1. Open the AWS Console and switch the region to **Asia Pacific (Sydney) — ap-southeast-2**.
+2. Go to **Amazon Bedrock → Model access**.
+3. Click **Modify model access**.
+4. Enable **Qwen 3 VL 235B A22B** (`qwen.qwen3-vl-235b-a22b`).
+5. Submit and wait for the status to become **Access granted**.
+
+![Bedrock model access granted for Qwen3-VL](images/bedrock-model-access.png)
+
+> **Note:** Unlike Anthropic or Cohere models, **Qwen is not sold through the AWS Marketplace**. No `aws-marketplace:Subscribe` IAM permission is needed. The console opt-in step above is the only approval required. The first API call then completes a brief auto-provisioning step (allow up to 15 minutes after clicking **Save changes** before the model responds).
+
+The IAM policy attached to the `ai-engine` and `process-nutrition` Lambdas in `backend/amplify/backend.ts` grants `bedrock:InvokeModel` on this exact model ARN:
 
 ```text
 arn:aws:bedrock:ap-southeast-2::foundation-model/qwen.qwen3-vl-235b-a22b
 ```
+
+If you switch regions or models, you must also update `backend.ts` and `ai-engine/handler.ts`.
 
 ### 3. AWS Budgets alert
 
@@ -41,8 +54,8 @@ Install the following on your workstation. Versions listed are the minimum teste
 
 | Tool                                       | Minimum version     | Used for                                        |
 | ------------------------------------------ | ------------------- | ----------------------------------------------- |
-| Node.js                                    | **22 LTS** or newer | Running `ampx` CLI, Lambda builds, Expo         |
-| npm                                        | **10+**             | Package install (bundled with Node 20+)         |
+| Node.js                                    | **22** or newer | Running `ampx` CLI, Lambda builds, Expo         |
+| npm                                        | **10+**             | Package install (bundled with Node 22+)         |
 | AWS CLI                                    | **v2**              | Credential setup, CloudFormation and S3 ops     |
 | Git                                        | **2.40+**           | Cloning the template, pushing branches for CI   |
 | Docker Desktop                             | **latest stable**   | Building the FastAPI image for ECS              |
@@ -88,7 +101,7 @@ Cognito federates to Google for social sign-in. You need a Google OAuth 2.0 Web 
 5. Authorized redirect URIs: you will add the Cognito Hosted UI callback URL after section 4.3 creates the user pool. For now, leave it blank — you will return.
 6. Copy the **Client ID** and **Client secret**.
 
-![Google OAuth Web client credentials](/FCAJ-intership-report/workshop-images/4.2-Prerequiste/image.png)
+<img src="images/google-oauth-client.png" alt="Google OAuth Web client credentials" style="width: 60%; max-width: 600px;" />
 
 Store them as Amplify sandbox secrets later (from `backend/`):
 
@@ -117,4 +130,4 @@ If you stop at 4.10 Cleanup the same day, expect a total AWS bill of under **$10
 
 ## Ready?
 
-When every box above is checked — Bedrock access granted, CLIs installed, Google OAuth client created, budget alert armed — continue to [4.3 Foundation Setup](../4.3-Foundation-Setup/).
+When every box above is checked — Bedrock access granted, CLIs installed, Google OAuth client created, budget alert armed — continue to [4.3 Foundation Setup](/workshop/4.3-Foundation-Setup).

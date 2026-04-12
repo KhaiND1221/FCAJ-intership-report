@@ -17,7 +17,7 @@ Nếu một statement không nằm trong `backend.ts`, Lambda không có quyền
 
 ## Role của aiEngine
 
-Lambda `aiEngine` xử lý toàn bộ Bedrock calls, voice transcription và đọc ảnh từ S3. Đây là Lambda có quyền rộng nhất trong số bốn Lambda của workshop.
+Lambda `aiEngine` xử lý toàn bộ Bedrock calls và voice transcription. Đây là Lambda có quyền rộng nhất trong số năm Lambda của workshop cho các tác vụ text/voice; `scanImage` giữ quyền bổ sung cho luồng routing ảnh sang ECS.
 
 ### Bedrock: invoke model Qwen3-VL
 
@@ -120,7 +120,7 @@ Wildcard `Food-*` khớp với tên bảng Amplify sinh ra (ví dụ `Food-abc12
 **Khuyến nghị**: inject `FOOD_TABLE_NAME` tường minh (theo đúng pattern `friendRequest`) và xoá `ListTables` khỏi policy trước khi lên production:
 
 ```typescript
-const cfnProcessNutritionFn = backend.processNutrition.resources.cfnResources.cfnFunction;
+const cfnProcessNutritionFn = backend.processNutrition.resources.lambda.node.defaultChild as cdk.aws_lambda.CfnFunction;
 cfnProcessNutritionFn.addPropertyOverride(
   'Environment.Variables.FOOD_TABLE_NAME',
   backend.data.resources.tables['Food'].tableName
@@ -129,7 +129,18 @@ cfnProcessNutritionFn.addPropertyOverride(
 
 ### Bedrock: đường fallback
 
-Cùng một Bedrock statement như `aiEngine` cũng được gắn vào đây, vì nutrition lookup sẽ rơi xuống gọi Qwen3-VL khi không có row nào match trong DB. Resource ARN giống hệt.
+Khi không có row nào trong DynamoDB khớp, `processNutrition` gọi Qwen3-VL. Statement Bedrock được gắn tường minh trong `backend.ts`:
+
+```typescript
+const processNutritionLambda = backend.processNutrition.resources.lambda;
+processNutritionLambda.addToRolePolicy(new iam.PolicyStatement({
+  effect: iam.Effect.ALLOW,
+  actions: ['bedrock:InvokeModel'],
+  resources: ['arn:aws:bedrock:ap-southeast-2::foundation-model/qwen.qwen3-vl-235b-a22b'],
+}));
+```
+
+Resource ARN giống với statement của `aiEngine`. Thiếu đoạn này, Lambda sẽ ném `AccessDeniedException` ở mọi DB miss — Lambda vẫn chạy và trả về `success: false` nhưng không có dữ liệu dinh dưỡng.
 
 ## Role của friendRequest
 
@@ -240,17 +251,18 @@ Mở rộng thành `s3:GetObject`, `s3:GetObject*`, `s3:List*` trên bucket ARN 
 Lưu ý:
 
 - Dấu `*` cuối bao phủ hậu tố tự động mà Secrets Manager thêm vào mỗi ARN secret (ví dụ `-AbCdEf`). Thiếu nó, lệnh `GetSecretValue` sẽ lỗi `ResourceNotFoundException`.
-- Lambda dùng key này để tạo JWT HS256 1 phút và đính kèm dưới dạng `Authorization: Bearer` khi gọi ALB. Xem 4.8.2 về luồng JWT.
+- Lambda dùng key này để tạo JWT HS256 5 phút và đính kèm dưới dạng `Authorization: Bearer` khi gọi ALB. Xem 4.8.2 về luồng JWT.
 - Không có Lambda nào khác có quyền này — least-privilege được giữ nguyên.
 
 ### Inject biến môi trường cho scanImage
 
 ```typescript
-const cfnScanImageFn = scanImageLambda.node.defaultChild as cdk.aws_lambda.CfnFunction;
+const cfnScanImageFn = backend.scanImage.resources.lambda.node.defaultChild as cdk.aws_lambda.CfnFunction;
 cfnScanImageFn.addPropertyOverride('Environment.Variables.STORAGE_BUCKET_NAME', s3Bucket.bucketName);
-cfnScanImageFn.addPropertyOverride('Environment.Variables.ECS_API_URL', ecsAlbDns);
-cfnScanImageFn.addPropertyOverride('Environment.Variables.NUTRITRACK_API_KEY_SECRET_ID', apiKeySecret.secretName);
+cfnScanImageFn.addPropertyOverride('Environment.Variables.ECS_BASE_URL', ecsAlbDns);
 ```
+
+Tên secret Secrets Manager được hard-code trong handler là `"nutritrack/prod/api-keys"` và không cần override env var.
 
 ## S3 bucket resource policy
 
