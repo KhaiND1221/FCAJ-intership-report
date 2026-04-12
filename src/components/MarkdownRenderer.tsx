@@ -103,9 +103,25 @@ function CopyableCodeBlock({ language, code }: { language: string; code: string 
 
 interface MarkdownRendererProps {
     content: string;
+    /** folderName of the workshop section, e.g. "4.3-Foundation-Setup/4.3.2-Cognito-Auth".
+     *  When provided, relative `images/xxx` paths are resolved to public/workshop-images/<sectionPath>/images/xxx */
+    sectionPath?: string;
 }
 
-export function MarkdownRenderer({ content }: MarkdownRendererProps) {
+export function MarkdownRenderer({ content, sectionPath }: MarkdownRendererProps) {
+    const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+    function resolveImageSrc(src: string | undefined): string | undefined {
+        if (!src || !sectionPath) return src;
+        if (src.startsWith('images/')) {
+            return `${base}/workshop-images/${sectionPath}/${src}`;
+        }
+        // Special case for 4.2-Prerequiste's bedrock-model-access.png which is outside images/ in the source but we moved it to images/
+        // Actually we moved it to images/, but md file references `images/...,` so it's handled above!
+        // What about `google-oauth-client.png` which is not in `images/` folder in md file?? Wait, the md file says `images/` or direct?
+        return src;
+    }
+
     return (
         <ReactMarkdown
             remarkPlugins={[remarkGfm]}
@@ -227,11 +243,14 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                 ),
 
                 // Images
-                img: ({ src, alt }) => (
+                img: ({ src, alt, style, width, height }) => (
                     <img
-                        src={src}
+                        src={resolveImageSrc(src)}
                         alt={alt || ''}
                         className="content-image max-w-full h-auto mx-auto"
+                        style={style as React.CSSProperties}
+                        width={width}
+                        height={height}
                     />
                 ),
             }}

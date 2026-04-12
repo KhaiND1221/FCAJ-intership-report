@@ -60,7 +60,8 @@ const WORKSHOP_SECTIONS: WorkshopSection[] = [
             { id: '4.5.1-Bedrock', folderName: '4.5-Processing-Setup/4.5.1-Bedrock', en: '4.5.1 Bedrock Qwen3-VL', vi: '4.5.1 Bedrock Qwen3-VL' },
             { id: '4.5.2-AIEngine', folderName: '4.5-Processing-Setup/4.5.2-AIEngine', en: '4.5.2 aiEngine Lambda', vi: '4.5.2 Lambda aiEngine' },
             { id: '4.5.3-ProcessNutrition', folderName: '4.5-Processing-Setup/4.5.3-ProcessNutrition', en: '4.5.3 processNutrition Lambda', vi: '4.5.3 Lambda processNutrition' },
-            { id: '4.5.4-ResizeImage', folderName: '4.5-Processing-Setup/4.5.4-ResizeImage', en: '4.5.4 resizeImage Lambda', vi: '4.5.4 Lambda resizeImage' }
+            { id: '4.5.4-ResizeImage', folderName: '4.5-Processing-Setup/4.5.4-ResizeImage', en: '4.5.4 resizeImage Lambda', vi: '4.5.4 Lambda resizeImage' },
+            { id: '4.5.5-ScanImage', folderName: '4.5-Processing-Setup/4.5.5-ScanImage', en: '4.5.5 scanImage Lambda', vi: '4.5.5 Lambda scanImage' }
         ]
     },
     {
@@ -90,8 +91,10 @@ const WORKSHOP_SECTIONS: WorkshopSection[] = [
         en: '4.8 ECS Deployment',
         vi: '4.8 Triển Khai ECS',
         children: [
-            { id: '4.8.1-VPC-ECR', folderName: '4.8-Verify-Setup/4.8.1-VPC-ECR', en: '4.8.1 VPC & ECR', vi: '4.8.1 VPC & ECR' },
-            { id: '4.8.2-Fargate-ALB', folderName: '4.8-Verify-Setup/4.8.2-Fargate-ALB', en: '4.8.2 Fargate & ALB', vi: '4.8.2 Fargate & ALB' }
+            { id: '4.8.1-VPC-ECR', folderName: '4.8-Verify-Setup/4.8.1-VPC-ECR', en: '4.8.1 VPC & Network', vi: '4.8.1 VPC & Network' },
+            { id: '4.8.2-Fargate-ALB', folderName: '4.8-Verify-Setup/4.8.2-Fargate-ALB', en: '4.8.2 Fargate & ALB', vi: '4.8.2 Fargate & ALB' },
+            { id: '4.8.3-Infrastructure', folderName: '4.8-Verify-Setup/4.8.3-Infrastructure', en: '4.8.3 Infrastructure', vi: '4.8.3 Hạ Tầng' },
+            { id: '4.8.4-NAT-Instance', folderName: '4.8-Verify-Setup/4.8.4-NAT-Instance', en: '4.8.4 NAT Instance', vi: '4.8.4 NAT Instance' }
         ]
     },
     {
@@ -126,7 +129,17 @@ function flattenSections(sections: WorkshopSection[]): Map<string, WorkshopSecti
     for (const s of sections) {
         map.set(s.id, s);
         if (s.children) {
-            for (const c of s.children) map.set(c.id, c);
+            for (const c of s.children) {
+                map.set(c.id, c);
+                map.set(`${s.id}/${c.id}`, c); // compound key for /workshop/:sectionId/:subId routes
+                if (c.children) {
+                    for (const gc of c.children) {
+                        map.set(gc.id, gc);
+                        map.set(`${c.id}/${gc.id}`, gc);
+                        map.set(`${s.id}/${c.id}/${gc.id}`, gc);
+                    }
+                }
+            }
         }
     }
     return map;
@@ -185,7 +198,7 @@ export function WorkshopSectionPage() {
                 <SectionHeader icon="workshop" title={sectionMeta ? (language === 'en' ? sectionMeta.en : sectionMeta.vi) : routeId} />
 
                 <div className="bg-white/50 backdrop-blur-sm rounded-3xl p-8 border border-gray-100 shadow-sm mt-6">
-                    <MarkdownRenderer content={content} />
+                    <MarkdownRenderer content={content} sectionPath={folderName} />
                 </div>
 
                 {/* Child section links if this section has children */}
@@ -196,7 +209,7 @@ export function WorkshopSectionPage() {
                             {sectionMeta.children.map((child, i) => (
                                 <li key={child.id}>
                                     <Link
-                                        to={`/workshop/${child.id}`}
+                                        to={`/workshop/${sectionMeta.id}/${child.id}`}
                                         className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-accent-orange/30 transition-all group"
                                     >
                                         <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-accent-orange font-mono text-sm font-semibold group-hover:bg-accent-orange group-hover:text-white transition-colors">
