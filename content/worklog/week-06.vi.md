@@ -1,48 +1,42 @@
 ### Mục tiêu Tuần 6
 
-* Đảm bảo Dữ liệu lưu trữ (At-rest) và Dữ liệu truyền tải (In-transit) được mã hóa đồng bộ trong hệ sinh thái NeuraX.
-* Quản lý và tiến hành xoay vòng khóa mật mã qua AWS Key Management Service (KMS).
-* Loại bỏ việc "code cứng" (hard-code) các tham số bí mật bằng AWS Secrets Manager.
-* Thi hành các Quy chuẩn Bảo mật S3 (S3 Security Best Practices) cho kho chứa ảnh thực đơn NutriTrack.
+* Khởi tạo project React Native (Expo Router) với file-based routing.
+* Kết nối Frontend với Amplify Data (AppSync GraphQL).
+* Cùng team xây dựng hệ thống tab navigation chính.
 
 ### Các công việc thực hiện trong tuần
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Thiết lập Hệ thống Khóa <br>&emsp; + Tạo Customer Managed Keys (CMK) trong AWS KMS <br>&emsp; + Định nghĩa Key Policies cấp quyền truy cập | 05/03/2026 | 05/03/2026 | [Encryption with AWS KMS](https://000033.awsstudygroup.com) |
-| 2 | - Mã hóa S3 & DynamoDB <br>&emsp; + Áp dụng vòng khóa KMS lên bảng DynamoDB của NutriTrack <br>&emsp; + Bắt buộc mã hóa mặc định (Default Encryption) trên mọi S3 bucket | 06/03/2026 | 06/03/2026 | [AWS Sec Best Practices] |
-| 3 | - Quản lý tham số Bí mật <br>&emsp; + Chuyển các khóa API bên thứ ba vào lưu trong AWS Secrets Manager <br>&emsp; + Xóa toàn bộ secret tồn tại dưới dạng thuần text trong Lambda Env Vars | 07/03/2026 | 07/03/2026 | [AWS Secrets Manager](https://000096.awsstudygroup.com) |
-| 4 | - Định tuyến Kín cho S3 <br>&emsp; + Ngăn chặn luồng dữ liệu từ Lambda gọi sang S3 đi qua mạng Internet công cộng <br>&emsp; + Setup S3 Gateway VPC Endpoint | 08/03/2026 | 08/03/2026 | [Private Access to S3](https://000111.awsstudygroup.com) |
-| 5 | - Tăng cường bọc thép S3 <br>&emsp; + Kích hoạt toàn bộ S3 Block Public Access <br>&emsp; + Viết S3 Bucket Policy từ chối mọi truy vấn không thông qua HTTPS | 09/03/2026 | 09/03/2026 | [S3 Security Best Practices](https://000069.awsstudygroup.com) |
-| 6-7 | - Đánh giá Kiến trúc <br>&emsp; + Phổ biến quy chuẩn mã hóa cùng Dev team <br>&emsp; + Rà soát đảm bảo các IAM Role của Lambda đã thêm cờ `kms:Decrypt` | 10/03/2026 | 11/03/2026 | [Architecture Draft] |
+| 1 | - Khởi tạo Expo Router <br>&emsp; + Tạo project với file-based routing trong `app/` <br>&emsp; + Cấu hình layout groups: `(tabs)/` cho UX chính, `(auth)/` cho xác thực | 05/03/2026 | 05/03/2026 | [Expo Router](https://expo.github.io/router) |
+| 2 | - Xử lý Dependencies <br>&emsp; + Giải quyết lỗi `npm install` do xung đột peer dependencies React Native <br>&emsp; + Áp dụng `--legacy-peer-deps` và ghim phiên bản thư viện tương thích | 06/03/2026 | 06/03/2026 | [React Native Docs](https://reactnative.dev/docs/getting-started) |
+| 3 | - Tích hợp AppSync <br>&emsp; + Cấu hình `Amplify.configure()` với `amplify_outputs.json` <br>&emsp; + Xác nhận kết nối GraphQL client qua `generateClient<Schema>()` | 07/03/2026 | 07/03/2026 | [Amplify Data](https://docs.amplify.aws/gen2/build-a-backend/data/) |
+| 4 | - Bottom Tab Navigation (cùng team) <br>&emsp; + Xây dựng layout 5 tabs: Home, Log, Kitchen, Coach, Profile <br>&emsp; + Cấu hình icons và routing cho từng screen | 09/03/2026 | 09/03/2026 | [Expo Tabs](https://docs.expo.dev/router/advanced/tabs/) |
+| 5 | - Dựng Screens (cùng team) <br>&emsp; + Tạo placeholder screens cho mỗi tab <br>&emsp; + Implement shared header component và flow chuyển trang | 10/03/2026 | 10/03/2026 | - |
+| 6 | - Test Android Emulator <br>&emsp; + Cấu hình `adb reverse tcp:8081 tcp:8081` cho Metro server local <br>&emsp; + Kiểm tra hot reload và navigation trên emulator | 11/03/2026 | 11/03/2026 | - |
 
 ### Kết quả đạt được trong Tuần 6
 
-* **Thực thi Mã hóa dữ liệu:**
-  * Tạo thành công Custom Keys bảo mật cao qua **AWS KMS** và triển khai gắn thành công vào mảng lưu trữ (DynamoDB, S3). Rủi ro rò rỉ dữ liệu khi bị đánh cắp ổ cứng cấp bách được triệt tiêu toàn diện.
+* **Nền tảng Frontend:**
+  * Project Expo Router hoạt động đầy đủ với file-based routing phân tách rõ ràng giữa UX chính và luồng xác thực.
 
-* **Cô lập tham số mật (Secrets Decoupling):**
-  * Rà soát mã nguồn IaC của nhóm dev. Lọc bỏ các giá trị biến môi trường chứa token nhạy cảm, thay bằng việc cho code tự tải cấu hình mật từ **AWS Secrets Manager**, giảm hẳn nguy cơ sập bẫy rò rỉ khóa lên GitHub.
+* **Kết nối Backend:**
+  * Frontend giao tiếp với Amplify backend qua GraphQL queries có schema-typed sử dụng `generateClient<Schema>()`.
 
-* **Tiêu chuẩn hóa kho S3:**
-  * Niêm phong tuyệt đối các kho ảnh của NutriTrack qua tính năng "Block Public Access". Mọi giao tiếp trao đổi dữ liệu từ Lambda sang S3 giờ đây chạy an toàn qua **VPC Endpoints** nội bộ trực tiếp trên hạ tầng mạng của AWS.
+* **Phối hợp Team:**
+  * Cùng team hoàn thiện hệ thống 5 tabs bottom navigation (Home, Log, Kitchen, Coach, Profile), xác lập luồng trải nghiệm người dùng cốt lõi cho NutriTrack.
 
 ### Thách thức & Bài học kinh nghiệm
 
 * **Thách thức:**
-  * Sau khi bật mã hóa bảng DynamoDB, các cục hàm Lambda đột ngột ném lỗi `AccessDeniedContext` mù mờ, gây tê liệt các API.
-  * Developers báo lỗi không test code dưới local được vì công cụ AWS SAM thiếu quyền kết nối ngữ cảnh KMS.
-
+  * Xung đột dependencies React Native khiến `npm install` lỗi liên tục. Nhiều thư viện yêu cầu phiên bản React cụ thể xung đột với Expo SDK.
 * **Giải pháp:**
-  * Lần theo dấu vết trên AWS CloudTrail, phát hiện Execution Role của Lambda chỉ có quyền đọc DynamoDB mà chưa được cấp bổ sung cờ lệnh `kms:GenerateDataKey` và `kms:Decrypt` cho con CMK đang dùng. 
-  * Hướng dẫn team sử dụng kĩ thuật test Mock Integration đối với KMS để vượt qua lỗi rào cản dưới local.
-
+  * Sử dụng flag `--legacy-peer-deps` xuyên suốt và ghim phiên bản thư viện cụ thể trong `package.json`.
 * **Bài học:**
-  * Việc áp dụng mã hóa phá vỡ định nghĩa quyền truy cập cũ: Có quyền hạn với IAM không có nghĩa là sẽ đọc được dữ liệu nếu Identity bị thiếu quyền xử lý trong KMS Policy.
-  * AWS Secrets Manager sẽ làm hệ thống Lambda xử lý chậm hơn vài mili-giây lúc khởi động (cold start), nhưng đó là sự đánh đổi bắt buộc để lấy sự an toàn ở tầm mức Enterprise.
+  * Quản lý dependencies React Native đòi hỏi kiên nhẫn. Xây dựng UI components cùng team từ sớm giúp mọi người có cùng hiểu biết về kiến trúc ứng dụng.
 
 ### Kế hoạch Tuần 7
 
-* Bước vào phân đoạn Theo dõi & Trinh sát Bảo mật (Continuous Security Monitoring).
-* Kích hoạt radar phân tích mã độc khôn ngoan với **Amazon GuardDuty**.
-* Đọc và phân tích **VPC Flow Logs**, đi kèm thiết kế hệ thống báo động CloudWatch Alarms chuyên bắt lỗi các hành vi bất thường trên API của NeuraX.
+* Xây dựng giao diện Authentication hoàn chỉnh (Sign Up, Sign In, OTP).
+* Tích hợp Amazon Cognito (Email OTP + Google OAuth).
+* Bắt đầu kiểm thử bảo mật ban đầu cho luồng Auth.

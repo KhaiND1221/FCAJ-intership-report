@@ -1,48 +1,38 @@
 ### Mục tiêu Tuần 12
 
-* Chốt hạ bản thiết kế Kiến trúc Serverless An toàn (Secure Architecture diagram) cuối cùng cho dự án.
-* Biên soạn và trau chuốt Báo cáo Tổng kết Kỳ thực tập FCAJ Internship.
-* Chuyển giao toàn quyền và quy trình quản lý rủi ro trên AWS lại cho nội bộ team NeuraX.
-* Thuyết trình trọn vẹn màn tổng kết báo cáo vòng đời bảo mật.
+* Thuyết trình báo cáo dự án cuối cùng trước FCJ Mentors.
+* Hoàn tất đối soát ngân sách cùng IA-1 teammate.
+* Bàn giao kiến thức và hoàn thiện tài liệu dự án.
 
 ### Các công việc thực hiện trong tuần
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Khắc họa Kiến trúc Bảo mật <br>&emsp; + Xuất bản sơ đồ trực quan kết nối WAF, Cognito, và API Gateway <br>&emsp; + Tài liệu hóa mạch luân chuyển khóa mã hóa dữ liệu với AWS KMS | 16/04/2026 | 16/04/2026 | [Draw.io / Visio] |
-| 2 | - Bàn giao Quản trị <br>&emsp; + Thuyết minh mô hình AWS Security Hub dashboard cho team dev <br>&emsp; + Bàn giao sổ tay Incident Response Playbook | 17/04/2026 | 17/04/2026 | [Họp Chuyển giao] |
-| 3 | - Kiểm kê Tài chính <br>&emsp; + Check lại rổ chi phí đánh đổi (Price-to-performance) của bộ tool GuardDuty, Macie <br>&emsp; + Dọn dẹp và reset lại biểu đồ AWS Budgets | 18/04/2026 | 18/04/2026 | [Cost and Usage Management](https://000064.awsstudygroup.com) |
-| 4 | - Soạn và Ghép Báo Cáo <br>&emsp; + Tổng hòa 12 bản báo cáo tuần lẻ tẻ thành văn bản Internship Report cuối cùng <br>&emsp; + Ghi lại cảm nhận dọc hành trình gò ép sang ngành Security | 19/04/2026 | 19/04/2026 | [Mẫu FCAJ] |
-| 5 | - Hiệu đính Mentor <br>&emsp; + Đẩy bản phác thảo cuối cho Mentor đọc kiểm duyệt <br>&emsp; + Gia giảm lại lượng từ ngữ học thuật chuyên ngành theo lời khuyên | 20/04/2026 | 20/04/2026 | [Tài liệu Tương tác] |
-| 6-7 | - Thuyết trình Bế mạc <br>&emsp; + Hoàn thành buổi trình diễn Đồ thị Sinh thái Bảo mật (Security Lifecycle) <br>&emsp; + Ăn mừng bế mạc chương trình Thực tập sinh FCJ | 21/04/2026 | 22/04/2026 | [Slide Deck] |
+| 1 | - Xác nhận Kỹ thuật Cuối cùng <br>&emsp; + Kiểm tra tất cả kết nối AppSync/Bedrock trước demo live <br>&emsp; + Review và luyện tập slides thuyết trình | 16/04/2026 | 16/04/2026 | [AWS Bedrock](https://docs.aws.amazon.com/bedrock/) |
+| 2 | - Tổng duyệt Thuyết trình <br>&emsp; + Dry-run toàn bộ cùng team <br>&emsp; + Test các kịch bản demo live và chuẩn bị phương án dự phòng | 17/04/2026 | 17/04/2026 | - |
+| 3 | 🔥 **THUYẾT TRÌNH CUỐI CÙNG TRƯỚC MENTORS** <br>&emsp; + Trình bày NutriTrack trước FCJ Mentors <br>&emsp; + Hoàn thành Self-Evaluation và FCJ rubric assessments | 18/04/2026 | 18/04/2026 | - |
+| 4 | - Phản hồi Chương trình & Suy ngẫm <br>&emsp; + Gửi feedback xây dựng cho ban quản trị chương trình <br>&emsp; + Ghi chép suy ngẫm cá nhân và lời cảm ơn mentorship | 20/04/2026 | 20/04/2026 | - |
+| 5 | - Bàn giao Kiến thức <br>&emsp; + Cập nhật AWS Workshop documentation cho các khóa sau <br>&emsp; + Kiểm tra trạng thái cuối cùng của `README.md` repository | 21/04/2026 | 21/04/2026 | - |
+| 6 | - Đóng sổ Ngân sách (cùng IA-1) & Celebration <br>&emsp; + Đối soát AWS Cost Explorer lần cuối <br>&emsp; + Kỷ niệm hoàn thành dự án cùng Team NeuraX | 22/04/2026 | 22/04/2026 | [AWS Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/) |
 
 ### Kết quả đạt được trong Tuần 12
 
-* **Kiện toàn Vòng đời Bảo mật (Security Lifecycle):**
-  * Nâng tầm một ý tưởng trên giấy dại khờ NeuraX trở thành một ứng dụng đánh thép chìm nổi, tuân thủ quốc tế. Triết lý phòng thủ chiều sâu (Defense-in-depth) tản đều khắp ba khía cạnh: Danh tính (Cognito/IAM), Cổng Ứng dụng (WAF) và Lưu trữ (KMS/Macie) đã được bàn giao chính thức.
+* **Thuyết trình Thành công:**
+  * NutriTrack demo live trước FCJ Mentors — toàn bộ AI pipeline (Camera → Bedrock → Nutrition) hoạt động hoàn hảo trong buổi demo.
 
-* **Hoàn thiện Hồ sơ Di sản:**
-  * Quy chuẩn hóa bộ quy tắc rào cản nền tảng. Hiện tại, anh em trong nhóm đã tường minh về ý thức **Trách nhiệm bảo mật chéo (Shared Responsibility Model)** khi dev hạ tầng Serverless.
-  * Đồng bộ toàn diện dữ kiện WAF, Log tấn công và sửa lỗi thành công vào mốc Báo cáo Tổng kết cuối cùng này.
+* **Ngân sách Đối soát:**
+  * Hoàn tất review chi phí cuối cùng cùng IA-1 teammate — toàn bộ chi tiêu AWS được kiểm soát và nằm trong ngưỡng kế hoạch.
 
-* **Trái ngọt Thực tập sinh:**
-  * Đi hết 12 mốc thời gian vất vả thuộc đường đua First Cloud Journey. Lột xác thành công từ một lính mới cưỡi ngựa xem hoa các tab căn bản AWS trở thành một Cloud Security Engineer thực thụ.
+* **Kiến thức Được Bảo tồn:**
+  * Workshop documentation và repository README được hoàn thiện cho tham khảo tương lai và tính liên tục của team.
 
 ### Thách thức & Bài học kinh nghiệm
 
 * **Thách thức:**
-  * Việc vắt ép 12 tuần ngập ngụa trong rừng log tấn công và ma trận rules WAF xuống thành một bài tập báo cáo ngắn gọn, dễ thẩm thấu cho cấp quản lý tốn cực nhiều chất xám.
-  * Cần thao tác khéo để bàn giao rủi ro cho Dev, tránh trường hợp họ ngứa tay vào console tắt rules WAF hay xóa nhầm khóa KMS khiến hạ tầng sụp đổ.
-
-* **Giải pháp:**
-  * Thay vì kể lể "bấm nút này để bật GuardDuty", bài báo cáo đổi tông viết tập trung thẳng vào Giá trị Cốt lõi (Ví dụ: Thắng được vụ lộ data, đáp ứng quy chuẩn CIS).
-  * Viết một bộ SCPs (Service Control Policies) đóng đinh từ tầng AWS Organizations cấm tiệt tuyệt đối hành động vô tình (hay cố ý) gỡ bỏ các linh kiện IAM/KMS cấu trúc.
-
+  * Phối hợp demo live hoàn hảo đòi hỏi chuẩn bị kỹ lưỡng và nhiều phương án dự phòng cho sự cố mạng hoặc dịch vụ.
 * **Bài học:**
-  * Bảo mật không phải là cái khóa ngoắc trên tường chờ ngày xét duyết. Nó là dòng sông luôn chảy không có điểm dừng. Những gì dàn dựng xuyên suốt 12 đọan tuần qua là một bến cảng, chúng phải liên tục nâng tầm cùng nhịp code ứng dụng.
-  * Tài liệu đào tạo và phương thức ngoại giao trong Bảo Mật còn quan trọng hơn bản thân cái rào đó. Cả team mà không biết đọc log AWS, thì WAF cũng hóa đồ trang trí.
+  * Tổng duyệt kỹ lưỡng là bắt buộc trước demo live. Tài liệu nên được duy trì liên tục xuyên suốt dự án, không chỉ vào cuối.
 
-### Định hướng Tương lai
+### Suy ngẫm Cuối cùng
 
-* Mặc dùng thời hạn báo cáo đã khép lại, tôi vẫn khát khao sử dụng những nhãn quan thực chiến quý báu này để cày cuốc chinh phục chứng chỉ quốc tế uy tín **AWS Certified Security - Specialty**.
-* Mang những bài tủ khắc phục lỗ hổng dị hợm gặp phải đi giao lưu truyền dạy tiếp cùng cộng đồng AWS Study Group.
+* Chuyển đổi từ quản trị AWS cơ bản sang thực hành Infrastructure Architecture, Frontend Development, Penetration Testing, và Cost Management xuyên suốt 12 tuần dự án production.

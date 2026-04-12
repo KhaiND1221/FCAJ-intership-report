@@ -1,45 +1,37 @@
 ### Week 7 Objectives
 
-* Build continuous visibility into the NeuraX infrastructure for potential attacks.
-* Deploy Amazon GuardDuty for Machine Learning-backed threat detection.
-* Monitor internal network activity using VPC Flow Logs.
-* Establish automated alerts via Amazon SNS and CloudWatch Alarms.
+* Develop the complete Authentication UI (Sign Up, Sign In, OTP Verification).
+* Integrate Amazon Cognito with dual authentication methods (Email OTP + Google OAuth).
+* Conduct the first penetration test targeting the authentication and token management flow.
 
-### Tasks carried out this week
+### Tasks to be carried out this week
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Threat Detection Initialization <br>&emsp; + Enable AWS GuardDuty across the specific AWS account <br>&emsp; + Monitor baseline resource behavior | 12/03/2026 | 12/03/2026 | [Threat Detection with GuardDuty](https://000098.awsstudygroup.com) |
-| 2 | - Network Visibility <br>&emsp; + Enable VPC Flow Logs for the primary backend VPC <br>&emsp; + Push Flow Logs data to CloudWatch | 13/03/2026 | 13/03/2026 | [Network Monitoring with VPC Flow Logs](https://000074.awsstudygroup.com) |
-| 3 | ⭐ **EVENT:** AWS Cloud Mastery 1 <br>&emsp; - Advanced Output Formatting <br>&emsp; + Forced Sonnet to return a structured JSON array of recipes including `macros`, `steps`, and `why_this`. | 14/03/2026 | 14/03/2026 | - |
-| 4 | - Alerting Systems <br>&emsp; + Setup Amazon Simple Notification Service (SNS) topics <br>&emsp; + Connect SNS to our internal NeuraX Discord webhook | 15/03/2026 | 15/03/2026 | [Messaging Systems with SNS](https://000077.awsstudygroup.com) |
-| 5 | - Security Triggers <br>&emsp; + Configure EventBridge rules to route GuardDuty high-severity findings to SNS <br>&emsp; + Set CloudWatch alarms for an unusual number of 4xx/5xx API Gateway errors | 16/03/2026 | 16/03/2026 | [CloudWatch Advanced Workshop](https://000036.awsstudygroup.com) |
-| 6-7 | - Penetration Demo <br>&emsp; + Simulated unusual API calls (Port scanning/Brute force) from an external IP <br>&emsp; + Verified alerts triggering | 17/03/2026 | 18/03/2026 | [Internal Testing] |
+| 1 | - Authentication UI Development <br>&emsp; + Built Sign Up, Sign In, and OTP Verification screens <br>&emsp; + Integrated Cognito Email + OTP authentication flow | 12/03/2026 | 12/03/2026 | [Auth with Cognito](https://000081.awsstudygroup.com/) |
+| 2 | - Google OAuth Integration <br>&emsp; + Configured OAuth 2.0 redirect URIs in `auth/resource.ts` <br>&emsp; + Set up Google Cloud Console OAuth Client credentials | 13/03/2026 | 13/03/2026 | [Google Cloud Console](https://console.cloud.google.com/welcome/new?pli=1) |
+| 3 | ⭐ **EVENT:** AWS Cloud Mastery 1 | 14/03/2026 | 14/03/2026 | - |
+| 4 | - Secure Token Storage <br>&emsp; + Implemented JWT token persistence using `expo-secure-store` <br>&emsp; + Designed session lifecycle management (token refresh, expiry handling) | 16/03/2026 | 16/03/2026 | [Expo SecureStore](https://docs.expo.dev/versions/latest/sdk/securestore/) |
+| 5 | - Authentication Functional Testing <br>&emsp; + End-to-end validation of sign-up, sign-in, OTP verification, and Google OAuth flows <br>&emsp; + Verified session persistence across app restarts | 17/03/2026 | 17/03/2026 | - |
+| 6 | - Pentest #1: Token Security Assessment <br>&emsp; + Attempted JWT token manipulation and signature bypass <br>&emsp; + Evaluated token expiration enforcement and refresh token rotation | 18/03/2026 | 18/03/2026 | [OWASP Testing Guide](https://owasp.org/www-project-web-security-testing-guide/) |
 
 ### Week 7 Achievements
 
-* **Proactive Security Awareness:**
-  * Adopted **Amazon GuardDuty**. Our AWS environment is now continually monitored against compromised credentials, abnormal API data exfiltration, and malicious IP communications without needing custom-built agents.
-  * Achieved 100% visibility into network traffic hitting our subnets through **VPC Flow Logs**, enabling the team to detect lateral movement or unauthorized SSH attempts.
+* **Complete Auth Flow:**
+  * Full authentication pipeline operational — Email+OTP and Google OAuth both verified end-to-end.
 
-* **Real-time Incident Communication:**
-  * Successfully piped security events directly from AWS EventBridge to SNS, which perfectly triggers messages into our NeuraX Discord channel. Discovered threats are no longer buried in log screens.
+* **Security Validated:**
+  * Initial pentest confirmed that Cognito-issued JWTs resist manipulation attempts and enforce proper expiration policies.
 
 ### Challenges & Lessons
 
 * **Challenges:**
-  * GuardDuty requires an extended learning period to establish a baseline. Generating meaningful test findings was difficult because it categorizes "safe" test-traffic properly.
-  * VPC Flow Logs generate an enormous amount of data, blowing up CloudWatch storage costs during the first 24 hours.
-
-* **Solutions:**
-  * Utilized GuardDuty's built-in "Generate Sample Findings" feature to ensure the EventBridge/SNS integration was functioning without needing to actually compromise the platform.
-  * Changed the VPC Flow Logs destination from CloudWatch directly to Amazon S3 with an aggregation interval to optimize the retention cost.
-
+  * Configuring Google OAuth redirect URIs for the Expo development environment required multiple iterations due to platform-specific URL scheme differences.
 * **Lessons Learned:**
-  * Too much telemetry without filtering is just noise. Tuning the severity limits before pushing alerts to Discord is critical to avoid "alert fatigue" among the development team.
+  * Authentication is the most critical attack surface. Testing token security early prevents cascading vulnerabilities downstream.
 
 ### Next Week Plan
 
-* Drill down into the specific privacy concerns of medical/fitness data.
-* Set up **Amazon Macie** to evaluate S3 bucket privacy patterns.
-* Conduct Data Anomaly Detection on our stored backups.
+* Collaborate with DEV team to research and prototype the Pet evolution UI.
+* Design and demonstrate the Streak system and XP accumulation mechanics.
+* Expand the penetration testing toolkit.

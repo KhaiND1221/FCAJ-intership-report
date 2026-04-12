@@ -1,49 +1,42 @@
 ### Mục tiêu Tuần 5
 
-* Thiết lập lá chắn bảo vệ lớp ứng dụng NeuraX khỏi các lỗi khai thác Web phổ biến.
-* Triển khai AWS Web Application Firewall (WAF) bảo vệ cho API Gateway và CloudFront.
-* Xây dựng cơ chế Rate Limiting để giảm thiểu tấn công DDoS cơ bản.
-* Đánh giá quy tắc WAF bằng cách mô phỏng trực tiếp các payload tấn công.
+* Thiết lập môi trường AWS Amplify sandbox cùng IA-1 teammate.
+* Tạo và đồng bộ file `amplify_outputs.json` cho Frontend.
+* Xây dựng ước tính chi phí AWS theo giá thị trường và cấu hình cảnh báo ngân sách.
 
 ### Các công việc thực hiện trong tuần
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Khởi tạo Application Protection <br>&emsp; + Khởi tạo AWS WAF Web ACLs <br>&emsp; + Áp dụng Web ACLs lên CloudFront/API Gateway | 26/02/2026 | 26/02/2026 | [Application Protection with AWS WAF](https://000026.awsstudygroup.com) |
-| 2 | - Phòng chống rủi ro lõi <br>&emsp; + Import AWS Managed Rules (Core rule set, SQLi, XSS) <br>&emsp; + Tinh chỉnh rule để giảm thiểu cảnh báo sai (false positive) cho API | 27/02/2026 | 27/02/2026 |  |
-| 3 | - Ngăn chặn DDoS <br>&emsp; + Cấu hình Rate-based rules (VD: 500 requests / 5 mins) <br>&emsp; + Bật AWS Shield Standard chặn tấn công mạng Layer 3/4 | 28/02/2026 | 28/02/2026 |  |
-| 4 | - Lưu trữ Log và Phân tích WAF <br>&emsp; + Định tuyến WAF logs về CloudWatch / S3 <br>&emsp; + Thử nghiệm trực quan hóa lượng request | 01/03/2026 | 01/03/2026 | [CloudWatch Logs] |
-| 5 | - Kiểm thử WAF Policy <br>&emsp; + Giả lập payload độc hại với `curl` và Burp Suite <br>&emsp; + Xác nhận hệ thống trả về mã 403 Forbidden đúng quy trình | 02/03/2026 | 02/03/2026 |  |
-| 6-7 | - Tối ưu hóa Rules <br>&emsp; + Đọc log các requests bị block từ phía Dev <br>&emsp; + Chuyển đổi trạng thái từ Count sang Block ở các rule ổn định | 03/03/2026 | 04/03/2026 | [Audit Logs] |
+| 1 | - Phân tích Hạ tầng (cùng IA-1) <br>&emsp; + Nghiên cứu sâu `backend.ts`, `data/resource.ts`, `auth/`, `storage/` <br>&emsp; + Map các định nghĩa CDK resource với dịch vụ AWS tương ứng | 26/02/2026 | 26/02/2026 | [AWS Amplify Docs](https://docs.amplify.aws/) |
+| 2 | - Khởi tạo Sandbox (cùng IA-1) <br>&emsp; + Chạy `npx ampx sandbox` lần đầu <br>&emsp; + Xác nhận Cognito User Pool, DynamoDB tables, S3 buckets được tự động tạo | 27/02/2026 | 27/02/2026 | [Amplify Sandbox](https://docs.amplify.aws/gen2/deploy-and-host/sandbox-environments/) |
+| 3 | - Đồng bộ Config Frontend (cùng IA-1) <br>&emsp; + Tạo `amplify_outputs.json` qua `npx ampx generate outputs --outputs-out-dir ../frontend` <br>&emsp; + Kiểm tra schema config cho AppSync, Cognito, và S3 | 28/02/2026 | 28/02/2026 | [Amplify CLI Reference](https://docs.amplify.aws/gen2/reference/cli-commands/) |
+| 4 | - Ước tính Chi phí Production <br>&emsp; + Tính giá thị trường cho các dịch vụ AWS: Lambda, DynamoDB, S3, Cognito, Bedrock (Qwen3-VL 235B) <br>&emsp; + Dự toán chi phí hàng tháng cho cả workshop (1 ngày) và production (1 tháng) | 02/03/2026 | 02/03/2026 | [AWS Pricing Calculator](https://calculator.aws/) |
+| 5 | - Cấu hình Rào chắn Ngân sách <br>&emsp; + Thiết lập AWS Budgets với cảnh báo đa ngưỡng hàng tháng <br>&emsp; + Cấu hình Cost Explorer dashboards phân loại theo dịch vụ | 03/03/2026 | 03/03/2026 | [Cost and Usage Management](https://000064.awsstudygroup.com) |
+| 6 | - Kiểm tra Sandbox toàn diện (cùng IA-1) <br>&emsp; + Test luồng đăng ký/đăng nhập Cognito <br>&emsp; + Xác nhận quyền upload S3 và đo thời gian cold start Lambda | 04/03/2026 | 04/03/2026 | - |
 
 ### Kết quả đạt được trong Tuần 5
 
-* **Hoàn thiện Vành đai bảo mật lớp 7:**
-  * Đưa **AWS WAF** vào hoạt động toàn diện tại các rìa (Edge) của CloudFront cũng như API Gateway vùng, hình thành chốt chặn giao thông toàn cục.
-  * Các loại mã độc dạng SQL injection, Cross-Site Scripting (XSS), và trình quét bot rác bị cản lại triệt để nhờ AWS Managed rules.
-  
-* **Sức chịu đựng trước DDoS:**
-  * Luật chống Spam/Brute-force (Rate Limiting) giúp tự động khóa IP nếu chúng gửi trên 500 yêu cầu trong 5 phút. Điều này đặc biệt giá trị để bảo vệ cổng đăng nhập Cognito.
+* **Hạ tầng Baseline:**
+  * Cùng IA-1 teammate dựng thành công Amplify sandbox. Backend stack (Cognito, DynamoDB, S3, Lambda) được tự động sinh từ CDK definitions.
 
-* **Quan sát và Cảnh báo:**
-  * Enabled tính năng logging yêu cầu. Nhóm hiện có thể tra cứu toàn bộ header và nội dung payload của mọi request bị rớt để làm rõ nguyên nhân.
+* **Đồng bộ Frontend-Backend:**
+  * Tạo và xác nhận `amplify_outputs.json`, cho phép frontend kết nối mọi dịch vụ backend không cần cấu hình thủ công.
+
+* **Quản trị Chi phí:**
+  * Ước tính chi phí production theo giá thị trường và triển khai cảnh báo ngân sách chủ động, cung cấp tầm nhìn tài chính rõ ràng cho toàn team.
 
 ### Thách thức & Bài học kinh nghiệm
 
 * **Thách thức:**
-  * Khi vừa bật WAF, một số API gửi lên định dạng Meal Logging có chứa cụm text lạ bị WAF hiểu lầm là SQLi (False positive), dẫn đến chặn nhầm traffic chuẩn của dự án NutriTrack.
-  * Việc tra cứu file JSON rối rắm của WAF log bên trong CloudWatch tiêu tốn nhiều thời gian.
-
+  * Lệnh `npx ampx sandbox` lỗi ngay lần chạy đầu do thiếu dependencies Node.js và AWS CLI phiên bản cũ.
 * **Giải pháp:**
-  * Tạm chỉnh rule nghi ngờ về trạng thái "Count" (chỉ đếm, không chặn), phân tích trường dữ liệu bị nghi ngờ và viết Exception rule (loại trừ) cho trường JSON đó.
-  * Dùng CloudWatch Log Insights với cú pháp truy vấn chuyên dụng để tách nhanh thông tin Client IP, URL và RuleID.
-
+  * Nâng cấp Node.js lên v22 LTS và cài lại AWS CLI v2, giải quyết triệt để lỗi provisioning.
 * **Bài học:**
-  * Không bao giờ nên bật WAF ở trạng thái "Block" ngay khi ra mắt. Luôn đặt ở trạng thái "Count" trong một khoảng thời gian để thăm dò traffic thực tế, qua đó lọc bỏ các lệnh chặn nhầm.
-  * Security tốt là security không gây khó dễ hay cản trở tính năng hợp lệ của doanh nghiệp.
+  * Amplify sử dụng CDK, đòi hỏi hiểu sâu về Infrastructure as Code. Ước tính chi phí nên dùng giá thị trường thay vì Free Tier để đảm bảo lập ngân sách chính xác cho production.
 
 ### Kế hoạch Tuần 6
 
-* Chuyển hướng tập trung sang **Bảo vệ Dữ liệu (Data Protection)**.
-* Sử dụng **AWS KMS** để mã hóa dữ liệu lưu trữ tại S3 và bảng DynamoDB.
-* Chuyển toàn bộ các thông số nhạy cảm trong code sang hệ thống **AWS Secrets Manager**.
+* Khởi tạo project React Native (Expo Router) cho frontend.
+* Kết nối frontend với Amplify backend.
+* Xây dựng hệ thống tab navigation cùng team.

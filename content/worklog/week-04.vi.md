@@ -1,52 +1,41 @@
 ### Mục tiêu Tuần 4
 
-* Chuyển mình hoàn toàn vào vai trò **Security Engineer** cho dự án NeuraX (NutriTrack).
-* Bảo mật quyền truy cập hạ tầng cho đội ngũ Dev bằng AWS IAM Identity Center.
-* Xây dựng hệ thống quản lý danh tính người dùng chót (End-User) bằng Amazon Cognito.
-* Thiết lập và thực thi các chính sách IAM nghiêm ngặt trên toàn bộ môi trường phát triển.
+* Nghiên cứu AWS WAF (Web Application Firewall) và các kỹ thuật phòng chống tấn công web.
+* Tìm hiểu Amazon CloudFront CDN và cấu hình HTTPS/SSL.
+* Khám phá Route 53 DNS management và kiến trúc hosted zone.
+* Giới thiệu Amazon Bedrock — Danh mục Foundation Model và quy trình truy cập.
 
 ### Các công việc thực hiện trong tuần
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Bảo mật truy cập cho Developer <br>&emsp; + Thiết lập Identity Federation với AWS Single Sign-On (SSO) <br>&emsp; + Gán các permission sets cho Dev team | 10/02/2026 | 10/02/2026 | [Identity Federation with SSO](https://000012.awsstudygroup.com) |
-| 2 | - Lập rào chắn IAM <br>&emsp; + Cấu hình IAM Permission Boundaries <br>&emsp; + Ngăn chặn lập trình viên tự động leo thang đặc quyền | 11/02/2026 | 11/02/2026 | [IAM Permission Boundaries](https://000030.awsstudygroup.com) |
-| 3 | - Thiết lập Authentication người dùng <br>&emsp; + Khởi tạo Amazon Cognito User Pool cho NutriTrack <br>&emsp; + Đặt chính sách mật khẩu và MFA cho end-users | 12/02/2026 | 12/02/2026 | [Auth with Cognito](https://000081.awsstudygroup.com/) |
-| 4 | - Identity Pools & Cấp quyền <br>&emsp; + Setup Cognito Identity Pool <br>&emsp; + Mapping IAM Roles tương ứng cho user đã đăng nhập và khách | 13/02/2026 | 13/02/2026 | [Cognito Auth Docs] |
-| 5 | - Danh tính xuyên dải mạng (Cross-Domain) <br>&emsp; + Thử nghiệm Cross-Domain Authentication với Amazon Cognito <br>&emsp; + Kiểm chứng token JWT được cấp phát | 14/02/2026 | 14/02/2026 | [Cross-Domain Cognito](https://000141.awsstudygroup.com) |
-| 6-7 | - Audit bảo mật & Đồng bộ <br>&emsp; + Kiểm toán các Lambda execution roles hiện có và cắt giảm đặc quyền dư thừa <br>&emsp; + Họp đồng bộ tiến độ định kỳ với Dev team | 15/02/2026 | 16/02/2026 | [Audit Logs] |
+| 1 | - AWS WAF Cơ bản <br>&emsp; + Nghiên cứu cấu trúc Web ACL: Rules, Rule Groups, và managed rule sets <br>&emsp; + Học các vector tấn công OWASP Top 10 (SQLi, XSS, CSRF) và cách WAF phòng chống | 10/02/2026 | 10/02/2026 | [AWS WAF Docs](https://docs.aws.amazon.com/waf/) |
+| 2 | - Amazon CloudFront CDN <br>&emsp; + Tìm hiểu kiến trúc CloudFront: edge locations, origins, cache behaviors <br>&emsp; + Nghiên cứu tích hợp HTTPS/SSL với AWS Certificate Manager (ACM) | 11/02/2026 | 11/02/2026 | [CloudFront Docs](https://docs.aws.amazon.com/cloudfront/) |
+| 3 | - Tích hợp WAF + CloudFront <br>&emsp; + Nghiên cứu cách gắn WAF Web ACLs vào CloudFront distributions <br>&emsp; + Tìm hiểu rate-based rules và geo-restriction configurations | 12/02/2026 | 12/02/2026 | [WAF + CloudFront](https://000039.awsstudygroup.com) |
+| 4 | - Route 53 DNS chuyên sâu <br>&emsp; + Tìm hiểu hosted zones, loại record (A, CNAME, ALIAS), và routing policies <br>&emsp; + Nghiên cứu DNS failover và health check mechanisms | 13/02/2026 | 13/02/2026 | [Route 53 Docs](https://docs.aws.amazon.com/route53/) |
+| 5 | - Giới thiệu Amazon Bedrock <br>&emsp; + Khám phá danh mục Foundation Model và mô hình giá <br>&emsp; + Nghiên cứu khả năng Qwen3-VL cho bài toán nhận diện thực phẩm | 14/02/2026 | 14/02/2026 | [Amazon Bedrock](https://docs.aws.amazon.com/bedrock/) |
+| 6 | - Tổng kết tuần & Chuẩn bị dự án <br>&emsp; + Tổng hợp ghi chú về WAF, CloudFront, Route 53, và Bedrock <br>&emsp; + Phác thảo yêu cầu hạ tầng NutriTrack cho giai đoạn khởi động dự án | 16/02/2026 | 16/02/2026 | [OWASP Top 10](https://owasp.org/www-project-top-ten/) |
 
 ### Kết quả đạt được trong Tuần 4
 
-* **Truy cập Backend an toàn:**
-  * Bỏ việc tạo IAM User thủ công, thay bằng **AWS IAM Identity Center (SSO)**, giúp team đăng nhập an toàn từ một cổng tập trung.
-  * Áp dụng thành công **IAM Permission Boundaries**, đảm bảo Developer không vô tình trao quyền admin cho các Lambda function do họ deploy.
+* **Nền tảng Bảo mật Web:**
+  * Nắm vững AWS WAF — rule groups, managed rules, và mô hình tích hợp với CloudFront để phòng chống OWASP Top 10.
 
-* **Lớp xác thực Client hiệu quả:**
-  * Triển khai hoàn chỉnh kiến trúc **Amazon Cognito** (User Pools + Identity Pools).
-  * Quy định điều kiện mật khẩu khắt khe (độ dài >= 8, chữ Hoa, chữ thường, ký tự đặc biệt) và kích hoạt MFA tùy chọn.
-  * Cấu hình sinh JWT token chuẩn xác để phục vụ cho việc kiểm soát các API phía sau.
+* **Thành thạo CDN & DNS:**
+  * Nghiên cứu kiến trúc CloudFront distribution và quản lý DNS Route 53, hiểu toàn bộ luồng request từ DNS resolution → CDN edge → origin server.
 
-* **Thế trận bảo mật (Security Posture):**
-  * Đưa thành phần kiến trúc đầu tiên của Backend Serverless An toàn vào hoạt động. Việc xác thực giờ đây đã độc lập với code logic.
-  * Hoàn tất đợt audit đầu tiên đối với các quyền chạy Lambda, ép khuôn theo Principle of Least Privilege.
+* **Nhận thức Dịch vụ AI:**
+  * Tiếp cận hệ sinh thái Foundation Model của Amazon Bedrock, xác định Qwen3-VL là model mục tiêu cho pipeline nhận diện thực phẩm của NutriTrack.
 
 ### Thách thức & Bài học kinh nghiệm
 
 * **Thách thức:**
-  * Cấu hình Cognito để trích xuất token MAP với AWS Credentials qua Identity Pools rất dễ rối vì phải làm việc cùng lúc với 2 loại Pool.
-  * Các lỗi `AccessDenied` liên tục bay ra khi áp dụng Permission Boundaries khiến team dev phàn nàn và chán nản ban đầu.
-
-* **Giải pháp:**
-  * Viết một tài liệu hướng dẫn nội bộ ngắn gọn phân biệt rõ User Pools (dùng để Auth) và Identity Pools (dùng để Authorization tài nguyên).
-  * Đọc log AWS CloudTrail để chỉ thẳng cho Dev đoạn API nào vượt quyền, rồi điều chỉnh lại JSON policy một cách hợp lý.
-
+  * Phạm vi dịch vụ rộng (WAF, CloudFront, Route 53, Bedrock) khiến việc đào sâu vào bất kỳ chủ đề nào trong một tuần trở nên khó khăn.
 * **Bài học:**
-  * Áp dụng bảo mật chặt chẽ luôn gây ma sát với nhóm làm sản phẩm ban đầu. Giao tiếp và dẫn chứng mạch lạc qua log system là chìa khóa tháo gỡ tranh cãi.
-  * Chuyển giao trọng trách Authentication cho Cognito giảm đi hàng tá thời gian và rủi ro so với việc code tay tính năng đăng nhập.
+  * Hiểu biết tổng quan về các dịch vụ AWS trước khi bắt đầu dự án giúp đưa ra quyết định kiến trúc tốt hơn. Nắm vững mô hình WAF + CloudFront sớm ngăn ngừa lỗ hổng bảo mật trong production.
 
 ### Kế hoạch Tuần 5
 
-* Tiến lên bước bảo vệ Application Layer.
-* Triển khai **AWS Web Application Firewall (WAF)** để phòng thủ cho API Gateway.
-* Theo dõi và ngăn chặn các kiểu tấn công Web kinh điển theo tiêu chuẩn OWASP Top 10 (SQLi, XSS, DDoS,...).
+* Bắt đầu giai đoạn hạ tầng dự án NutriTrack cùng IA-1 teammate.
+* Thiết lập môi trường AWS Amplify sandbox.
+* Xây dựng ước tính chi phí AWS theo giá thị trường.

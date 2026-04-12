@@ -1,48 +1,40 @@
 ### Mục tiêu Tuần 11
 
-* Trực tiếp khắc phục và vá các lỗ hổng hệ thống khai quật được từ đợt Tấn công thử nghiệm Tuần 10.
-* Thắt chặt logic lập trình phía Ứng dụng về việc đối chiếu phân quyền.
-* Trau chuốt lại cấu hình phần cứng hạ tầng (WAF / API Gateway).
-* Số hóa Cẩm nang Phản ứng Sự cố (Incident Response playbook) cho nội bộ team NeuraX.
+* Khắc phục tất cả lỗ hổng phát hiện trong quá trình pentest.
+* Thực hiện kiểm thử chất lượng toàn diện trên tất cả user flows.
+* Đóng tất cả tickets bảo mật và bug còn tồn đọng.
 
 ### Các công việc thực hiện trong tuần
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Sàng lọc báo cáo Lỗ hổng <br>&emsp; + Định mức mức độ nguy hiểm và phân công ticket cho nhóm <br>&emsp; + Đặt lỗi IDOR lên mức độ khẩn cấp (Prioritized) | 09/04/2026 | 09/04/2026 | [Vulnerability Report] |
-| 2 | - Xóa sổ nợ IDOR <br>&emsp; + Chèn ngầm logic đối chiếu Claim UUID của token Cognito với ID được truy vấn <br>&emsp; + Đan xen Unit Test để bắt hàm tự tát 403 khi ID không khớp | 10/04/2026 | 10/04/2026 | [AWS Lambda Auth context] |
-| 3 | ⭐ **SỰ KIỆN:** AWS Cloud Mastery 3 (ĐH FPT) <br>&emsp; - Phác thảo Presentation Deck <br>&emsp; + Chụp các bản đồ Diagram kiến trúc bỏ vô Slide. <br>&emsp; + Kể câu chuyện cắt chi phí tối đa nhờ chẻ Data qua Haiku và Sonnet. | 11/04/2026 | 11/04/2026 | - |
-| 4 | - Tinh luyện rào WAF <br>&emsp; + Review lại đống log của WAF khi giả lập bị đánh Pen-test <br>&emsp; + Châm chước các dải IP đẩy code CI/CD tự động tránh chặn nhầm bằng tính năng Exclusion Rate Limits | 12/04/2026 | 12/04/2026 | [AWS WAF Console] |
-| 5 | - Biên soạn Cẩm nang Tác chiến <br>&emsp; + Phác thảo Version 1 cho Cẩm nang phản ứng khẩn cấp (IR Playbook) <br>&emsp; + Diễn đạt step-by-step quy trình vô hiệu hóa lập tức một IAM/Cognito token nghi ngờ rò rỉ | 13/04/2026 | 13/04/2026 | [IR Playbook Template] |
-| 6-7 | - Thẩm định kết quả (Re-test) <br>&emsp; + Y chang đợt test cũ, gọi trích xuất lỗ hổng lại lần nữa (Re-scan) và mò nhắm tay lại <br>&emsp; + Hoàn thiện chu trình giải quyết đóng Ticket mã độc | 14/04/2026 | 15/04/2026 | [Re-validation Logs] |
+| 1 | - Khắc phục Lỗ hổng IDOR <br>&emsp; + Thêm kiểm tra JWT claim `cognito:username` vào logic authorization Lambda <br>&emsp; + Viết unit tests xác nhận trả 403 khi identity không khớp | 09/04/2026 | 09/04/2026 | [Cognito JWT Claims](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-id-token.html) |
+| 2 | - Sửa lỗi Ổn định Frontend <br>&emsp; + Giải quyết vấn đề đồng bộ state trong Zustand stores <br>&emsp; + Fix edge cases AsyncStorage persistence gây mất dữ liệu khi restart app | 10/04/2026 | 10/04/2026 | [Zustand](https://github.com/pmndrs/zustand) |
+| 3 | ⭐ **SỰ KIỆN:** AWS Cloud Mastery 3 (FPT Uni) | 11/04/2026 | 11/04/2026 | - |
+| 4 | - Kiểm thử Chất lượng Toàn diện <br>&emsp; + Test end-to-end thủ công: Auth → Food Log → AI Coach → Gamification → Leaderboard <br>&emsp; + Xác nhận tương tác cross-feature và tính nhất quán dữ liệu | 13/04/2026 | 13/04/2026 | - |
+| 5 | - Xác nhận lại Bảo mật <br>&emsp; + Chạy lại tất cả kịch bản pentest trước đó trên endpoints đã vá <br>&emsp; + Xác nhận zero regression trong khắc phục lỗ hổng | 14/04/2026 | 14/04/2026 | [OWASP Re-testing](https://owasp.org/www-project-web-security-testing-guide/) |
+| 6 | - Đóng Tickets & Tài liệu <br>&emsp; + Đóng tất cả tickets pentest và bug fix <br>&emsp; + Chuẩn bị tài liệu kỹ thuật cho tuần thuyết trình cuối | 15/04/2026 | 15/04/2026 | - |
 
 ### Kết quả đạt được trong Tuần 11
 
-* **Zero Tồn đọng Cấp thiết:**
-  * Vá xong xuôi triệt đường hổng IDOR. Lớp code Backend Serverless hiện tại sẽ gắp thẳng thuộc tính `cognito:username` bảo mật cấp bởi JWT (đã pass chữ ký) để đấu chéo so sánh với URI Parameter cấp từ client. Triệt tiêu 100% tình trạng "đứa này lén dò dữ liệu đứa kia".
+* **Không còn Lỗ hổng Nghiêm trọng:**
+  * Lỗ IDOR đã vá hoàn toàn — Lambda giờ cross-reference JWT claims với quyền sở hữu resource được yêu cầu.
 
-* **Bít cửa Hở Thông Tin:**
-  * Vệ sinh thành công vỏ bọc trả lời của API Gateway. Mọi truy vấn dị dạng hay cú pháp sai lệch giờ đều trả chung một mẫu thông tin. Kẻ gian hết cơ hội lượm lặt đặc tả tên thư mục nội bộ (stack traces) thông qua màn hình báo ngáo.
+* **Ổn định Ứng dụng:**
+  * Giải quyết tất cả vấn đề state management frontend, đảm bảo persistence dữ liệu đáng tin cậy giữa các sessions.
 
-* **Bản lề Tác chiến Trực trạm:**
-  * Xuất bản Bộ cẩm nang V1 **NeuraX Incident Response Playbook**. Cả team hiện đều có Quy chế chung (SOP) kể rành rành về cách phong tỏa Lambda, cách lật trục Khóa mạ AWS KMS, và cắt cổ tài khoản nghi án Cognito ngay trong vài ba phút.
+* **Sạch sẽ Hoàn toàn:**
+  * Tất cả tickets bảo mật và QA đã đóng. Ứng dụng verified ổn định và sẵn sàng cho thuyết trình cuối.
 
 ### Thách thức & Bài học kinh nghiệm
 
 * **Thách thức:**
-  * Cắt ghép logic bảo vệ giấu kín nhưng phải giữ vẹn toàn cấu trúc phản hồi frontend yêu cầu là việc rất phiềnái. Mở cái nọ dễ sập cái kia.
-  * Việc vạch định ra một quy tắc Khắc phục hỏa tốc (IR) từ zero là quá tải đối với người chưa tiếp xúc với khung quy củ cấp doanh nghiệp.
-
-* **Giải pháp:**
-  * Tận dụng triệt để chức năng "Mapping templates" ảo diệu ngay thân API Gateway để chặn mút và lột vỏ nội dung error thô ráp từ Backend trước khi gởi đi báo client.
-  * Tham vấn hệ thống biểu mẫu của viện SANS Institute, xào nấu lại thành bản rút gọn khớp lệnh với mảng AWS Serverless đặc hữu cho gọn gàng.
-
+  * Tách rời thay đổi logic authorization mà không phá vỡ response format frontend mong đợi đòi hỏi phối hợp chặt chẽ.
 * **Bài học:**
-  * Bản vá lỗi hiếm khi là món tự chơi tự chịu. Tụm đầu với đội Dev, phân giải rành rọt "Vì sao cái file mảng này phải đóng hộp" với thái độ tôn trọng là cách nhanh nhất để chốt sổ Ticket.
-  * Bản đề án chuẩn bị tác chiến (IR) nếu cất ngăn bàn mà chưa bao giờ lôi quân ra đóng kịch diễn thử phản xạ... thì nó cũng chỉ làm mồi nhen lửa. Nhất quyết phải có một buổi Drill test sắp tới.
+  * Khắc phục lỗ hổng là nỗ lực hợp tác giữa Security và Development. Giao tiếp rõ ràng đẩy nhanh việc giải quyết ticket.
 
 ### Kế hoạch Tuần 12
 
-* Cột gọn tàn dư của cả dự án!
-* Khắc phác thảo lần cuối chốt hạ Kiến trúc Bảo mật (Secure Architecture Diagrams) hoành tráng nhất.
-* Gom cục 12 tuần này đóng thành Báo Cáo Thực Tập vĩ mô và đi vào thuyết trình bế giảng.
+* Thuyết trình báo cáo dự án cuối cùng trước FCJ Mentors.
+* Hoàn tất đối soát ngân sách cùng IA-1 teammate.
+* Bàn giao kiến thức và hoàn thiện tài liệu dự án.

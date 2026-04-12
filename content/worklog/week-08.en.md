@@ -1,49 +1,37 @@
 ### Week 8 Objectives
 
-* Enforce Data Privacy controls over the NutriTrack user health and image data.
-* Automate the discovery of exposed Personally Identifiable Information (PII) using Amazon Macie.
-* Formalize the data backup and snapshot lifecycle policies to guarantee resilience.
-* Mitigate ransomware risks via automated backup anomaly detection.
+* Collaborate with the DEV team to research and prototype the Pet evolution UI.
+* Design and demonstrate the Streak system and XP accumulation mechanics.
+* Expand the penetration testing toolkit by researching modern open-source security tools.
 
-### Tasks carried out this week
+### Tasks to be carried out this week
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Data Privacy Management <br>&emsp; + Enable Amazon Macie across the account <br>&emsp; + Configure Macie to scan S3 buckets for sensitive PII | 19/03/2026 | 19/03/2026 | [Data Protection with Amazon Macie](https://000090.awsstudygroup.com) |
-| 2 | - PII Discovery <br>&emsp; + Uploaded mock PII data (Names, Emails, Health statuses) to test buckets <br>&emsp; + Verified Macie findings report | 20/03/2026 | 20/03/2026 | [Macie PII Scan] |
-| 3 | - Automated Backups <br>&emsp; + Implement Snapshot Automation with Amazon EBS Data Lifecycle Manager (DLM) <br>&emsp; + Define cross-region copy rules for disaster recovery | 21/03/2026 | 21/03/2026 | [Snapshot Automation](https://000088.awsstudygroup.com) |
-| 4 | - Backup Anomaly Detection <br>&emsp; + Explore Anomaly Detection for EBS Backups <br>&emsp; + Learn mechanisms for locking backups against ransomware | 22/03/2026 | 22/03/2026 | [Anomaly Detection](https://000089.awsstudygroup.com) |
-| 5 | - Compliance Reporting <br>&emsp; + Use AWS Backup to establish central policies for DynamoDB <br>&emsp; + Generate initial compliance reports for the Dev team | 23/03/2026 | 23/03/2026 | [Data Protection with AWS Backup](https://000013.awsstudygroup.com) |
-| 6-7 | - Architecture Fine-tuning <br>&emsp; + Review Data Flow diagrams regarding PII handling <br>&emsp; + Update the team on required data anonymization prior to analytics | 24/03/2026 | 25/03/2026 | [Architecture Draft] |
+| 1 | - Pet UI Research (with DEV) <br>&emsp; + Explored visual references and animation patterns for the "Minh Long" Dragon evolution system <br>&emsp; + Benchmarked gamification UIs from competing wellness applications | 19/03/2026 | 19/03/2026 | [Lottie Animations](https://lottiefiles.com/) |
+| 2 | - Wireframe Design (with DEV) <br>&emsp; + Sketched the 5-stage evolution wireframe: Egg → Newborn → Young → Adult → Legendary <br>&emsp; + Proposed animation transitions and visual state indicators | 20/03/2026 | 20/03/2026 | - |
+| 3 | - Streak/XP System Demo (with DEV) <br>&emsp; + Prototyped the daily check-in logic, Streak Flame counter, and XP calculation engine <br>&emsp; + Demonstrated the working prototype to the broader team for feedback | 21/03/2026 | 21/03/2026 | - |
+| 4 | - Demo Refinement <br>&emsp; + Calibrated XP thresholds across 5 evolution stages (36-day intervals per stage) <br>&emsp; + Integrated Podium ranking logic for the competitive Leaderboard feature | 23/03/2026 | 23/03/2026 | - |
+| 5 | - Pentest Tool Discovery <br>&emsp; + Surveyed modern open-source security tools on GitHub: toxssin, Nuclei, httpx, ffuf <br>&emsp; + Evaluated each tool's applicability to our serverless API architecture | 24/03/2026 | 24/03/2026 | [toxssin](https://github.com/t3l3machus/toxssin) |
+| 6 | - Pentest Toolkit Setup <br>&emsp; + Installed and configured selected tools against the sandbox environment <br>&emsp; + Ran initial baseline scans to verify tool compatibility | 25/03/2026 | 25/03/2026 | [Nuclei Scanner](https://github.com/projectdiscovery/nuclei) |
 
 ### Week 8 Achievements
 
-* **Data Privacy Secured:**
-  * Adopted **Amazon Macie**, setting up continuous evaluation of our S3 data storage. We can now automatically detect if developers accidentally log plain-text user emails, phone numbers, or health credentials into the NutriTrack cloud storage.
+* **Gamification Blueprint:**
+  * Delivered a complete wireframe and working Streak/XP prototype with the DEV team, defining the 180-day Dragon evolution journey.
 
-* **Automated Resilience:**
-  * Solidified the Disaster Recovery strategy by applying **AWS Backup** and **EBS Data Lifecycle Manager**. Database states are now snapped securely on a set schedule with cross-region replication activated, preventing data loss from unexpected outages.
-
-* **Ransomware Mitigation:**
-  * Enabled Anomaly Detection on our backups. If a malicious actor injects ransomware payload which encrypts our files prior to a snapshot, the system detects the anomaly pattern and immediately alerts the administrative team.
+* **Security Arsenal Expanded:**
+  * Assembled a modern penetration testing toolkit (toxssin, Nuclei, httpx, ffuf) tailored for serverless API environments.
 
 ### Challenges & Lessons
 
 * **Challenges:**
-  * Initial Macie scans were financially taxing because they processed the *entire* historical bucket contents rather than just the new/changed files.
-  * AWS Backup configurations struggled to tag resources appropriately to fall under the required backup vault policies.
-
-* **Solutions:**
-  * Configured Macie to only run automated targeted jobs scoped down to highly sensitive prefixes instead of evaluating completely raw, untagged images.
-  * Enforced global Resource Tagging policies (e.g., `BackupPlan: Daily`) using AWS Organizations to guarantee resources were cleanly targeted.
-
+  * Balancing gamification appeal with technical feasibility — some animation concepts were too resource-intensive for mobile rendering.
 * **Lessons Learned:**
-  * Security tools like Macie are incredibly powerful but can become expensive if not scoped. Data classification (tagging what is Public, Internal, or Confidential) prior to scanning is necessary to manage costs effectively.
-  * Backups are meaningless unless they are completely immutable and guarded against insider threats.
+  * Effective gamification requires tight collaboration between design vision and technical constraints. Security tooling must be curated specifically for the target architecture.
 
 ### Next Week Plan
 
-* Step into Governance and Automating Security Postures at scale.
-* Activate **AWS Security Hub** to aggregate security findings horizontally.
-* Contrast our current setup against the **CIS AWS Foundations Benchmark**.
-* Start preparing the final Security Penetration test for the NutriTrack backend.
+* Perform comprehensive functional testing of Camera, Voice, and Food Card features.
+* Provide actionable UI/UX improvement recommendations for the Camera scan experience.
+* Conduct a targeted penetration test against S3 presigned URL mechanisms.

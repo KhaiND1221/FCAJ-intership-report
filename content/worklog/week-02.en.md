@@ -1,9 +1,9 @@
 ### Week 2 Objectives
 
-* Complete AWS Module 3 & 4.
+* Attend the AWS re:Invent 2025 Recap event.
+* Draft the NutriTrack project proposal and research project references.
+* Complete AWS Labs 5, 6, 8, and 10 (RDS, EC2, Route 53, CloudWatch).
 * Research the AWS Well-Architected Framework.
-* Set up advanced load testing and databases.
-* Refine project proposal and research project references.
 
 ### Tasks to be carried out this week
 

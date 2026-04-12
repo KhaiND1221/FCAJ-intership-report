@@ -1,48 +1,40 @@
 ### Week 11 Objectives
 
-* Remediate vulnerabilities discovered during the Week 10 Penetration Test.
-* Enforce strict Application-level authorization checks.
-* Fine-tune infrastructure settings (WAF / API Gateway).
-* Draft an Incident Response (IR) playbook for the NeuraX team.
+* Remediate all vulnerabilities discovered during the penetration testing phase.
+* Execute a comprehensive quality assurance pass across all user flows.
+* Close all outstanding security and bug tickets.
 
-### Tasks carried out this week
+### Tasks to be carried out this week
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Vulnerability Triage <br>&emsp; + Ranked findings and assigned tickets to the team <br>&emsp; + Prioritized the IDOR vulnerability | 09/04/2026 | 09/04/2026 | [Vulnerability Report] |
-| 2 | - IDOR Remediation <br>&emsp; + Modified Lambda logic to compare Cognito JWT Claims against the requested Identity ID <br>&emsp; + Wrote unit tests confirming access denial on mismatch | 10/04/2026 | 10/04/2026 | [AWS Lambda Auth context] |
-| 3 | ⭐ **EVENT:** AWS Cloud Mastery 3 (FPT Uni) <br>&emsp; - Presentation Deck Draft <br>&emsp; + Extracted the major architecture flow diagrams built earlier. <br>&emsp; + Summarized our Qwen3-VL 235B multimodal architecture strategy. | 11/04/2026 | 11/04/2026 | - |
-| 4 | - WAF Rules Tuning <br>&emsp; + Reviewed WAF logs from the Pen-test phase <br>&emsp; + Refined rate-limiting IP exclusions for our CI/CD pipelines | 12/04/2026 | 12/04/2026 | [AWS WAF Console] |
-| 5 | - Playbook Drafting <br>&emsp; + Drafted the initial Incident Response (IR) Playbook <br>&emsp; + Documented steps for disabling compromised IAM/Cognito credentials | 13/04/2026 | 13/04/2026 | [IR Playbook Template] |
-| 6-7 | - Remediation Testing <br>&emsp; + Conducted a final re-scan and manual test of the patched endpoints <br>&emsp; + Closed the vulnerabilities on our internal tracker | 14/04/2026 | 15/04/2026 | [Re-validation Logs] |
+| 1 | - IDOR Vulnerability Remediation <br>&emsp; + Injected `cognito:username` JWT claim validation into the Lambda authorization logic <br>&emsp; + Wrote unit tests confirming 403 rejection on identity mismatch | 09/04/2026 | 09/04/2026 | [Cognito JWT Claims](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-id-token.html) |
+| 2 | - Frontend Stability Fixes <br>&emsp; + Resolved state synchronization issues in Zustand stores <br>&emsp; + Fixed AsyncStorage persistence edge cases causing data loss on app restart | 10/04/2026 | 10/04/2026 | [Zustand](https://github.com/pmndrs/zustand) |
+| 3 | ⭐ **EVENT:** AWS Cloud Mastery 3 (FPT Uni) | 11/04/2026 | 11/04/2026 | - |
+| 4 | - Full Quality Assurance Pass <br>&emsp; + Manual end-to-end testing: Auth → Food Log → AI Coach → Gamification → Leaderboard <br>&emsp; + Validated cross-feature interactions and data consistency | 13/04/2026 | 13/04/2026 | - |
+| 5 | - Security Re-validation <br>&emsp; + Re-executed all previous pentest scenarios against patched endpoints <br>&emsp; + Confirmed zero regression in vulnerability remediation | 14/04/2026 | 14/04/2026 | [OWASP Re-testing](https://owasp.org/www-project-web-security-testing-guide/) |
+| 6 | - Ticket Closure & Documentation <br>&emsp; + Closed all penetration testing and bug fix tickets <br>&emsp; + Prepared technical documentation for the final presentation week | 15/04/2026 | 15/04/2026 | - |
 
 ### Week 11 Achievements
 
 * **Zero Critical Vulnerabilities:**
-  * Successfully patched the IDOR flaw. The Lambda backend now cross-references the user's requested path parameter against the `cognito:username` attribute embedded strictly within the validated JWT token context. Data enumeration is now impossible.
+  * IDOR flaw fully patched — Lambda now cross-references JWT claims against requested resource ownership.
 
-* **Information Leakage Plugged:**
-  * Cleaned up the API Gateway integration responses. Attackers can no longer deduce stack traces or database structures from malformed requests.
+* **Application Stability:**
+  * Resolved all frontend state management issues, ensuring reliable data persistence across sessions.
 
-* **Incident Readiness:**
-  * Delivered Version 1 of the **NeuraX Incident Response Playbook**. The team now has standard operating procedures (SOPs) for isolating Lambda functions, rotating AWS KMS keys, and locking out compromised Cognito users in the event of an imminent breach.
+* **Clean Slate:**
+  * All security and QA tickets closed. Application verified stable and ready for final presentation.
 
 ### Challenges & Lessons
 
 * **Challenges:**
-  * Decoupling the logic changes securely without breaking the frontend application's expected response structures required tight synchronization.
-  * Creating an IR playbook from scratch is daunting; deciding what level of detail to include without making it overly long was tough.
-
-* **Solutions:**
-  * Used API Gateway mapping templates to absorb the backend exceptions and cleanly transform them into safe JSON schemas for the frontend.
-  * Used a standard SANS Institute template for the IR playbook, modifying it specifically for our Serverless AWS deployment architecture.
-
+  * Decoupling authorization logic changes without breaking the frontend's expected response format required tight coordination.
 * **Lessons Learned:**
-  * Remediation is often a collaborative effort between Security and Development. Clear, respectful communication is needed to explain *why* exactly a code block needs to change.
-  * An Incident Response plan that has never been tested is just a piece of paper. We must simulate a walk-through in the future.
+  * Remediation is a collaborative effort between Security and Development. Clear communication accelerates ticket resolution.
 
 ### Next Week Plan
 
-* Project wrap-up and documentation!
-* Finalize the comprehensive Secure Architecture Diagrams.
-* Compile the work into the final Internship Report and prepare for the concluding presentation.
+* Deliver the concluding project presentation to FCJ Mentors.
+* Finalize budget reconciliation with the IA-1 teammate.
+* Complete knowledge handover and project documentation.

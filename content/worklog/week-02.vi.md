@@ -1,8 +1,9 @@
 ### Mục tiêu Tuần 2:
 
-* Hoàn thành Module 3 & 4.
-* Thực hiện nghiên cứu tùy chọn: AWS Well-Architected Framework.
-* Lên ý tưởng dự án và tìm hiểu các ứng dụng tham khảo.
+* Tham gia sự kiện AWS re:Invent 2025 Recap.
+* Lên ý tưởng dự án (NutriTrack Proposal) và tìm hiểu các ứng dụng tham khảo.
+* Hoàn thành các bài Lab 5, 6, 8, và 10 (RDS, EC2, Route 53, CloudWatch).
+* Nghiên cứu về AWS Well-Architected Framework (6 trụ cột).
 
 ### Các công việc thực hiện trong tuần:
 

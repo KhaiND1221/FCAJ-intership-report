@@ -1,45 +1,37 @@
 ### Mục tiêu Tuần 7
 
-* Xây dựng khả năng giám sát không gián đoạn để phát hiện nguy cơ tấn công hạ tầng NeuraX.
-* Tích hợp Amazon GuardDuty, tận dụng Machine Learning để rà soát hành vi bất thường.
-* Giám sát luồng mạng nội bộ với tính năng VPC Flow Logs.
-* Thiết lập hệ thống Cảnh báo tự động thông qua Amazon SNS và CloudWatch Alarms.
+* Xây dựng giao diện Authentication hoàn chỉnh (Sign Up, Sign In, OTP Verification).
+* Tích hợp Amazon Cognito với hai phương thức xác thực (Email OTP + Google OAuth).
+* Thực hiện pentest đầu tiên nhắm vào luồng xác thực và quản lý token.
 
 ### Các công việc thực hiện trong tuần
 
 | Ngày | Công việc | Ngày Bắt Đầu | Ngày Hoàn Thành | Tài Liệu Tham Khảo |
 | --- | --- | --- | --- | --- |
-| 1 | - Khởi tạo Trinh sát Bảo mật <br>&emsp; + Bật AWS GuardDuty cho tài khoản thực tập <br>&emsp; + Thiết lập mức baseline cho hành vi tài nguyên | 12/03/2026 | 12/03/2026 | [Threat Detection with GuardDuty](https://000098.awsstudygroup.com) |
-| 2 | - Giám sát luồng mạng <br>&emsp; + Bật VPC Flow Logs cho Backend VPC chính yếu <br>&emsp; + Đẩy dữ liệu Flow Logs về CloudWatch | 13/03/2026 | 13/03/2026 | [Network Monitoring with VPC Flow Logs](https://000074.awsstudygroup.com) |
-| 3 | ⭐ **SỰ KIỆN:** AWS Cloud Mastery 1 <br>&emsp; - Advanced Output Formatting <br>&emsp; + Trí mạng Sonnet phải trả về array chứa các trường JSON gắt gao gồm `macros`, `steps`, và `why_this`. | 14/03/2026 | 14/03/2026 | - |
-| 4 | - Hệ thống Báo động <br>&emsp; + Triển khai Amazon Simple Notification Service (SNS) <br>&emsp; + Nối SNS với webhook của NeuraX Discord nội bộ | 15/03/2026 | 15/03/2026 | [Messaging Systems with SNS](https://000077.awsstudygroup.com) |
-| 5 | - Căng bẫy sự kiện <br>&emsp; + Viết luật EventBridge định tuyến các phát hiện nghiêm trọng của GuardDuty sang SNS <br>&emsp; + Cài báo động CloudWatch nếu API Gateway trả về quá nhiều lỗi 4xx/5xx | 16/03/2026 | 16/03/2026 | [CloudWatch Advanced Workshop](https://000036.awsstudygroup.com) |
-| 6-7 | - Thử nghiệm Mô phỏng <br>&emsp; + Chạy các lệnh API bất thường (Quét cổng/Brute force) từ một IP ngoài <br>&emsp; + Xác nhận tin nhắn báo động nổ về kênh chat | 17/03/2026 | 18/03/2026 | [Kiểm thử Nội bộ] |
+| 1 | - Phát triển Auth UI <br>&emsp; + Xây dựng màn hình Sign Up, Sign In, và OTP Verification <br>&emsp; + Tích hợp luồng xác thực Cognito Email + OTP | 12/03/2026 | 12/03/2026 | [Auth with Cognito](https://000081.awsstudygroup.com/) |
+| 2 | - Tích hợp Google OAuth <br>&emsp; + Cấu hình OAuth 2.0 redirect URIs trong `auth/resource.ts` <br>&emsp; + Thiết lập Google Cloud Console OAuth Client credentials | 13/03/2026 | 13/03/2026 | [Google Cloud Console](https://console.cloud.google.com/welcome/new?pli=1) |
+| 3 | ⭐ **SỰ KIỆN:** AWS Cloud Mastery 1 | 14/03/2026 | 14/03/2026 | - |
+| 4 | - Lưu trữ Token An toàn <br>&emsp; + Implement lưu JWT token bằng `expo-secure-store` <br>&emsp; + Thiết kế quản lý session lifecycle (token refresh, xử lý hết hạn) | 16/03/2026 | 16/03/2026 | [Expo SecureStore](https://docs.expo.dev/versions/latest/sdk/securestore/) |
+| 5 | - Kiểm thử Chức năng Auth <br>&emsp; + Kiểm tra end-to-end: đăng ký, đăng nhập, OTP, Google OAuth <br>&emsp; + Xác nhận session persistence khi restart app | 17/03/2026 | 17/03/2026 | - |
+| 6 | - Pentest #1: Đánh giá Bảo mật Token <br>&emsp; + Thử thao túng JWT token và bypass chữ ký <br>&emsp; + Đánh giá việc thực thi hết hạn token và rotation refresh token | 18/03/2026 | 18/03/2026 | [OWASP Testing Guide](https://owasp.org/www-project-web-security-testing-guide/) |
 
 ### Kết quả đạt được trong Tuần 7
 
-* **Phòng thủ Chủ động (Proactive Security):**
-  * Đã bật chức năng **Amazon GuardDuty**. Nhờ đó, môi trường AWS liên tục được quét để nhận diện dấu hiệu tài khoản bị lộ mật khẩu, gọi API móc nối dữ liệu bất hợp pháp... mà không cần phải cài cắm Agent phức tạp.
-  * Hoàn thành hiển thị 100% luồng truy cập đi xuyên qua các subnet thông qua **VPC Flow Logs**, giúp team có cơ sở chứng cứ để chặn mọi gói tin quét ngang trái phép.
+* **Luồng Auth Hoàn chỉnh:**
+  * Pipeline xác thực hoạt động đầy đủ — Email+OTP và Google OAuth đều được verify end-to-end.
 
-* **Giao tiếp sự cố Thời gian thực:**
-  * Tạo chuỗi liên kết hoàn hảo dẫn truyền sự kiện an ninh mạng từ AWS EventBridge nhảy thẳng thành tin nhắn báo động gọn gàng trên channel NeuraX Discord. Báo động không còn bị chôn vùi dưới đáy biểu đồ Log.
+* **Bảo mật Được Xác nhận:**
+  * Pentest ban đầu xác nhận JWT do Cognito cấp chống lại các nỗ lực thao túng và thực thi chính sách hết hạn đúng cách.
 
 ### Thách thức & Bài học kinh nghiệm
 
 * **Thách thức:**
-  * GuardDuty cần thời gian máy học (learning period) để xác định mức baseline bình thường. Khá khó để giả lập tấn công một cách giả tạo bởi cơ chế của AWS thừa thông minh để coi các truy cập kia là an toàn.
-  * Bật tối đa tính năng lưu VPC Flow Logs trực tiếp lên CloudWatch làm phình to dữ liệu nhanh chóng, ngốn chi phí lưu trữ trong vòng chỉ 24h đầu.
-
-* **Giải pháp:**
-  * Sử dụng tính năng "Generate Sample Findings" tích hợp sẵn của GuardDuty để test tính liền mạch của bộ thu phát EventBridge/SNS thay vì cố gắng tự đi "hacker" hệ thống mình.
-  * Tinh chỉnh cấu hình đẩy lưu trữ của VPC Flow Logs chuyển trực tiếp về Amazon S3 chung với việc gom nhóm khoảng thời lượng dài hơn (aggregation interval) nhằm tiết kiệm ngân sách.
-
+  * Cấu hình Google OAuth redirect URIs cho môi trường phát triển Expo cần thử nhiều lần do khác biệt URL scheme giữa các platform.
 * **Bài học:**
-  * Có quá nhiều chỉ số viễn trắc (telemetry) mà không màng tới bộ lọc sẽ trở thành rác. Việc siết chặt ngưỡng báo động (chuẩn High-severity) trước khi đẩy về Discord là tối quan trọng nhằm chống lại "Hội chứng mệt mỏi cảnh báo" (Alert fatigue) ở Team Dev.
+  * Authentication là bề mặt tấn công quan trọng nhất. Kiểm thử bảo mật token sớm ngăn ngừa lỗ hổng lan truyền xuống downstream.
 
 ### Kế hoạch Tuần 8
 
-* Chăm chút vào các yếu tố riêng tư nhạy cảm của dữ liệu Y tế/Sức khỏe.
-* Dùng **Amazon Macie** đánh giá quyền truy cập sâu bên trong dữ liệu S3.
-* Triển khai bộ dò tìm bất thường đối với hệ thống sao lưu.
+* Cùng DEV team nghiên cứu và prototype giao diện Pet evolution.
+* Thiết kế và demo Streak system và cơ chế tích lũy XP.
+* Mở rộng bộ công cụ pentest.

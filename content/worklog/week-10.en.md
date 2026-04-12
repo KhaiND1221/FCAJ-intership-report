@@ -1,49 +1,40 @@
 ### Week 10 Objectives
 
-* Transition from defensive architecture to an offensive security mindset.
-* Perform internal penetration testing on the NutriTrack serverless backend.
-* Validate the efficacy of Amazon Cognito and AWS WAF configurations.
-* Discover and document application-layer vulnerabilities.
+* Execute deep penetration testing against the NutriTrack serverless backend.
+* Complete the comprehensive NutriTrack architecture diagram.
+* Submit the project deliverables.
 
-### Tasks carried out this week
+### Tasks to be carried out this week
 
 | Day | Task | Start Date | Completion Date | Reference Material |
 | --- | --- | --- | --- | --- |
-| 1 | - Test Environment Setup <br>&emsp; + Spin up a cloned isolated environment (Staging) <br>&emsp; + Configured proxy tools (Burp Suite) to intercept traffic | 02/04/2026 | 02/04/2026 | [Burp Suite Config Docs] |
-| 2 | - Authentication & Authorization Testing <br>&emsp; + Attempted Cognito Token manipulation & bypass <br>&emsp; + Tested for Insecure Direct Object Reference (IDOR) on user profiles | 03/04/2026 | 03/04/2026 | [OWASP Auth Testing] |
-| 3 | ⭐ **EVENT:** AWS Cloud Mastery 2 (FPT Uni) <br>&emsp; - Lambda Hook-up <br>&emsp; + Finalized `generate_coaching_tip()` tying Boto3 to Qwen3-VL 235B. <br>&emsp; + Pushed to Amplify. | 04/04/2026 | 04/04/2026 | [Amplify Fullstack Docs](https://docs.amplify.aws/gen2/deploy-and-host/fullstack-branching/) |
-| 4 | - API Logic Flaws <br>&emsp; + Hunted for Business Logic vulnerabilities in the Lambda API endpoints <br>&emsp; + Checked for Excessive Data Exposure in JSON responses | 05/04/2026 | 05/04/2026 | [REST API Security] |
-| 5 | - Privilege Escalation Audit <br>&emsp; + Audited IAM Roles assumed by backend systems <br>&emsp; + Checked for over-permissive `sts:AssumeRole` trusts | 06/04/2026 | 06/04/2026 | [IAM Security Assessment] |
-| 6-7 | - Security Report Generation <br>&emsp; + Compiled findings into a structured Vulnerability Assessment Report <br>&emsp; + Ranked findings by CVSS severity score | 07/04/2026 | 08/04/2026 | [Vulnerability Score Matrix] |
+| 1 | - Pentest #3: IDOR Vulnerability Assessment <br>&emsp; + Tested `GET /meals/{id}` endpoint for cross-user data access exploitation <br>&emsp; + Verified authorization boundary enforcement at the Lambda level | 02/04/2026 | 02/04/2026 | [OWASP IDOR Testing](https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/05-Authorization_Testing/04-Testing_for_Insecure_Direct_Object_References) |
+| 2 | - Pentest #4: API Gateway Security <br>&emsp; + Intercepted and fuzzed AppSync GraphQL queries using Burp Suite <br>&emsp; + Tested for injection attacks and excessive data exposure in API responses | 03/04/2026 | 03/04/2026 | [Burp Suite](https://portswigger.net/burp) |
+| 3 | ⭐ **EVENT:** AWS Cloud Mastery 2 (FPT Uni) | 04/04/2026 | 04/04/2026 | - |
+| 4 | 🎨 Architecture Diagram Completion + 📦 Project Submission <br>&emsp; + Finalized the full NutriTrack infrastructure diagram (Cognito → AppSync → Lambda → Bedrock → DynamoDB → S3) <br>&emsp; + Submitted the complete project deliverables | 05/04/2026 | 05/04/2026 | - |
+| 5 | - Vulnerability Assessment Report <br>&emsp; + Compiled all penetration findings into a structured report <br>&emsp; + Ranked vulnerabilities using CVSS severity scoring methodology | 07/04/2026 | 07/04/2026 | [CVSS v3.1](https://www.first.org/cvss/calculator/3.1) |
+| 6 | - Remediation Implementation <br>&emsp; + Patched verbose error responses exposing internal stack traces <br>&emsp; + Tightened Lambda execution role permissions following Principle of Least Privilege | 08/04/2026 | 08/04/2026 | - |
 
 ### Week 10 Achievements
 
-* **Offensive Security Validation:**
-  * Successfully conducted a mock penetration test hitting all layers of the stack (API Gateway, Cognito, Lambda logic, and Database interactions).
+* **Architecture Diagram Delivered:**
+  * Comprehensive visual documentation of the entire NutriTrack serverless infrastructure completed and submitted.
 
-* **Vulnerability Discovery:**
-  * Discovered a minor IDOR vulnerability in the `GET /meals/{id}` endpoint where a user could potentially enumerate a different user's meal logs if they guessed the ID, due to a missing authorization check inside the Lambda function.
-  * Identified an instance where the API response returned overly verbose error traces if a malformed parameter was sent (Information disclosure).
+* **IDOR Vulnerability Discovered:**
+  * Identified a medium-severity IDOR flaw in `GET /meals/{id}` where missing authorization checks allowed potential cross-user data enumeration.
 
 * **WAF Efficacy Proven:**
-  * Our customized AWS WAF blocked 100% of standard script-kiddie payloads (SQLi, generic XSS) and successfully throttled the automated Burp Suite fuzzing via rate limits.
+  * AWS WAF successfully blocked 100% of standard injection payloads and rate-limited automated fuzzing attempts.
 
 ### Challenges & Lessons
 
 * **Challenges:**
-  * Setting up Burp Suite to man-in-the-middle encrypted API traffic requiring custom root certificates was technically tedious.
-  * Differentiating between an infrastructure configuration flaw versus a codebase logic flaw required deep code-review of the Lambda functions.
-
-* **Solutions:**
-  * Coordinated with the frontend developer to bypass SSL pinning purely in the Staging client environment for testing purposes.
-  * Paired directly with the Backend Developer to trace the IDOR payload from the API Gateway event down to the DynamoDB lookup query.
-
+  * Differentiating between infrastructure misconfigurations and application logic flaws required deep Lambda source code review.
 * **Lessons Learned:**
-  * Security is never purely infrastructural. AWS WAF and IAM can be configured perfectly, but flawed application logic (like missing resource ownership checks in Lambda) will fundamentally compromise the system.
-  * Penetration testing is incredibly valuable to validate your own defensive assumptions.
+  * Security is never purely infrastructural. Perfect WAF and IAM configurations are undermined by flawed application logic.
 
 ### Next Week Plan
 
-* Shift from offensive discovery to the Remediation phase.
-* Work alongside developers to patch the IDOR vulnerability and eliminate verbose errors.
-* Draft an Incident Response (IR) playbook for NeuraX based on our security audit.
+* Remediate all vulnerabilities discovered during the penetration testing phase.
+* Execute a comprehensive quality assurance pass across all user flows.
+* Close all outstanding security and bug tickets.
