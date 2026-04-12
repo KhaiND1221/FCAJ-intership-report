@@ -4,7 +4,10 @@ Run this section the same day you finish the workshop. AWS will happily bill you
 
 ## Order of Operations
 
-![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
+```mermaid
+flowchart TD
+  A[1. Delete Amplify sandbox] --> I[2. Verify: list-stacks + Cost Explorer]
+```
 
 ## 1. Delete the Amplify Sandbox
 
@@ -19,137 +22,9 @@ Confirm the prompt. This tears down the CloudFormation stack prefixed `amplify-n
 
 If the command fails because the S3 bucket is not empty, empty it first with step 3 and retry.
 
-## 2. Delete Amplify Branch Environments
+![Delete Sandbox](images/4.10_Delete_sandbox.png)
 
-Each Amplify Hosting branch is a separate CloudFormation stack. Delete both:
-
-```bash
-aws amplify delete-branch --app-id d1glc6vvop0xlb --branch-name feat/phase3
-aws amplify delete-branch --app-id d1glc6vvop0xlb --branch-name main
-```
-
-Replace `d1glc6vvop0xlb` with your actual Amplify app ID from the Console URL. If you want to keep the app shell, stop here. If you want everything gone, also run:
-
-```bash
-aws amplify delete-app --app-id d1glc6vvop0xlb
-```
-
-![Amplify Console after branch deletion](images/amplify-console-empty.png)
-
-## 3. Empty S3 Buckets Before Deletion
-
-CloudFormation cannot delete a non-empty bucket. Each environment has its own storage bucket with the same four prefixes. Double-check **each** prefix before moving on:
-
-- `incoming/` — raw image uploads (should be nearly empty due to 1-day lifecycle rule).
-- `voice/` — voice recordings for Transcribe.
-- `avatar/` — user profile pictures (identity-scoped writes).
-- `media/` — processed/resized images written by the `resizeImage` Lambda.
-
-List buckets:
-
-```bash
-aws s3 ls | grep -i nutritrack
-```
-
-Empty every matched bucket:
-
-```bash
-aws s3 rm s3://BUCKET_NAME --recursive
-aws s3 rb s3://BUCKET_NAME
-```
-
-Repeat for the sandbox, `feat/phase3`, and `main` buckets.
-
-## 4. Delete Remaining CloudFormation Stacks
-
-If the Amplify delete commands left orphaned stacks (rare, but it happens when a custom resource hangs), list and delete them manually:
-
-```bash
-aws cloudformation list-stacks \
-  --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE DELETE_FAILED
-```
-
-Any stack whose name contains `amplify-nutritrack`, `amplify-d1glc6vvop0xlb`, or `NutriTrack` is fair game:
-
-```bash
-aws cloudformation delete-stack --stack-name STACK_NAME
-```
-
-Watch for `DELETE_FAILED` — that usually means a dependency (S3 bucket, ENI, log group) is still pinned. Delete the pinning resource and retry.
-
-## 5. Destroy the ECS Fargate Tier
-
-### Option A — Terraform (recommended if you used `infrastructure/`)
-
-```bash
-cd infrastructure
-terraform destroy
-```
-
-Type `yes` at the confirmation. Terraform tears down the VPC, subnets, ALB, target groups, ECS cluster, service, task definition, and IAM roles in the correct order.
-
-### Option B — AWS Console (if you deployed manually from `ECS/`)
-
-Delete in **this exact order** or you will hit dependency errors:
-
-1. ECS service (scale to 0 tasks first, then delete).
-2. ECS task definitions (deregister all revisions).
-3. ECS cluster.
-4. ALB listeners, then the ALB itself.
-5. Target groups.
-6. Security groups attached to the ALB and tasks.
-7. NAT Instance EC2 (terminate the Auto Scaling group first, then the launch template — do this after tasks are stopped).
-8. Elastic IPs released.
-9. VPC (only deletable once everything above is gone).
-
-## 6. Remove the Docker Hub Image (Optional)
-
-NutriTrack uses **Docker Hub** (not ECR) for the container image — there is no ECR repository to delete and no AWS billing impact from leaving the image up. If you want to clean up Docker Hub:
-
-1. Log in to [hub.docker.com](https://hub.docker.com).
-2. Navigate to **Repositories** → `<your-username>/nutritrack-api`.
-3. Click **Settings** → **Delete repository** and confirm.
-
-Alternatively, delete just the `latest` tag via the Docker Hub API:
-
-```bash
-# Requires a Docker Hub Personal Access Token with delete scope
-curl -s -X DELETE \
-  -H "Authorization: Bearer <DOCKERHUB_TOKEN>" \
-  "https://hub.docker.com/v2/repositories/<USERNAME>/nutritrack-api/tags/latest/"
-```
-
-Removing the repository does not affect any running ECS tasks — tasks pull the image only on startup. Already-running tasks keep their cached layer until the next deployment.
-
-## 7. Revoke Bedrock Model Access
-
-Bedrock model access by itself has no cost, so revoking is optional. If you want a clean slate:
-
-1. Open **Amazon Bedrock → Model access** in `ap-southeast-2`.
-2. Click **Modify model access**.
-3. Untick **Qwen 3 VL 235B A22B**.
-4. Submit.
-
-## 8. Delete Workshop IAM Users and Roles
-
-If you created a dedicated IAM user for the workshop, delete it:
-
-```bash
-aws iam list-access-keys --user-name nutritrack-workshop
-aws iam delete-access-key --user-name nutritrack-workshop --access-key-id AKIA...
-aws iam detach-user-policy --user-name nutritrack-workshop --policy-arn arn:aws:iam::aws:policy/AdministratorAccess
-aws iam delete-user --user-name nutritrack-workshop
-```
-
-Amplify and CDK leave behind several service roles. Filter for them:
-
-```bash
-aws iam list-roles --query "Roles[?contains(RoleName, 'amplify') || contains(RoleName, 'nutritrack')].RoleName"
-```
-
-Delete each one after detaching its policies. Do **not** delete AWS-managed service-linked roles (names starting with `AWSServiceRoleFor...`).
-
-## 9. Verify Everything Is Gone
+## 2. Verify Everything Is Gone
 
 ### Stacks
 

@@ -234,7 +234,21 @@ Giờ ECS SG đã có, cập nhật Outbound rule cho ALB SG:
 
 ### 4.5 Sơ đồ Security Group Chain
 
-![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
+```mermaid
+flowchart TB
+    internet_in[Internet]
+    alb["nutritrack-api-vpc-alb-sg\nInbound: HTTP 80 from 0.0.0.0/0\nOutbound: TCP 8000 to ecs-sg"]
+    ecs["nutritrack-api-vpc-ecs-sg\nInbound: TCP 8000 from alb-sg\nOutbound: HTTPS/HTTP to nat-sg + S3 VPCE"]
+    s3_prefix["S3 Prefix List\n(com.amazonaws.ap-southeast-2.s3)"]
+    nat["nutritrack-api-vpc-nat-sg\nInbound: All from ecs-sg + SSH 22 from admin\nOutbound: All to 0.0.0.0/0"]
+    internet_out[Internet]
+
+    internet_in -->|HTTP:80| alb
+    alb -->|TCP:8000| ecs
+    ecs -->|HTTPS/HTTP| nat
+    ecs -->|HTTPS 443| s3_prefix
+    nat -->|All traffic| internet_out
+```
 
 ---
 

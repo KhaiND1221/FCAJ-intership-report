@@ -125,7 +125,12 @@ npx ampx sandbox secret list
 
 The promotion path is strictly linear: sandbox → `feat/phase3` → `main`.
 
-![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
+```mermaid
+flowchart LR
+  Dev[Developer laptop<br/>npx ampx sandbox] -->|commit + push| Feat[Branch: feat/phase3<br/>Amplify env: fe-]
+  Feat -->|PR + merge| Main[Branch: main<br/>Amplify env: ma-]
+  Main -->|Amplify Hosting| Prod[Production<br/>DynamoDB + AppSync + Lambda]
+```
 
 ### Day-to-day loop
 

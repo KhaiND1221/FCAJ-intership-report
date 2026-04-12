@@ -158,7 +158,7 @@ Các lỗi thường gặp:
 
 CloudWatch Logs group: `/aws/lambda/amplify-*-ai-engine-*`. Bật `DEBUG=true` để log chi tiết.
 
-![CloudWatch ai-engine logs](images/cloudwatch-ai-logs.png)
+
 
 ## Liên kết
 
