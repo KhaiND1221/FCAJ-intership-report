@@ -16,7 +16,7 @@ From a single `amplify/data/resource.ts` file, Amplify Gen 2 produces:
 
 ## Architecture
 
-![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
+![Architecture Diagram](/FCAJ-intership-report/solution-architect/nutritrack-v4.drawio.png)
 
 ## The 8 models at a glance
 

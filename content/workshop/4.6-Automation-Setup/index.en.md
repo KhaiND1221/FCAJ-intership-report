@@ -21,7 +21,7 @@ Every `a.model(...)` in `data/resource.ts` automatically exposes `onCreate`, `on
 
 ## Architecture
 
-![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
+![Architecture Diagram](/FCAJ-intership-report/solution-architect/nutritrack-v4.drawio.png)
 
 - Mutations travel HTTPS → AppSync → Lambda → DynamoDB.
 - Subscriptions travel back over a persistent WebSocket — AppSync notices the `Friendship` row flipping from `pending` to `accepted` and pushes the updated object to every client that has an active filter matching the row's `owner`.

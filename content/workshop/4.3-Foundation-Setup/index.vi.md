@@ -12,7 +12,7 @@ Các phase sau sẽ gắn Lambda, AppSync, DynamoDB lên nền tảng này mà k
 
 ## Kiến trúc của phase này
 
-![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
+![Architecture Diagram](/FCAJ-intership-report/solution-architect/nutritrack-v4.drawio.png)
 
 Amplify CLI chạy TypeScript, bên dưới synth thành một CDK app, và submit một CloudFormation stack cho mỗi dev (stack sandbox). Tên stack có dạng `amplify-nutritrack-<username>-sandbox-<hash>`.
 

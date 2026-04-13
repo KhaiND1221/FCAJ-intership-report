@@ -20,7 +20,7 @@ The 120-second timeout on `ai-engine` is required because `voiceToFood` starts a
 
 ## Architecture
 
-![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
+![Architecture Diagram](/FCAJ-intership-report/solution-architect/nutritrack-v4.drawio.png)
 
 ## Ground-truth Bedrock model
 

@@ -21,7 +21,7 @@ Mỗi `a.model(...)` trong `data/resource.ts` tự động phơi bày ba subscri
 
 ## Kiến trúc
 
-![Architecture Diagram](/FCAJ-intership-report/workshop-images/4.1-Workshop-overview/architect_v3.drawio.png)
+![Architecture Diagram](/FCAJ-intership-report/solution-architect/nutritrack-v4.drawio.png)
 
 - Mutation đi HTTPS → AppSync → Lambda → DynamoDB.
 - Subscription đi ngược lại qua WebSocket bền vững — AppSync phát hiện hàng `Friendship` chuyển từ `pending` sang `accepted` và đẩy object mới tới mọi client có filter khớp `owner`.
