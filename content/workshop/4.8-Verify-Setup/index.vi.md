@@ -4,7 +4,7 @@ Tầng ECS Fargate chạy một FastAPI service containerized song song với Am
 
 ## Kiến trúc
 
-![Kiến trúc NutriTrack API VPC](images/only-nutritrack-api-vpc.drawio.svg)
+![Kiến trúc NutriTrack API VPC](images/nutritrack-api-vpc.drawio.png)
 
 Fargate task chạy trong private subnet; ALB nằm trong public subnet. Task tiếp cận AWS service qua NAT Instance (tiết kiệm 70% so với NAT Gateway) hoặc S3 Gateway VPCE (miễn phí).
 

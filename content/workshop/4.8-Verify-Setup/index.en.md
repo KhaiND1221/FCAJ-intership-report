@@ -4,7 +4,7 @@ The ECS Fargate tier runs a containerized FastAPI service alongside the serverle
 
 ## Architecture
 
-![NutriTrack API VPC Architecture](images/only-nutritrack-api-vpc.drawio.svg)
+![NutriTrack API VPC Architecture](images/nutritrack-api-vpc.drawio.png)
 
 Fargate tasks run in private subnets; the ALB sits in public subnets. Tasks reach AWS services via NAT Instance (70% cheaper than NAT Gateway) or the S3 Gateway VPCE (free).
 
