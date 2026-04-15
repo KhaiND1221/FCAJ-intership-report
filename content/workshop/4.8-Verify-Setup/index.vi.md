@@ -4,16 +4,7 @@ Tầng ECS Fargate chạy một FastAPI service containerized song song với Am
 
 ## Kiến trúc
 
-```mermaid
-graph LR
-  Internet -->|HTTP 80| ALB["Application\nLoad Balancer\n(public subnet)"]
-  ALB -->|TCP 8000| Task["ECS Fargate Task\n(FastAPI)\n(private subnet)"]
-  Task -->|via NAT| Bedrock["Amazon Bedrock\nap-southeast-2"]
-  Task -->|S3 VPCE| S3["S3 Cache Bucket"]
-  Task -->|via NAT| SecretsManager["Secrets Manager"]
-  Dev["Developer"] -->|docker push| DockerHub["Docker Hub"]
-  DockerHub -->|via NAT| Task
-```
+![Kiến trúc NutriTrack API VPC](images/only-nutritrack-api-vpc.drawio.svg)
 
 Fargate task chạy trong private subnet; ALB nằm trong public subnet. Task tiếp cận AWS service qua NAT Instance (tiết kiệm 70% so với NAT Gateway) hoặc S3 Gateway VPCE (miễn phí).
 
@@ -21,13 +12,13 @@ Fargate task chạy trong private subnet; ALB nằm trong public subnet. Task ti
 
 | Thành phần | Chi phí ước tính/tháng |
 | :--- | :--- |
-| 2× NAT Instance `t4g.nano` | ~$9 |
-| 2× Fargate Task (0.5 vCPU / 1 GB) | ~$17 |
-| ALB | ~$16 |
-| CloudWatch Logs (5 GB, 30 ngày) | ~$2 |
-| **Tổng** | **~$44** |
+| 2× NAT Instance `t4g.nano` | ≈$9 |
+| 2× Fargate Task (0.5 vCPU / 1 GB) | ≈$17 |
+| ALB | ≈$16 |
+| CloudWatch Logs (5 GB, 30 ngày) | ≈$2 |
+| **Tổng** | **≈$44** |
 
-So sánh: dùng NAT Gateway thay NAT Instance sẽ tốn thêm ~$32/tháng (tổng ~$76).
+So sánh: dùng NAT Gateway thay NAT Instance sẽ tốn thêm ≈$32/tháng (tổng ≈$76).
 
 Tầng ECS có giá trị khi bạn cần:
 

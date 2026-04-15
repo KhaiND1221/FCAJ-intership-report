@@ -25,10 +25,10 @@ Hậu tố `-NONE` là placeholder của Amplify cho "no environment type". Sand
 
 - **Partition key**: `food_id` (String)
 - **Sort key**: không có
-- **GSI**: không
+- **GSI**: `Food-name_vi-index` trên `name_vi`, `Food-name_en-index` trên `name_en`
 - **Auth**: guest đọc, authenticated đọc
 - **Số item**: ~200 (seed một lần, ít update)
-- **Ai truy cập**: resolver AppSync trực tiếp (đọc), Lambda `process-nutrition` (scan + đọc)
+- **Ai truy cập**: resolver AppSync trực tiếp (đọc), Lambda `process-nutrition` (query qua GSI + scan)
 
 Item ví dụ:
 

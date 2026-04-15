@@ -63,8 +63,8 @@ async function captureAndUpload(cameraRef: React.RefObject<CameraView>, userId: 
 After the upload, `resizeImage` runs in the background (triggered by S3 ObjectCreated). Then call `scanImage` — the dedicated image-processing Lambda that proxies to ECS FastAPI:
 
 ```tsx
-import { generateClient } from 'aws-amplify/api';
-import type { Schema } from '@/amplify_outputs.json';
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '../../../backend/amplify/data/resource';
 
 const client = generateClient<Schema>();
 

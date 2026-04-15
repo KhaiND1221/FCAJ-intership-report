@@ -32,30 +32,39 @@ The center Add tab uses a custom tab bar button (`+` icon, larger, accent-colore
 
 ## Zustand store pattern
 
-All state lives in `src/store/`. Each store uses `zustand` with `persist` middleware backed by `AsyncStorage`:
+All state lives in `src/store/`. Stores use plain `zustand` with manual `AsyncStorage` persistence — **not** the `persist` middleware. Each store manages its own `STORAGE_KEY` and calls `AsyncStorage.setItem`/`getItem` inside actions:
 
 ```typescript
 // src/store/mealStore.ts
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const STORAGE_KEY = '@nutritrack_meals';
+
 interface MealState {
-  logs: FoodLog[];
-  addLog: (log: FoodLog) => void;
-  clearLogs: () => void;
+  meals: Meal[];
+  isLoading: boolean;
+  addMeal: (meal: Omit<Meal, 'id' | 'time' | 'date'> & { date?: string }) => Promise<void>;
+  loadMeals: () => Promise<void>;
+  // ...
 }
 
-export const useMealStore = create<MealState>()(
-  persist(
-    (set) => ({
-      logs: [],
-      addLog: (log) => set((s) => ({ logs: [log, ...s.logs] })),
-      clearLogs: () => set({ logs: [] }),
-    }),
-    { name: 'meal-storage', storage: createJSONStorage(() => AsyncStorage) }
-  )
-);
+export const useMealStore = create<MealState>((set, get) => ({
+  meals: [],
+  isLoading: false,
+
+  loadMeals: async () => {
+    const raw = await AsyncStorage.getItem(STORAGE_KEY);
+    if (raw) set({ meals: JSON.parse(raw) });
+  },
+
+  addMeal: async (mealData) => {
+    // ... build meal object
+    const updated = [meal, ...get().meals];
+    set({ meals: updated });
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  },
+}));
 ```
 
 A screen reads from the store and calls a service:
@@ -104,9 +113,16 @@ Each evolution level maps to a pre-rendered video file in `MANHINH/` (`1.mp4` th
 
 ```tsx
 import { Video, ResizeMode } from 'expo-av';
+import { getUserData } from '@/src/store/userStore';
 
 export default function BattleScreen() {
-  const petLevel = useUserStore((s) => s.petLevel); // 1–5
+  const [petLevel, setPetLevel] = useState(1);
+
+  useEffect(() => {
+    getUserData().then((user) => {
+      setPetLevel(user?.gamification?.pet_level ?? 1);
+    });
+  }, []);
 
   return (
     <Video
@@ -127,6 +143,8 @@ const petVideos: Record<number, { uri: string }> = {
   5: require('@/assets/MANHINH/5.mp4'),
 };
 ```
+
+> **Note:** `userStore.ts` is **not** a Zustand store — it is a plain AsyncStorage utility that exports `getUserData()` and `saveUserData()` async functions. There is no `useUserStore` hook. Read user data with `await getUserData()` inside a `useEffect`.
 
 This approach avoids the WebGL/3D overhead entirely, giving smooth 60 fps playback on low-end Android devices.
 

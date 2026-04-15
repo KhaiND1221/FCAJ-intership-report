@@ -131,24 +131,22 @@ unauthenticatedUserIamRole.addToPolicy(new iam.PolicyStatement({
 
 ## Auth guard in root layout
 
-The root `_layout.tsx` checks authentication state on every render and redirects unauthenticated users to `/welcome`:
+The root `_layout.tsx` checks authentication state on mount and redirects unauthenticated users to `/welcome`. The real implementation (~390 lines) adds `Hub.listen('auth')` for OAuth redirect handling, biometric prompts, and `useRef` guards. The core structure:
 
 ```typescript
 // app/_layout.tsx (simplified)
 import { useEffect } from 'react';
 import { router, Slot } from 'expo-router';
-import { useAuthStore } from '@/src/store/authStore';
+import { getCurrentUser } from 'aws-amplify/auth';
 import { LanguageProvider } from '@/src/i18n/LanguageProvider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function RootLayout() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace('/welcome');
-    }
-  }, [isAuthenticated]);
+    getCurrentUser()
+      .then(() => { /* authenticated — stay */ })
+      .catch(() => router.replace('/welcome'));
+  }, []);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -159,6 +157,8 @@ export default function RootLayout() {
   );
 }
 ```
+
+The full layout also subscribes to `Hub.listen('auth', ...)` so that when `signInWithRedirect` completes (Google OAuth), the auth state updates immediately and the router navigates to `(tabs)/home` without requiring another `getCurrentUser` poll.
 
 The `LanguageProvider` wraps the entire app so all screens can access `useAppLanguage()` for Vietnamese/English switching.
 

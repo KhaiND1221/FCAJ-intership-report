@@ -10,7 +10,7 @@ This section builds the AWS network foundation for the NutriTrack API: a dedicat
 | :--- | :--- |
 | **ECS Private Subnet** | Containers have no public IP — no direct attack surface |
 | **ALB Internet-facing** | Single ingress point from the internet, hides container IPs |
-| **NAT Instance** (vs NAT Gateway) | **~70% cost savings** (~$10/mo vs ~$34/mo) |
+| **NAT Instance** (vs NAT Gateway) | **~70% cost savings** (≈$10/mo vs ≈$34/mo) |
 | **S3 Gateway VPCE** | **Free** S3 access — no internet, no NAT |
 | **2 × NAT Instance (1 per AZ)** | True HA: one AZ fails, the other keeps serving |
 | **Fargate SPOT ARM64** | Additional ~70% compute cost savings |
@@ -24,6 +24,7 @@ This section builds the AWS network foundation for the NutriTrack API: a dedicat
 | Secrets Manager | NAT Instance → Internet | Data transfer charges apply |
 | CloudWatch Logs | NAT Instance → Internet | Data transfer charges apply |
 | Docker Hub image pull | NAT Instance → Internet | Data transfer charges apply |
+| External APIs (USDA, Avocavo, OpenFoodFacts) | NAT Instance → Internet | Data transfer charges apply |
 
 ---
 
@@ -153,7 +154,9 @@ Attached to the **Application Load Balancer**. Accepts HTTP from the internet, f
 
 | Type | Protocol | Port | Source | Purpose |
 | :--- | :--- | :--- | :--- | :--- |
-| HTTP | TCP | 80 | `0.0.0.0/0` | Accept HTTP from anywhere |
+| HTTP | TCP | 80 | `0.0.0.0/0` | Accept HTTP from the `scan-image` Lambda |
+
+> ⚠️ **Update required later:** The `0.0.0.0/0` source is temporary. Once you complete [4.5.5 ScanImage](/workshop/4.5.5-ScanImage) and the `scan-image` Lambda is attached to the VPC with its own security group (`scan-image-sg`), come back here and change the source from `0.0.0.0/0` to `scan-image-sg` — so only the Lambda can call the ALB.
 
 **Outbound Rules:** Keep the default `All traffic 0.0.0.0/0` for now — update in step 4.4 once the ECS SG exists.
 
@@ -232,14 +235,14 @@ Now that the ECS SG exists, update the ALB SG outbound rule:
 
 ```mermaid
 flowchart TB
-    internet_in[Internet]
+    lambda["Lambda (scan-image)"]
     alb["nutritrack-api-vpc-alb-sg\nInbound: HTTP 80 from 0.0.0.0/0\nOutbound: TCP 8000 to ecs-sg"]
     ecs["nutritrack-api-vpc-ecs-sg\nInbound: TCP 8000 from alb-sg\nOutbound: HTTPS/HTTP to nat-sg + S3 VPCE"]
     s3_prefix["S3 Prefix List\n(com.amazonaws.ap-southeast-2.s3)"]
     nat["nutritrack-api-vpc-nat-sg\nInbound: All from ecs-sg + SSH 22 from admin\nOutbound: All to 0.0.0.0/0"]
     internet_out[Internet]
 
-    internet_in -->|HTTP:80| alb
+    lambda -->|HTTP:80| alb
     alb -->|TCP:8000| ecs
     ecs -->|HTTPS/HTTP| nat
     ecs -->|HTTPS 443| s3_prefix

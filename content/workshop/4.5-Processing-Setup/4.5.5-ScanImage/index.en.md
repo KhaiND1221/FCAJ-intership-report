@@ -2,7 +2,7 @@
 
 `scan-image` is the fifth Lambda in NutriTrack. It is not a general AI orchestrator — it has exactly one job: receive an S3 object key from AppSync, fetch the image, authenticate against the ECS FastAPI cluster using a self-signed JWT, forward the image as multipart form-data, and poll for the result.
 
-The ECS FastAPI container runs its own AI inference pipeline and is accessible through the Application Load Balancer at `http://nutritrack-api-vpc-alb-1060755902.ap-southeast-2.elb.amazonaws.com`. The Lambda is the secure bridge between the serverless AppSync layer and the containerised compute layer.
+The ECS FastAPI container runs its own AI inference pipeline and is accessible through the Application Load Balancer at `http://nutritrack-api-vpc-alb-xxxxxxxxx.ap-southeast-2.elb.amazonaws.com`. The Lambda is the secure bridge between the serverless AppSync layer and the containerised compute layer.
 
 ## Resource definition
 

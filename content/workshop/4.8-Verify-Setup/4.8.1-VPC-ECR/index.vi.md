@@ -24,6 +24,7 @@ Hướng dẫn này thiết lập nền tảng mạng AWS cho NutriTrack API: VP
 | Secrets Manager | NAT Instance → Internet | Tính vào data transfer |
 | CloudWatch Logs | NAT Instance → Internet | Tính vào data transfer |
 | Docker Hub pull | NAT Instance → Internet | Tính vào data transfer |
+| External API (USDA, Avocavo, OpenFoodFacts) | NAT Instance → Internet | Tính vào data transfer |
 
 ---
 
@@ -157,7 +158,9 @@ Gắn vào **Application Load Balancer**. ALB nhận HTTP từ Internet rồi fo
 
 | Type | Protocol | Port | Source | Mục đích |
 | :--- | :--- | :--- | :--- | :--- |
-| HTTP | TCP | 80 | `0.0.0.0/0` | Nhận request HTTP từ Internet |
+| HTTP | TCP | 80 | `0.0.0.0/0` | Nhận request HTTP từ Lambda `scan-image` |
+
+> ⚠️ **Cần cập nhật sau:** Source `0.0.0.0/0` ở đây là tạm thời. Sau khi hoàn thành [4.5.5 ScanImage](/workshop/4.5.5-ScanImage) và Lambda `scan-image` được gắn vào VPC với security group riêng (`scan-image-sg`), hãy quay lại đây và đổi source từ `0.0.0.0/0` thành `scan-image-sg` — chỉ cho phép đúng Lambda gọi vào ALB.
 
 **Outbound Rules:** Tạm giữ mặc định `All traffic 0.0.0.0/0` — sẽ update ở bước 4.4 sau khi ECS SG có.
 
@@ -236,14 +239,14 @@ Giờ ECS SG đã có, cập nhật Outbound rule cho ALB SG:
 
 ```mermaid
 flowchart TB
-    internet_in[Internet]
+    lambda["Lambda (scan-image)"]
     alb["nutritrack-api-vpc-alb-sg\nInbound: HTTP 80 from 0.0.0.0/0\nOutbound: TCP 8000 to ecs-sg"]
     ecs["nutritrack-api-vpc-ecs-sg\nInbound: TCP 8000 from alb-sg\nOutbound: HTTPS/HTTP to nat-sg + S3 VPCE"]
     s3_prefix["S3 Prefix List\n(com.amazonaws.ap-southeast-2.s3)"]
     nat["nutritrack-api-vpc-nat-sg\nInbound: All from ecs-sg + SSH 22 from admin\nOutbound: All to 0.0.0.0/0"]
     internet_out[Internet]
 
-    internet_in -->|HTTP:80| alb
+    lambda -->|HTTP:80| alb
     alb -->|TCP:8000| ecs
     ecs -->|HTTPS/HTTP| nat
     ecs -->|HTTPS 443| s3_prefix

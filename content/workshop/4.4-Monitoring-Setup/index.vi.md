@@ -16,7 +16,21 @@ Từ một file `amplify/data/resource.ts` duy nhất, Amplify Gen 2 tạo ra:
 
 ## Kiến trúc
 
-![Architecture Diagram](/FCAJ-intership-report/solution-architect/nutritrack-v4.drawio.png)
+```mermaid
+flowchart LR
+  App[Expo / React Native app] -->|GraphQL| Client[Amplify JS client<br/>generateClient&lt;Schema&gt;]
+  Client -->|HTTPS + Cognito JWT| AppSync[AWS AppSync<br/>GraphQL API]
+
+  AppSync -->|resolver tự sinh| DDB[(DynamoDB<br/>8 bảng)]
+  AppSync -->|custom resolver| AiEngine[Lambda: ai-engine]
+  AppSync -->|custom resolver| ProcNut[Lambda: process-nutrition]
+  AppSync -->|custom resolver| FriendReq[Lambda: friend-request]
+
+  AiEngine --> Bedrock[Bedrock Qwen3-VL]
+  AiEngine --> Transcribe[Amazon Transcribe]
+  ProcNut --> DDB
+  FriendReq --> DDB
+```
 
 ## Tổng quan 8 model
 

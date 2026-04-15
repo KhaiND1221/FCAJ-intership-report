@@ -2,6 +2,9 @@
 
 AppSync is the managed GraphQL layer for NutriTrack. Instead of hand-writing VTL templates or resolver pipelines, we declare everything in `amplify/data/resource.ts` using the Amplify `a.schema(...)` DSL. At `npx ampx sandbox` time (or on every push-to-branch deploy) the CLI compiles that file into a full AppSync API, backing DynamoDB tables, IAM roles, and Lambda wiring.
 
+> **Full file:** The complete `backend/amplify/data/resource.ts` is built up across sections 4.4, 4.5, and 4.6. To paste the entire file at once, grab it from the source repo:
+> [`backend/amplify/data/resource.ts`](https://github.com/NeuraX-HQ/neurax-web-app/blob/main/backend/amplify/data/resource.ts)
+
 This page walks through the real `data/resource.ts` block by block.
 
 ## How `defineData` wires everything
@@ -73,6 +76,10 @@ Food: a
     source: a.string(),
   })
   .identifier(['food_id'])
+  .secondaryIndexes((index) => [
+    index('name_vi'),
+    index('name_en'),
+  ])
   .authorization((allow) => [
     allow.guest().to(['read']),
     allow.authenticated().to(['read'])
@@ -84,6 +91,7 @@ Things to notice:
 - `.identifier(['food_id'])` overrides the default `id` partition key with our custom `food_id` string.
 - `.array()` types become `List<String>` in DynamoDB.
 - `a.ref('Macros')` embeds the Macros custom type as a map attribute.
+- `.secondaryIndexes(...)` creates GSIs on `name_vi` and `name_en` — the `processNutrition` Lambda queries these GSIs to look up foods by Vietnamese or English name without a full-table scan.
 - `allow.guest().to(['read'])` issues an IAM-auth mode in addition to Cognito, so unauthenticated (Cognito Identity Pool guest) users can read the catalog.
 
 ### 3. `a.model(...)` with owner auth — the user table
@@ -153,6 +161,7 @@ FoodLog: a
 
 Models with GSIs:
 
+- `Food` — `name_vi`, `name_en`
 - `user` — `friend_code`
 - `FoodLog` — `date`
 - `ChallengeParticipant` — `user_id`
@@ -269,8 +278,8 @@ scanImage: a
 The Amplify JS client is fully typed off the schema:
 
 ```typescript
-import { generateClient } from 'aws-amplify/api';
-import type { Schema } from '@/amplify/data/resource';
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '../../../backend/amplify/data/resource';
 
 const client = generateClient<Schema>();
 
@@ -294,6 +303,8 @@ const result = await client.queries.scanImage({
   payload: JSON.stringify({ s3Key: 'incoming/user-abc/img-1.jpg' }),
 });
 ```
+
+> **Import paths:** Use `'aws-amplify/data'` (not `'aws-amplify/api'`). The `Schema` type is imported from the backend path `'../../../backend/amplify/data/resource'` — **not** from `amplify_outputs.json` and not via the `@/` alias, as this is a TypeScript type import from the backend source.
 
 Type inference is end-to-end: renaming a field in `resource.ts` is a compile error across the entire React Native app on the next `npx ampx sandbox` run, which regenerates `amplify_outputs.json` and the TypeScript client types.
 

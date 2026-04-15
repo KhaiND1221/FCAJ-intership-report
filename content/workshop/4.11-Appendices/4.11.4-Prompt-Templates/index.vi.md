@@ -386,7 +386,7 @@ Một lần gọi `generateFoodNutrition` điển hình (DB miss, text-only):
 - **Output** (nutrition JSON): ~400 token.
 - **Tổng cộng**: ~850 token.
 
-Với giá Bedrock Qwen3-VL (~$0.002/1K input token, ~$0.006/1K output token, ap-southeast-2 2025), mỗi lần lookup dinh dưỡng qua AI tốn khoảng $0.003. Cache kết quả theo tên món trong DynamoDB giúp tránh gọi lại cho cùng một món.
+Với giá Bedrock Qwen3-VL (≈$0.002/1K input token, ≈$0.006/1K output token, ap-southeast-2 2025), mỗi lần lookup dinh dưỡng qua AI tốn khoảng $0.003. Cache kết quả theo tên món trong DynamoDB giúp tránh gọi lại cho cùng một món.
 
 Các action chỉ dùng text (coach tip, tính macro) tiêu thụ ít token hơn nhiều — thường $0.001 hoặc ít hơn mỗi lần gọi.
 

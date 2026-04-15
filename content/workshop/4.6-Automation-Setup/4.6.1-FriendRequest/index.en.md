@@ -420,8 +420,8 @@ IAM note: resources are scoped with wildcards (`table/user-*`) rather than the e
 From any authenticated screen on the mobile app:
 
 ```typescript
-import { generateClient } from 'aws-amplify/api';
-import type { Schema } from '../amplify/data/resource';
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '../../../backend/amplify/data/resource';
 
 const client = generateClient<Schema>();
 

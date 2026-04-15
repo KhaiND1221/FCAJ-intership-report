@@ -1,357 +1,390 @@
 # 4.8.2 Fargate & ALB
 
-> **Điều kiện trước:** Đã hoàn thành [4.8.1 VPC & Network](/workshop/4.8-Verify-Setup/4.8.1-VPC-ECR), [4.8.3 Infrastructure](/workshop/4.8-Verify-Setup/4.8.3-Infrastructure), và [4.8.4 NAT Instance](/workshop/4.8-Verify-Setup/4.8.4-NAT-Instance).
+Phần này hướng dẫn build và push Docker image, sau đó tạo ECS Cluster, Task Definition, ALB, Target Group, ECS Service, và Auto Scaling — toàn bộ thông qua AWS Console.
 
----
+## Build & Push Docker Image
 
-## 1. Build & Push Docker Image lên Docker Hub
+Trước khi định nghĩa ECS Task, cần có image trên Docker Hub.
 
-NutriTrack dùng **Docker Hub** (không phải ECR) để lưu container image. ECS Task sẽ pull image từ Docker Hub qua NAT Instance đã cấu hình.
+### Clone source code
 
-### 1.1 Chuẩn bị
+```bash
+git clone https://github.com/justHman/NUTRI_TRACK
+cd NUTRI_TRACK
+```
+
+### Build và push ARM64 image
+
+ECS Fargate trên Graviton yêu cầu image `linux/arm64`. Build bằng `buildx` và push trực tiếp:
 
 ```bash
 # Đăng nhập Docker Hub
 docker login
-# Nhập Docker Hub username và password/token khi được hỏi
-```
 
-### 1.2 Build Image
+# Bật multi-architecture builds (chỉ cần lần đầu)
+docker buildx create --use --name mybuilder
 
-```bash
-# Build cho kiến trúc amd64 (Fargate mặc định)
-docker build \
-  --platform linux/amd64 \
-  -t <DOCKERHUB_USERNAME>/nutritrack-api:latest \
+# Build và push — thay <your-dockerhub-username> bằng username Docker Hub của bạn
+docker buildx build \
+  --platform linux/arm64 \
+  --tag <your-dockerhub-username>/nutritrack-api-image:arm-latest \
+  --push \
   .
-
-# Xác nhận image đã tồn tại
-docker images | grep nutritrack-api
 ```
 
-> **`--platform linux/amd64`:** Bắt buộc khi build trên máy Apple Silicon (M1/M2/M3) hoặc ARM. Fargate sử dụng x86_64 theo mặc định. Bỏ qua bước này sẽ dẫn đến lỗi `exec format error` khi task khởi động.
-
-### 1.3 Push Image
-
-```bash
-docker push <DOCKERHUB_USERNAME>/nutritrack-api:latest
-```
-
-> **Rate limiting Docker Hub:** Docker Hub giới hạn 100 pull/6 giờ cho tài khoản anonymous, 200 pull/6 giờ cho tài khoản free. ECS Task pull image khi khởi động — với 2 task chạy liên tục, bạn sẽ không bị rate limit trong môi trường workshop này. Nếu cần nhiều hơn, dùng Docker Hub Personal Access Token với `imagePullCredentials` trong Task Definition.
+> Graviton (ARM64) + Fargate Spot cho hiệu suất giá/hiệu năng tốt hơn tới 20%. Task Definition ở bước tiếp theo sẽ tham chiếu đúng tag này.
 
 ---
 
-## 2. CloudWatch Log Group
+## ECS Cluster
 
-Tạo log group **trước** khi deploy (ECS không tự tạo):
+1. AWS Console → **ECS** → **Clusters** → **Create cluster**.
 
-```bash
-aws logs create-log-group \
-  --log-group-name /ecs/nutritrack-api \
-  --region ap-southeast-2
+| Field | Giá trị |
+| :---- | :------ |
+| **Cluster name** | `nutritrack-api-cluster` |
+| **Infrastructure** | `AWS Fargate (serverless)` |
 
-aws logs put-retention-policy \
-  --log-group-name /ecs/nutritrack-api \
-  --retention-in-days 30 \
-  --region ap-southeast-2
-```
+1. Tùy chọn bật **Container Insights** trong phần Monitoring (tốn thêm ≈$2–5/tháng nhưng có metric chi tiết).
+1. Nhấn **Create**.
 
 ---
 
-## 3. ECS Cluster
+## Task Definition
 
-Tạo cluster dùng Fargate capacity provider:
+Task Definition chỉ định image nào sẽ chạy, bao nhiêu CPU và RAM, và cách truyền secret vào container.
 
-```bash
-aws ecs create-cluster \
-  --cluster-name nutritrack \
-  --capacity-providers FARGATE FARGATE_SPOT \
-  --default-capacity-provider-strategy \
-    capacityProvider=FARGATE,weight=1,base=1 \
-  --region ap-southeast-2
-```
+1. ECS Console → **Task definitions** → **Create new task definition**.
 
-NutriTrack dùng `FARGATE` cho tất cả task vì xử lý HTTP request người dùng không chịu được việc task bị thu hồi đột ngột (như FARGATE_SPOT).
+**Cấu hình task:**
 
----
+| Field | Giá trị |
+| :---- | :------ |
+| **Task definition family** | `arm-nutritrack-api-task` |
+| **Launch type** | `AWS Fargate` |
+| **OS/Architecture** | `Linux/ARM64` |
+| **CPU** | `1 vCPU` |
+| **Memory** | `2 GB` |
+| **Task execution role** | `ecsTaskExecutionRole` |
+| **Task role** | `ecsTaskRole` |
 
-## 4. Task Definition
+**Cấu hình container:**
 
-Đăng ký task definition. Thay `<ACCOUNT_ID>` và `<DOCKERHUB_USERNAME>` bằng giá trị của bạn:
+| Field | Giá trị |
+| :---- | :------ |
+| **Name** | `arm-nutritrack-api-container` |
+| **Image URI** | `<your-dockerhub-username>/nutritrack-api-image:arm-latest` |
+| **Container port** | `8000` |
+| **Protocol** | `TCP` |
 
-```json
-{
-  "family": "nutritrack-api",
-  "networkMode": "awsvpc",
-  "requiresCompatibilities": ["FARGATE"],
-  "cpu": "512",
-  "memory": "1024",
-  "executionRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/ecsTaskExecutionRole",
-  "taskRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/ecsTaskRole",
-  "containerDefinitions": [
-    {
-      "name": "nutritrack-api",
-      "image": "<DOCKERHUB_USERNAME>/nutritrack-api:latest",
-      "essential": true,
-      "portMappings": [{ "containerPort": 8000, "protocol": "tcp" }],
-      "environment": [
-        { "name": "AWS_REGION", "value": "ap-southeast-2" }
-      ],
-      "secrets": [
-        {
-          "name": "USDA_API_KEY",
-          "valueFrom": "arn:aws:secretsmanager:ap-southeast-2:<ACCOUNT_ID>:secret:nutritrack/prod/api-keys:USDA_API_KEY::"
-        },
-        {
-          "name": "NUTRITRACK_API_KEY",
-          "valueFrom": "arn:aws:secretsmanager:ap-southeast-2:<ACCOUNT_ID>:secret:nutritrack/prod/api-keys:NUTRITRACK_API_KEY::"
-        }
-      ],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/ecs/nutritrack-api",
-          "awslogs-region": "ap-southeast-2",
-          "awslogs-stream-prefix": "ecs"
-        }
-      },
-      "healthCheck": {
-        "command": ["CMD-SHELL", "curl -f http://localhost:8000/api/health || exit 1"],
-        "interval": 30,
-        "timeout": 5,
-        "retries": 3,
-        "startPeriod": 60
-      }
-    }
-  ]
-}
-```
+> Workflow build push 2 tag: `:arm-latest` (luôn mới nhất) và `:arm-DDMMYY` (theo ngày để rollback). Task Definition dùng `:arm-latest` — mỗi lần force redeploy sẽ pull image mới nhất.
 
-**Giải thích `secrets`:** ECS tự động inject giá trị từ Secrets Manager vào biến môi trường của container trước khi khởi động. `ecsTaskExecutionRole` cần có `secretsmanager:GetSecretValue` (đã cấu hình ở [4.8.3](/workshop/4.8-Verify-Setup/4.8.3-Infrastructure)).
+**Biến môi trường:**
 
-Lưu thành `task-definition.json` và đăng ký:
+| Key | Type | Value |
+| :-- | :--- | :---- |
+| `AWS_DEFAULT_REGION` | Value | `ap-southeast-2` |
+| `AWS_S3_CACHE_BUCKET` | Value | Tên S3 bucket của bạn |
+| `NUTRITRACK_API_KEY` | ValueFrom | `<SECRET_ARN>:NUTRITRACK_API_KEY::` |
+| `USDA_API_KEY` | ValueFrom | `<SECRET_ARN>:USDA_API_KEY::` |
+| `AVOCAVO_API_KEY` | ValueFrom | `<SECRET_ARN>:AVOCAVO_API_KEY::` |
 
-```bash
-aws ecs register-task-definition \
-  --cli-input-json file://task-definition.json \
-  --region ap-southeast-2
-```
+> **Cú pháp `ValueFrom`:** `[ARN]:[KEY_NAME]::` — bắt buộc có 2 dấu `::` ở cuối; thiếu là lỗi deploy.
 
-FastAPI app phải expose `GET /api/health` trả về `200 OK`. Thêm vào `main.py`:
+**Logging:**
 
-```python
-@app.get("/api/health")
-def health():
-    return {"status": "healthy"}
-```
+| Field | Giá trị |
+| :---- | :------ |
+| **Log driver** | `awslogs` |
+| **awslogs-group** | `/ecs/arm-nutritrack-api-task` |
+| **awslogs-region** | `ap-southeast-2` |
+| **awslogs-stream-prefix** | `ecs` |
+
+1. Nhấn **Create**.
 
 ---
 
-## 5. Application Load Balancer
+## Target Group
 
-### 5.1 Tạo ALB
+Target Group cho ALB biết route traffic đến đâu và cách health-check container.
 
-```bash
-# Lấy subnet IDs public (cần cả 2 AZ)
-PUBLIC_SUBNET_A=$(aws ec2 describe-subnets \
-  --filters "Name=tag:Name,Values=nutritrack-api-vpc-public-subnet-01" \
-  --query 'Subnets[0].SubnetId' --output text --region ap-southeast-2)
+1. EC2 Console → **Target Groups** → **Create target group**.
 
-PUBLIC_SUBNET_C=$(aws ec2 describe-subnets \
-  --filters "Name=tag:Name,Values=nutritrack-api-vpc-public-subnet-02" \
-  --query 'Subnets[0].SubnetId' --output text --region ap-southeast-2)
+| Field | Giá trị |
+| :---- | :------ |
+| **Target type** | `IP addresses` — **bắt buộc với Fargate** (awsvpc mode dùng ENI, không phải EC2 instance IP) |
+| **Target group name** | `nutritrack-api-vpc-tg` |
+| **Protocol** | `HTTP` |
+| **Port** | `8000` |
+| **VPC** | `nutritrack-api-vpc` |
+| **Protocol version** | `HTTP1` |
 
-ALB_SG_ID=$(aws ec2 describe-security-groups \
-  --filters "Name=group-name,Values=nutritrack-alb-sg" \
-  --query 'SecurityGroups[0].GroupId' --output text --region ap-southeast-2)
+**Health checks:**
 
-ALB_ARN=$(aws elbv2 create-load-balancer \
-  --name nutritrack-alb \
-  --type application \
-  --scheme internet-facing \
-  --subnets "$PUBLIC_SUBNET_A" "$PUBLIC_SUBNET_C" \
-  --security-groups "$ALB_SG_ID" \
-  --region ap-southeast-2 \
-  --query 'LoadBalancers[0].LoadBalancerArn' \
-  --output text)
+| Field | Giá trị | Lý do |
+| :---- | :------ | :---- |
+| **Protocol** | HTTP | |
+| **Path** | `/health` | Endpoint health check của FastAPI |
+| **Healthy threshold** | `2` | Phát hiện healthy nhanh hơn (mặc định 5 = chậm gấp 2.5 lần) |
+| **Unhealthy threshold** | `3` | |
+| **Interval** | `10` giây | Kiểm tra thường xuyên hơn mặc định 30s |
+| **Timeout** | `5` giây | |
+| **Success codes** | `200` | |
 
-echo "ALB ARN: $ALB_ARN"
-
-# Lấy DNS name — đây chính là ECS_BASE_URL
-aws elbv2 describe-load-balancers \
-  --load-balancer-arns "$ALB_ARN" \
-  --query 'LoadBalancers[0].DNSName' \
-  --output text
-```
-
-> Copy DNS name output (ví dụ `nutritrack-api-vpc-alb-1060755902.ap-southeast-2.elb.amazonaws.com`). Giá trị này được inject vào Lambda `scanImage` dưới dạng `ECS_BASE_URL` qua CDK property override trong `backend.ts`.
-
-### 5.2 Tạo Target Group
-
-```bash
-VPC_ID=$(aws ec2 describe-vpcs \
-  --filters "Name=tag:Name,Values=nutritrack-api-vpc" \
-  --query 'Vpcs[0].VpcId' --output text --region ap-southeast-2)
-
-TG_ARN=$(aws elbv2 create-target-group \
-  --name nutritrack-api-tg \
-  --protocol HTTP \
-  --port 8000 \
-  --target-type ip \
-  --vpc-id "$VPC_ID" \
-  --health-check-path /api/health \
-  --health-check-interval-seconds 30 \
-  --healthy-threshold-count 2 \
-  --unhealthy-threshold-count 3 \
-  --region ap-southeast-2 \
-  --query 'TargetGroups[0].TargetGroupArn' \
-  --output text)
-
-echo "Target Group ARN: $TG_ARN"
-```
-
-`target-type ip` bắt buộc với Fargate (`awsvpc` network mode dùng task ENI, không phải EC2 instance IP).
-
-### 5.3 Tạo Listener
-
-```bash
-aws elbv2 create-listener \
-  --load-balancer-arn "$ALB_ARN" \
-  --protocol HTTP \
-  --port 80 \
-  --default-actions Type=forward,TargetGroupArn="$TG_ARN" \
-  --region ap-southeast-2
-```
+1. Nhấn **Next** → **Create target group** (không cần đăng ký IP thủ công — ECS tự đăng ký task).
 
 ---
 
-## 6. ECS Service
+## Application Load Balancer
 
-```bash
-PRIVATE_SUBNET_A=$(aws ec2 describe-subnets \
-  --filters "Name=tag:Name,Values=nutritrack-api-vpc-private-subnet-01" \
-  --query 'Subnets[0].SubnetId' --output text --region ap-southeast-2)
+1. EC2 Console → **Load Balancers** → **Create Load Balancer** → **Application Load Balancer** → **Create**.
 
-PRIVATE_SUBNET_C=$(aws ec2 describe-subnets \
-  --filters "Name=tag:Name,Values=nutritrack-api-vpc-private-subnet-02" \
-  --query 'Subnets[0].SubnetId' --output text --region ap-southeast-2)
+| Field | Giá trị |
+| :---- | :------ |
+| **Load balancer name** | `nutritrack-api-vpc-alb` |
+| **Scheme** | `Internet-facing` |
+| **IP address type** | `IPv4` |
 
-TASK_SG_ID=$(aws ec2 describe-security-groups \
-  --filters "Name=group-name,Values=nutritrack-ecs-sg" \
-  --query 'SecurityGroups[0].GroupId' --output text --region ap-southeast-2)
+**Network mapping:**
 
-aws ecs create-service \
-  --cluster nutritrack \
-  --service-name nutritrack-api \
-  --task-definition nutritrack-api:1 \
-  --desired-count 2 \
-  --launch-type FARGATE \
-  --network-configuration "awsvpcConfiguration={
-    subnets=[$PRIVATE_SUBNET_A,$PRIVATE_SUBNET_C],
-    securityGroups=[$TASK_SG_ID],
-    assignPublicIp=DISABLED
-  }" \
-  --load-balancers "targetGroupArn=$TG_ARN,containerName=nutritrack-api,containerPort=8000" \
-  --deployment-configuration "minimumHealthyPercent=100,maximumPercent=200" \
-  --region ap-southeast-2
-```
+| Field | Giá trị |
+| :---- | :------ |
+| **VPC** | `nutritrack-api-vpc` |
+| **Mappings** | `ap-southeast-2a` → `nutritrack-api-vpc-public-alb01` |
+| | `ap-southeast-2c` → `nutritrack-api-vpc-public-alb02` |
 
-`minimumHealthyPercent=100` / `maximumPercent=200`: rolling update — khởi động task mới trước khi dừng task cũ, đảm bảo không downtime.
+**Security groups:** Chọn `nutritrack-api-vpc-alb-sg`.
+
+**Listeners and routing:**
+
+- **Protocol**: `HTTP` | **Port**: `80`
+- **Default action**: Forward to `nutritrack-api-vpc-tg`
+
+1. Nhấn **Create load balancer**.
+1. Đợi ~3 phút để status chuyển sang **Active**.
+1. Copy **DNS name** (dạng `nutritrack-api-vpc-alb-xxxxxxxxx.ap-southeast-2.elb.amazonaws.com`) — đây là URL public và sẽ được set làm `ECS_BASE_URL` trong Lambda `scanImage`.
 
 ---
 
-## 7. Auto Scaling
+## AWS WAF — Web ACL cho ALB
 
-Target tracking theo CPU:
+Sau khi ALB active, gắn Web ACL để bảo vệ khỏi brute-force và truy cập không xác thực.
+
+### Tạo Web ACL
+
+1. AWS Console → **WAF & Shield** → **Web ACLs** → **Create web ACL**.
+1. Đặt tên `waf_for_alb_nutritrack`, chọn scope **Regional**, chọn region của ALB (`ap-southeast-2`).
+
+![Cấu hình tên và scope WAF](images/name_waf_alb.png)
+
+1. Ở mục **Associated AWS resources**, nhấn **Add AWS resources** → chọn ALB `nutritrack-api-vpc-alb` → **Add**.
+
+![Web ACL đã liên kết với ALB](images/protection_waf_alb.png)
+
+### Thêm rule rate-based — RateLimitPerIP
+
+Rule này block mọi IP gửi quá 100 request trong 5 phút, bảo vệ khỏi tấn công brute-force và scanning.
+
+1. Ở bước **Add rules and rule groups**, nhấn **Add rules** → **Add my own rules and rule groups**.
+1. Chọn **Rate-based rule**.
+
+![Dialog thêm rule — chọn Rate-based rule](images/rule_waf_alb.png)
+
+1. Cấu hình rule:
+
+| Field | Giá trị |
+| :---- | :------ |
+| **Rule name** | `RateLimitPerIP` |
+| **Rate limit** | `100` |
+| **Evaluation window** | `5 minutes` |
+| **Aggregation key** | `IP address` |
+| **Action** | `Block` |
+
+![Cấu hình rule RateLimitPerIP](images/rate_rule_waf_alb.png)
+
+![Chi tiết rate và window của RateLimitPerIP](images/ratelimitperid_waf_alb.png)
+
+1. Nhấn **Add rule**.
+
+### Thêm custom rule — RequireAuthorizationHeader
+
+Rule này block mọi request không mang header `Authorization: Bearer`, đảm bảo chỉ Lambda `scan-image` (luôn đính kèm JWT) mới đến được container.
+
+1. Nhấn **Add rules** → **Add my own rules and rule groups** lần nữa.
+1. Chọn **Rule builder** (custom rule).
+
+![Dialog thêm rule — chọn Custom rule](images/custom_rule_waf_alb.png)
+
+1. Cấu hình rule:
+
+| Field | Giá trị |
+| :---- | :------ |
+| **Rule name** | `RequireAuthorizationHeader` |
+| **Type** | Regular rule |
+| **If a request** | `does not match the statement` |
+| **Inspect** | `Single header` → `authorization` |
+| **Match type** | `Starts with string` → `Bearer` |
+| **Action** | `Block` |
+
+![Rule RequireAuthorizationHeader — block request không có Bearer token](images/RequireAuthorizationHeader_waf_alb.png)
+
+1. Nhấn **Add rule** → **Next** → review → **Create web ACL**.
+
+> **Thứ tự ưu tiên rule:** `RateLimitPerIP` được đánh giá trước `RequireAuthorizationHeader`. IP bị flood sẽ bị block ở tầng rate trước khi đến kiểm tra header.
+
+---
+
+## ECS Service
+
+ECS Service đảm bảo luôn có task đang chạy và kết nối với ALB.
+
+1. ECS Console → **Clusters** → `nutritrack-api-cluster` → tab **Services** → **Create**.
+
+**Compute configuration:**
+
+- **Capacity provider strategy** → **Add capacity provider**:
+  - **Provider**: `FARGATE_SPOT` | **Weight**: `1`
+
+**Deployment configuration:**
+
+| Field | Giá trị |
+| :---- | :------ |
+| **Application type** | `Service` |
+| **Task definition** | `arm-nutritrack-api-task` (Latest revision) |
+| **Service name** | `spot-arm-nutritrack-api-task-service` |
+| **Desired tasks** | `1` |
+
+**Deployment options:**
+
+- **Deployment type**: Rolling update
+- **Minimum healthy percent**: `50`
+- **Maximum percent**: `200`
+
+**Networking:**
+
+| Field | Giá trị |
+| :---- | :------ |
+| **VPC** | `nutritrack-api-vpc` |
+| **Subnets** | `nutritrack-api-vpc-private-ecs01` ✅ + `nutritrack-api-vpc-private-ecs02` ✅ |
+| **Security group** | `nutritrack-api-vpc-ecs-sg` |
+| **Public IP** | **DISABLED** — container ra Internet qua NAT Instance |
+
+**Load balancing:**
+
+| Field | Giá trị |
+| :---- | :------ |
+| **Load balancing type** | `Application Load Balancer` |
+| **Load balancer** | `nutritrack-api-vpc-alb` |
+| **Listener** | `HTTP:80` |
+| **Target group** | `nutritrack-api-vpc-tg` |
+| **Health check grace period** | `60` giây |
+
+1. Nhấn **Create**.
+
+---
+
+## Auto Scaling
+
+Cấu hình Step Scaling để thêm task khi CPU cao và giảm khi CPU thấp.
+
+### Bật Service Auto Scaling
+
+1. ECS Console → **Clusters** → `nutritrack-api-cluster` → service `spot-arm-nutritrack-api-task-service`.
+1. Xác nhận service đang `ACTIVE` và task có trạng thái `RUNNING`.
+1. Nhấn **Update** (góc trên bên phải).
+1. Cuộn đến **Service auto scaling** → chọn **Use Service Auto Scaling**.
+1. Khai báo giới hạn task:
+   - **Minimum number of tasks**: `1`
+   - **Maximum number of tasks**: `10`
+
+### Policy Scale-Out (CPU ≥ 70% → thêm task)
+
+1. **Scaling policy type**: `Step scaling`
+1. **Policy name**: `nutritrack-api-cluster-cpu-above-70`
+1. **Amazon ECS service alarm**: nhấn **Create a new alarm using Amazon ECS metrics** — trình duyệt mở CloudWatch trong tab mới.
+
+**Tạo CloudWatch Alarm (trong tab mới):**
+
+1. **Metric**: `CPUUtilization` | **Statistic**: `Average` | **Period**: `1 minute` → **Next**.
+1. **Conditions**: Static, `Greater/Equal >=`, threshold `70`.
+1. **Next** → nhấn **Remove** để xóa action thông báo mặc định → **Next**.
+1. **Alarm name**: `nutritrack-api-cluster-cpu-above-70-alarm` → **Next** → **Create alarm**.
+
+**Quay lại tab ECS:**
+
+- Nhấn **Refresh (🔄)** ở phần alarm.
+- Chọn `nutritrack-api-cluster-cpu-above-70-alarm`.
+- **Scaling actions**:
+  - **Action**: `Add` | **Value**: `10` | **Type**: `percent`
+  - **Lower bound**: `70` (tự điền) | **Upper bound**: để trống (+infinity)
+  - **Cooldown period**: `120` giây
+  - **Minimum adjustment magnitude**: `1`
+
+### Policy Scale-In (CPU ≤ 20% → giảm task)
+
+1. Nhấn **Add more scaling policies**.
+1. **Scaling policy type**: `Step scaling`
+1. **Policy name**: `nutritrack-api-cluster-cpu-below-20`
+1. **Amazon ECS service alarm**: **Create a new alarm using Amazon ECS metrics**.
+
+**Tạo CloudWatch Alarm thứ hai (trong tab mới):**
+
+1. **Metric**: `CPUUtilization` | **Statistic**: `Average` | **Period**: `1 minute` → **Next**.
+1. **Conditions**: Static, `Less/Equal <=`, threshold `20`.
+1. **Next** → **Remove** action mặc định → **Next**.
+1. **Alarm name**: `nutritrack-api-cluster-cpu-below-20-alarm` → **Next** → **Create alarm**.
+
+**Quay lại tab ECS:**
+
+- Nhấn **Refresh (🔄)**.
+- Chọn `nutritrack-api-cluster-cpu-below-20-alarm`.
+- **Scaling actions**:
+  - **Action**: `Remove` | **Value**: `10` | **Type**: `percent`
+  - **Lower bound**: để trống (-infinity) | **Upper bound**: `20` (tự điền)
+  - **Cooldown period**: `300` giây
+  - **Minimum adjustment magnitude**: `1`
+
+### Lưu và xác minh
+
+- Cuộn xuống cuối và nhấn **Update** để lưu cả 2 policy.
+- Verify bằng CLI:
 
 ```bash
-aws application-autoscaling register-scalable-target \
+# Liệt kê 2 scaling policy
+aws application-autoscaling describe-scaling-policies \
   --service-namespace ecs \
-  --resource-id service/nutritrack/nutritrack-api \
-  --scalable-dimension ecs:service:DesiredCount \
-  --min-capacity 2 \
-  --max-capacity 8 \
-  --region ap-southeast-2
+  --resource-id "service/nutritrack-api-cluster/spot-arm-nutritrack-api-task-service" \
+  --query "ScalingPolicies[].{PolicyName:PolicyName,Type:PolicyType}" \
+  --output table
 
-aws application-autoscaling put-scaling-policy \
-  --service-namespace ecs \
-  --resource-id service/nutritrack/nutritrack-api \
-  --scalable-dimension ecs:service:DesiredCount \
-  --policy-name cpu-target-tracking \
-  --policy-type TargetTrackingScaling \
-  --target-tracking-scaling-policy-configuration '{
-    "TargetValue": 60.0,
-    "PredefinedMetricSpecification": {
-      "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
-    },
-    "ScaleInCooldown": 300,
-    "ScaleOutCooldown": 60
-  }' \
-  --region ap-southeast-2
+# Kiểm tra trạng thái alarm
+aws cloudwatch describe-alarms \
+  --alarm-names \
+    "nutritrack-api-cluster-cpu-above-70-alarm" \
+    "nutritrack-api-cluster-cpu-below-20-alarm" \
+  --query 'MetricAlarms[].{Name:AlarmName,State:StateValue}' \
+  --output table
 ```
 
-Scale out nhanh (60s cooldown) khi CPU tăng đột biến; scale in chậm (300s) để tránh thrashing.
+| Alarm | Điều kiện | Hành động | Cooldown |
+| :---- | :-------- | :-------- | :------- |
+| `nutritrack-api-cluster-cpu-above-70-alarm` | CPU ≥ 70% trong 1 phút | +10% task | 120 s |
+| `nutritrack-api-cluster-cpu-below-20-alarm` | CPU ≤ 20% trong 1 phút | −10% task | 300 s |
+
+> Cooldown không đối xứng: scale-out nhanh (120s) để xử lý spike ngay; scale-in chậm (300s) tránh dao động task liên tục.
 
 ---
 
-## 8. Xác minh
+## Xác thực Serverless → Container
 
-```bash
-# Lấy DNS của ALB
-ALB_DNS=$(aws elbv2 describe-load-balancers \
-  --names nutritrack-alb \
-  --query 'LoadBalancers[0].DNSName' \
-  --output text \
-  --region ap-southeast-2)
-
-echo "ALB DNS: $ALB_DNS"
-
-# Health check
-curl http://${ALB_DNS}/api/health
-# Expected: {"status":"healthy"}
-
-# Xem service events (5 events gần nhất)
-aws ecs describe-services \
-  --cluster nutritrack \
-  --services nutritrack-api \
-  --query 'services[0].events[0:5]' \
-  --region ap-southeast-2
-
-# Xem task logs
-aws logs tail /ecs/nutritrack-api --follow
-```
-
----
-
-## 9. Triển khai cập nhật
-
-Khi có image mới, force rolling deploy:
-
-```bash
-docker build --platform linux/amd64 -t <DOCKERHUB_USERNAME>/nutritrack-api:latest .
-docker push <DOCKERHUB_USERNAME>/nutritrack-api:latest
-
-aws ecs update-service \
-  --cluster nutritrack \
-  --service nutritrack-api \
-  --force-new-deployment \
-  --region ap-southeast-2
-```
-
-`--force-new-deployment` kích hoạt rolling deploy dù task definition không thay đổi (ví dụ image mới ở cùng tag `latest`).
-
----
-
-## 10. Xác thực Serverless → Container
-
-Cụm ECS FastAPI không mở cho internet — nó chỉ chấp nhận request mang JWT hợp lệ được ký bằng secret `NUTRITRACK_API_KEY` chia sẻ.
+ECS FastAPI chỉ chấp nhận request mang JWT hợp lệ được ký bằng secret `NUTRITRACK_API_KEY`. Đây là cách Lambda `scan-image` tạo token và container xác thực.
 
 ### Phía Lambda — tạo JWT
 
-Trước mỗi lần gọi ALB, Lambda `scan-image`:
+Trước mỗi lần gọi ALB, `scan-image`:
 
-1. Gọi `secretsmanager:GetSecretValue` để lấy `NUTRITRACK_API_KEY`.
-1. Tự tạo và ký JWT bằng **HS256** dùng module `crypto` built-in của Node.js — không cần thư viện JWT bên ngoài:
+1. Gọi `secretsmanager:GetSecretValue` để lấy `NUTRITRACK_API_KEY` (ARN: `arn:aws:secretsmanager:<region>:<account>:secret:nutritrack/prod/api-keys*`).
+1. Tạo và ký JWT bằng **HS256** dùng module `crypto` built-in của Node.js:
 
    ```typescript
    import { createHmac } from 'crypto';
@@ -374,50 +407,51 @@ Trước mỗi lần gọi ALB, Lambda `scan-image`:
 
 ### Phía Container — xác thực JWT
 
-Middleware FastAPI trên container ECS kiểm tra token trên mỗi request đến:
+Middleware FastAPI kiểm tra mọi request đến:
 
 - Giải mã header và payload (base64url).
-- Tính lại chữ ký HMAC-SHA256 dùng `NUTRITRACK_API_KEY` (inject qua `secrets` trong Task Definition).
-- Từ chối `401 Unauthorized` nếu chữ ký không khớp hoặc `exp` đã qua.
+- Tính lại chữ ký HMAC-SHA256 dùng `NUTRITRACK_API_KEY` (inject qua biến môi trường của task).
+- Trả về `401 Unauthorized` nếu chữ ký không khớp hoặc `exp` đã qua.
 
-Request đến ALB không có `Authorization: Bearer` bị ALB từ chối — Task-SG chỉ cho phép TCP 8000 inbound từ ALB-SG nên truy cập internet trực tiếp bị chặn ở tầng mạng.
+Task-SG chỉ cho phép TCP 8000 inbound từ ALB-SG nên truy cập internet trực tiếp cũng bị chặn ở tầng mạng.
 
 ### Tại sao dùng HS256 thay vì khóa bất đối xứng?
 
-Lambda và ECS container đều là service AWS nội bộ trong cùng tài khoản. HS256 đối xứng đơn giản hơn để xoay khóa (cập nhật một secret, redeploy cả hai phía) và không cần quản lý certificate. TTL 5 phút giới hạn mức độ thiệt hại nếu token bị chặn.
+Lambda và ECS container đều là service AWS nội bộ trong cùng tài khoản. HS256 đối xứng đơn giản hơn để xoay khóa (cập nhật một secret, redeploy cả hai phía) và không cần quản lý certificate. TTL 5 phút giới hạn thiệt hại nếu token bị chặn.
 
 ---
 
 ## Xử lý lỗi
 
 | Triệu chứng | Nguyên nhân | Fix |
-| :--- | :--- | :--- |
-| Task kẹt ở PROVISIONING | Image pull thất bại | Kiểm tra Docker Hub: image có public không? NAT Instance có route không? SG NAT-SG cho HTTPS outbound chưa? |
-| Task dừng ngay (exit 1) | App crash khi khởi động | `aws logs tail /ecs/nutritrack-api --follow`; thường do thiếu env var hoặc import error |
-| ALB trả 502 Bad Gateway | Thiếu endpoint `/api/health` hoặc container chưa khởi động | Xác nhận `GET /api/health` trả 200; kiểm tra `startPeriod: 60` |
-| ALB trả 504 Gateway Timeout | Task-SG chặn ALB-SG | Xác nhận Task-SG inbound cho phép TCP 8000 từ ALB-SG |
-| Task không lấy được secret | `ecsTaskExecutionRole` thiếu quyền | Kiểm tra inline policy `AllowSecretsManagerRead` trong [4.8.3](/workshop/4.8-Verify-Setup/4.8.3-Infrastructure) |
+| :---------- | :---------- | :-- |
+| Task kẹt ở PROVISIONING | Image pull thất bại | Kiểm tra NAT Instance route hoạt động; xác nhận image URI là `<dockerhub-user>/nutritrack-api-image:arm-latest` |
+| Task dừng ngay | App crash khi khởi động | CloudWatch → `/ecs/arm-nutritrack-api-task` → stream mới nhất — thường do thiếu env var |
+| ALB trả 502 | Thiếu endpoint `/health` hoặc container chưa khởi động | Xác nhận `GET /health` trả 200; kiểm tra health check grace period |
+| ALB trả 504 | Task-SG chặn ALB-SG trên port 8000 | Xác nhận Task-SG inbound cho phép TCP 8000 **từ ALB-SG** |
+| Auto Scaling không trigger | Cooldown chưa hết | Đợi hết cooldown; kiểm tra trạng thái CloudWatch alarm |
 
 ---
 
 ## Ước tính chi phí
 
-2 task × 0.5 vCPU / 1 GB RAM ở ap-southeast-2:
+1 FARGATE_SPOT task × 1 vCPU / 2 GB RAM ở ap-southeast-2 (giá 2025):
 
-| Thành phần | Chi phí hàng tháng |
-| :--- | :--- |
-| Fargate (2 task, 730 giờ) | ~$17 |
-| NAT Instance ×2 (`t4g.nano`) | ~$9 |
-| ALB | ~$16 |
-| CloudWatch logs (30 ngày, 5 GB) | ~$2 |
-| **Tổng** | **~$44** |
+| Thành phần | Chi phí/tháng |
+| :--------- | :------------ |
+| Fargate Spot (ARM64, 1 task, 730 giờ) | ≈$5–10 |
+| NAT Instance (2 × t4g.nano) | ≈$10.96 |
+| ALB | ≈$16.20 |
+| CloudWatch logs (30 ngày) | ≈$0.50 |
+| **Tổng (không kể Bedrock)** | **≈$33–38** |
 
-So với dùng NAT Gateway (~$32/tháng): **tiết kiệm ~$23/tháng (~34%)**.
+FARGATE_SPOT trên ARM64 rẻ hơn đáng kể so với on-demand x86. Chi phí cố định lớn nhất là ALB. Xem [4.8.4 NAT Instance](/workshop/4.8.4-NAT-Instance) để biết chi tiết cấu hình NAT.
 
 ---
 
 ## Liên kết
 
-- [4.8.1 VPC & Network](/workshop/4.8-Verify-Setup/4.8.1-VPC-ECR) — VPC, Subnets, Security Groups, S3 VPCE
-- [4.8.3 Infrastructure](/workshop/4.8-Verify-Setup/4.8.3-Infrastructure) — S3, Secrets Manager, IAM Roles
-- [4.8.4 NAT Instance](/workshop/4.8-Verify-Setup/4.8.4-NAT-Instance) — Cấu hình NAT forwarding
+- [4.8.1 VPC & ECR](/workshop/4.8.1-VPC-ECR) — Network và registry prerequisites.
+- [4.8.3 Infrastructure](/workshop/4.8.3-Infrastructure) — Secrets Manager và IAM role.
+- [4.8.4 NAT Instance](/workshop/4.8.4-NAT-Instance) — NAT Instance và Auto Scaling Group.
+- [4.10 Cleanup](/workshop/4.10-Cleanup) — Xóa theo thứ tự: service → task definitions → cluster → ALB → VPC.

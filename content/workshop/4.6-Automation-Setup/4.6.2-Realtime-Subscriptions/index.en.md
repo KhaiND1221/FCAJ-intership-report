@@ -31,8 +31,8 @@ Under the hood this is MQTT-over-WebSocket. From your code you never see that �
 
 ```tsx
 import { useEffect } from 'react';
-import { generateClient } from 'aws-amplify/api';
-import type { Schema } from '../../amplify/data/resource';
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '../../../backend/amplify/data/resource';
 import { useAuthStore } from '@/src/store/authStore';
 import { useMealStore } from '@/src/store/mealStore';
 
@@ -112,7 +112,7 @@ This is the client side of the flow started by the `friendRequest` Lambda in 4.6
 The Amplify JS client exposes `ConnectionState` via a listener:
 
 ```typescript
-import { CONNECTION_STATE_CHANGE } from 'aws-amplify/api';
+import { CONNECTION_STATE_CHANGE } from 'aws-amplify/data';
 import { Hub } from 'aws-amplify/utils';
 
 Hub.listen('api', (data) => {
@@ -139,7 +139,7 @@ AppSync pricing has two relevant dimensions for subscriptions:
 What this means for NutriTrack at ~1000 DAU:
 
 - Each user averages 4 minutes/day connected and receives ~20 events/day → well under $1/month.
-- Each user connected 24/7 → ~$3.50/month per user. Avoid.
+- Each user connected 24/7 → ≈$3.50/month per user. Avoid.
 
 Rules to keep the bill flat:
 

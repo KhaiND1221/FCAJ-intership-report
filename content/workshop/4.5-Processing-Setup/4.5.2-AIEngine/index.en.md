@@ -190,7 +190,7 @@ Common failure modes:
 
 CloudWatch Logs group: `/aws/lambda/amplify-*-ai-engine-*`. Enable the `DEBUG=true` env var for verbose logging — the handler's `debug()` helper is a no-op in production.
 
-
+![CloudWatch ai-engine logs](images/cloudwatch-ai-logs.png)
 
 ## Cross-links
 

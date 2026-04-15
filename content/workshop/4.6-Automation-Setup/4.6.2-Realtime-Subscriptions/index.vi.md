@@ -31,8 +31,8 @@ Bên dưới là MQTT-over-WebSocket. Từ code của bạn, bạn không cần 
 
 ```tsx
 import { useEffect } from 'react';
-import { generateClient } from 'aws-amplify/api';
-import type { Schema } from '../../amplify/data/resource';
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '../../../backend/amplify/data/resource';
 import { useAuthStore } from '@/src/store/authStore';
 import { useMealStore } from '@/src/store/mealStore';
 
@@ -112,7 +112,7 @@ useEffect(() => {
 Amplify JS client expose `ConnectionState` qua listener:
 
 ```typescript
-import { CONNECTION_STATE_CHANGE } from 'aws-amplify/api';
+import { CONNECTION_STATE_CHANGE } from 'aws-amplify/data';
 import { Hub } from 'aws-amplify/utils';
 
 Hub.listen('api', (data) => {
@@ -139,7 +139,7 @@ Pricing AppSync có hai chiều liên quan đến subscription:
 Với NutriTrack ~1000 DAU:
 
 - Mỗi user trung bình 4 phút/ngày connected và nhận ~20 event/ngày → dưới $1/tháng.
-- Mỗi user connected 24/7 → ~$3.50/tháng/user. Tránh điều này.
+- Mỗi user connected 24/7 → ≈$3.50/tháng/user. Tránh điều này.
 
 Quy tắc giữ hóa đơn ổn định:
 

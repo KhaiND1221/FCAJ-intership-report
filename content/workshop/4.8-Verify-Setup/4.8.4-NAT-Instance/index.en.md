@@ -10,7 +10,7 @@ A NAT Instance is an EC2 configured to **forward traffic** from the private subn
 
 | | NAT Gateway | NAT Instance (`t4g.nano`) |
 | :--- | :--- | :--- |
-| **Cost** | ~$32–34/month | ~$3.87/month |
+| **Cost** | ≈$32–34/month | ≈$3.87/month |
 | **High availability** | AWS-managed | Requires ASG configuration |
 | **Throughput** | Up to 100 Gbps | 5 Gbps (sufficient for this workshop) |
 | **Setup** | Zero config | SSH/SSM to install `iptables` |
@@ -24,7 +24,7 @@ A NAT Instance is an EC2 configured to **forward traffic** from the private subn
 | :--- | :--- | :--- |
 | **OS** | Amazon Linux 2023 (AL2023) ARM64 | AWS-optimized, hardened, uses `dnf` |
 | **Instance type** | `t4g.nano` | ARM Graviton2, 2 vCPU, 0.5 GB RAM — sufficient for packet forwarding. 5 Gbps bandwidth |
-| **Cost (ap-southeast-2)** | ~$0.0053/hr (~$3.87/mo × 2 instances) | |
+| **Cost (ap-southeast-2)** | ≈$0.0053/hr (≈$3.87/mo × 2 instances) | |
 
 > **Why is t4g.nano enough?** NAT is pure packet forwarding — no heavy CPU or RAM needed. A t4g.nano handles hundreds of MB/s.
 
@@ -73,7 +73,7 @@ A NAT Instance is an EC2 configured to **forward traffic** from the private subn
 1. On the **Quick Start AMIs** tab → select **"Amazon Linux 2023 kernel-6.1 AMI"**.
 1. In the **Select** column: choose **`64-bit (Arm), uefi`** ← required for `t4g.nano` (Graviton).
 
-> ⚠️ **Do NOT select from the "AWS Marketplace AMIs" tab.** The "Amazon ECS-Optimized Amazon Linux 2023 arm64 AMI" there costs an additional **$0.045/hr** (~$33/mo). It includes Docker and ECS Agent — neither needed for a NAT Instance. The correct AMI is on the **Quick Start AMIs** tab and is **free**.
+> ⚠️ **Do NOT select from the "AWS Marketplace AMIs" tab.** The "Amazon ECS-Optimized Amazon Linux 2023 arm64 AMI" there costs an additional **$0.045/hr** (≈$33/mo). It includes Docker and ECS Agent — neither needed for a NAT Instance. The correct AMI is on the **Quick Start AMIs** tab and is **free**.
 
 **Network settings:**
 
@@ -325,14 +325,235 @@ Or via Console:
 
 ## 9. NAT Instance HA (Auto Scaling Group)
 
-> **Content coming soon.** This section will cover creating a **Launch Template** and **Auto Scaling Group** so that NAT Instances self-heal when they fail — no manual intervention needed. The ASG uses **User Data** (identical to the script above) to configure NAT automatically on each new instance, and calls `ec2:ReplaceRoute` to update the Route Table.
+A single NAT Instance is a **single point of failure** — if it crashes, all ECS Tasks in that AZ lose internet. An Auto Scaling Group (ASG) solves this:
+
+1. Continuously health-checks the instance.
+2. When the instance dies → **creates a replacement** in 2–3 minutes.
+3. The new instance runs the **User Data script** → NAT is configured automatically.
+4. The script calls `aws ec2 replace-route` to update the Route Table to point at the new instance ID.
+
+**Why a separate ASG per AZ?** A shared ASG can put both instances in the same AZ, leaving the other AZ without NAT. Each AZ needs exactly one instance as its default route — so each needs its own ASG.
+
+### 9.1 Create Launch Template
+
+The Launch Template stores the full config so each ASG-launched instance is identical.
+
+1. EC2 Console → **Launch Templates** → **Create launch template**.
+
+| Field | Value |
+| :---- | :---- |
+| **Launch template name** | `nutritrack-api-vpc-nati-lt` |
+| **Template version description** | `NAT Instance AL2023 ARM64 t4g.nano` |
+| **Auto Scaling guidance** | ✅ tick the checkbox |
+
+- **AMI**: Search `Amazon Linux 2023 AMI` → select the latest **Arm 64-bit** version.
+- **Instance type**: `t4g.nano`
+- **Key pair**: `nutritrack-api-vpc-pulic-nati-keypair`
+- **Security groups**: `nutritrack-api-vpc-nat-sg`
+
+**Advanced details:**
+
+- **IAM instance profile**: `nutritrack-api-vpc-nat-instance-role`
+- **User data**: paste the script below.
+
+> Before pasting, replace the two Route Table ID placeholders with the real IDs from your VPC Console → **Route tables**:
 >
-> **HA architecture:**
->
-> - 1 Launch Template shared by both AZs
-> - 2 separate Auto Scaling Groups (one per AZ), each with `DesiredCapacity=1`
-> - User Data installs NAT and updates the correct AZ's Route Table
-> - When an instance fails, the ASG creates a replacement and the Route Table is updated automatically via `ec2:ReplaceRoute`
+> - `rtb-REPLACE_WITH_RT01_ID` → Route Table ID of `nutritrack-api-private-rt-01`
+> - `rtb-REPLACE_WITH_RT02_ID` → Route Table ID of `nutritrack-api-private-rt-02`
+
+```bash
+#!/bin/bash
+set -e
+# ============================================================
+# NutriTrack NAT Instance Auto-Setup Script
+# Runs automatically at instance boot (User Data / ASG recovery)
+# All output logged to /var/log/user-data.log for debugging
+# ============================================================
+exec > >(tee /var/log/user-data.log) 2>&1
+
+echo "=============================================="
+echo " NAT Instance Auto-Setup started: $(date)"
+echo "=============================================="
+
+# --- [0] Fetch instance metadata (IMDSv2 required on AL2023) ---
+REGION="ap-southeast-2"
+TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" \
+    -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" --max-time 5)
+INSTANCE_ID=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
+    --max-time 5 http://169.254.169.254/latest/meta-data/instance-id)
+AZ=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
+    --max-time 5 http://169.254.169.254/latest/meta-data/placement/availability-zone)
+PRIVATE_IP=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
+    --max-time 5 http://169.254.169.254/latest/meta-data/local-ipv4)
+echo "[0] Instance: $INSTANCE_ID | AZ: $AZ | Private IP: $PRIVATE_IP"
+
+# --- [1] Determine Route Table ID by AZ ---
+if [[ "$AZ" == "ap-southeast-2a" ]]; then
+    ROUTE_TABLE_ID="rtb-REPLACE_WITH_RT01_ID"   # nutritrack-api-private-rt-01
+elif [[ "$AZ" == "ap-southeast-2c" ]]; then
+    ROUTE_TABLE_ID="rtb-REPLACE_WITH_RT02_ID"   # nutritrack-api-private-rt-02
+else
+    echo "[ERROR] Unknown AZ: $AZ — stopping"
+    exit 1
+fi
+echo "[1] Route Table: $ROUTE_TABLE_ID (AZ: $AZ)"
+
+# --- [2] Enable IP Forwarding ---
+echo "[2] Enabling IP forwarding..."
+echo "net.ipv4.ip_forward = 1" > /etc/sysctl.d/custom-nat.conf
+sysctl -p /etc/sysctl.d/custom-nat.conf
+echo "    ip_forward = $(sysctl -n net.ipv4.ip_forward)"
+
+# --- [3] Install and start iptables-services ---
+echo "[3] Installing iptables-services..."
+dnf install iptables-services -y -q
+systemctl enable iptables
+systemctl start iptables
+echo "    iptables: $(systemctl is-active iptables)"
+
+# --- [4] Configure NAT MASQUERADE ---
+echo "[4] Configuring NAT MASQUERADE..."
+IFACE=$(ip route get 8.8.8.8 | awk '{print $5; exit}')
+echo "    Interface: $IFACE"
+iptables -t nat -A POSTROUTING -o "$IFACE" -s 10.0.0.0/16 -j MASQUERADE
+
+# --- [5] FORWARD rules — flush default REJECT first ---
+# iptables-services ships with -A FORWARD -j REJECT
+# Appending ACCEPT after REJECT would have no effect
+echo "[5] Flush FORWARD + add ACCEPT rules..."
+iptables -F FORWARD
+iptables -A FORWARD -i "$IFACE" -o "$IFACE" -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i "$IFACE" -o "$IFACE" -j ACCEPT
+echo "    FORWARD ACCEPT: $(iptables -L FORWARD -n | grep -c ACCEPT) | REJECT: $(iptables -L FORWARD -n | grep -c REJECT || echo 0)"
+
+# --- [6] Persist rules across reboots ---
+echo "[6] Saving iptables rules..."
+iptables-save > /etc/sysconfig/iptables
+echo "    Saved $(grep -c 'ACCEPT\|MASQUERADE' /etc/sysconfig/iptables) rules"
+
+# --- [7] Disable Source/Destination Check (required for NAT) ---
+echo "[7] Disabling Source/Dest Check..."
+aws ec2 modify-instance-attribute \
+    --instance-id "$INSTANCE_ID" \
+    --no-source-dest-check \
+    --region "$REGION"
+echo "    Source/Dest Check: disabled"
+
+# --- [8] Update Route Table to point at this instance ---
+echo "[8] Updating Route Table $ROUTE_TABLE_ID..."
+aws ec2 replace-route \
+    --route-table-id "$ROUTE_TABLE_ID" \
+    --destination-cidr-block "0.0.0.0/0" \
+    --instance-id "$INSTANCE_ID" \
+    --region "$REGION" 2>/dev/null || \
+aws ec2 create-route \
+    --route-table-id "$ROUTE_TABLE_ID" \
+    --destination-cidr-block "0.0.0.0/0" \
+    --instance-id "$INSTANCE_ID" \
+    --region "$REGION"
+echo "    Route updated: 0.0.0.0/0 → $INSTANCE_ID"
+
+# --- [9] Test internet connectivity ---
+echo "[9] Testing internet connectivity..."
+sleep 3
+PUBLIC_IP=$(curl -sf --max-time 10 https://api.ipify.org 2>/dev/null || echo "")
+
+echo ""
+echo "=============================================="
+if [[ -n "$PUBLIC_IP" ]]; then
+    echo " ✅ NAT Instance READY"
+    echo "    Instance ID : $INSTANCE_ID"
+    echo "    AZ          : $AZ"
+    echo "    Private IP  : $PRIVATE_IP"
+    echo "    Public IP   : $PUBLIC_IP  ← ECS Tasks will egress via this IP"
+    echo "    Interface   : $IFACE"
+    echo "    Route Table : $ROUTE_TABLE_ID"
+    echo "    Completed at: $(date)"
+else
+    echo " ❌ Internet test FAILED — see /var/log/user-data.log"
+    echo "    ip_forward   : $(sysctl -n net.ipv4.ip_forward)"
+    echo "    MASQUERADE   : $(iptables -t nat -L POSTROUTING -n | grep MASQUERADE || echo 'MISSING')"
+    echo ""
+    echo " Common causes:"
+    echo "   A. Source/Dest Check not disabled"
+    echo "   B. SG Outbound missing HTTPS/HTTP to 0.0.0.0/0"
+    echo "   C. Public subnet Route Table missing 0.0.0.0/0 → IGW"
+    echo "   D. FORWARD chain still has a REJECT rule above ACCEPT"
+fi
+echo "=============================================="
+```
+
+After filling in the Route Table IDs, click **Create launch template**.
+
+> To verify User Data after the ASG creates an instance: EC2 Console → select the instance → **Connect** → **Session Manager** → run `sudo cat /var/log/user-data.log`.
+
+### 9.2 Create ASG for NAT Instance #1 (AZ ap-southeast-2a)
+
+1. EC2 Console → **Auto Scaling** → **Auto Scaling Groups** → **Create Auto Scaling group**.
+
+| Field | Value |
+| :---- | :---- |
+| **Auto Scaling group name** | `nutritrack-api-vpc-nati-asg01` |
+| **Launch template** | `nutritrack-api-vpc-nati-lt` |
+| **Version** | Default (Latest) |
+
+1. **Network**:
+   - **VPC**: `nutritrack-api-vpc`
+   - **Availability Zones**: `ap-southeast-2a` **only** ← critical, one AZ per ASG
+   - **Subnets**: `nutritrack-api-vpc-public-alb01`
+
+1. **Configure group size**:
+   - **Desired capacity**: `1`
+   - **Minimum capacity**: `1`
+   - **Maximum capacity**: `1`
+
+> Keep min = max = desired = 1. NAT Instances don't need to scale — they just need to always be present.
+
+1. **Health checks**:
+   - **Health check type**: `EC2`
+   - **Health check grace period**: `60` seconds
+
+1. No further configuration needed → click **Create Auto Scaling group**.
+
+### 9.3 Create ASG for NAT Instance #2 (AZ ap-southeast-2c)
+
+Repeat step 9.2 with only these values changed:
+
+| Field | Value |
+| :---- | :---- |
+| **Auto Scaling group name** | `nutritrack-api-vpc-nati-asg02` |
+| **Availability Zones** | `ap-southeast-2c` **only** |
+| **Subnets** | `nutritrack-api-vpc-public-alb02` |
+
+### 9.4 What happens when a NAT Instance crashes?
+
+```text
+NAT Instance #1 (AZ-2a) crashes
+        │
+        ▼
+ASG health check detects failure (after 60–120 seconds)
+        │
+        ▼
+ASG terminates old instance + launches new one from Launch Template
+    (~2–3 minutes)
+        │
+        ▼
+New instance boots → User Data runs automatically:
+  1. Enable IP forwarding
+  2. Install iptables + NAT rules
+  3. Disable Source/Dest Check
+  4. aws ec2 replace-route → Private RT-01 points to new instance ID
+        │
+        ▼
+ECS Tasks in AZ-2a automatically use new NAT (route updated)
+        │
+        ▼
+Internet connectivity restored — no manual intervention needed
+
+Total downtime: ~3–4 minutes
+
+Note: ECS Tasks in AZ-2c are completely unaffected (separate NAT instance)
+```
 
 ---
 

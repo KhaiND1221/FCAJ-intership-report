@@ -21,7 +21,21 @@ Every `a.model(...)` in `data/resource.ts` automatically exposes `onCreate`, `on
 
 ## Architecture
 
-![Architecture Diagram](/FCAJ-intership-report/solution-architect/nutritrack-v4.drawio.png)
+```mermaid
+flowchart LR
+  FE[React Native Client]
+  AS[AppSync GraphQL API]
+  FR[friendRequest Lambda<br/>Node.js 22 ARM64]
+  DDB[(DynamoDB<br/>user + Friendship)]
+  SUB[Subscription Fan-out<br/>MQTT/WebSocket]
+
+  FE -- "Mutation.friendRequest" --> AS
+  AS -- invoke --> FR
+  FR -- "TransactWriteItems" --> DDB
+  DDB -- stream triggers --> AS
+  AS -- "Subscription.onCreate/onUpdate" --> SUB
+  SUB -- push --> FE
+```
 
 - Mutations travel HTTPS → AppSync → Lambda → DynamoDB.
 - Subscriptions travel back over a persistent WebSocket — AppSync notices the `Friendship` row flipping from `pending` to `accepted` and pushes the updated object to every client that has an active filter matching the row's `owner`.

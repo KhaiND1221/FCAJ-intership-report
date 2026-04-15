@@ -47,7 +47,7 @@ Secrets Manager lưu trữ API keys được mã hóa — container đọc key l
 | `NUTRITRACK_API_KEY` | `<JWT signing secret dùng chung giữa scan-image Lambda và ECS>` |
 
 > **Không nhập** AWS Access Key/Secret Key vào đây — đó là việc của IAM Role.
-> **`ECS_BASE_URL`** (`http://nutritrack-api-vpc-alb-1060755902.ap-southeast-2.elb.amazonaws.com`) **không phải secret** — inject nó dưới dạng `environment` entry trong ECS Task Definition, hoặc override qua CDK property override cho `ECS_BASE_URL` trong `scanImage` Lambda.
+> **`ECS_BASE_URL`** (`http://nutritrack-api-vpc-alb-xxxxxxxxx.ap-southeast-2.elb.amazonaws.com`) **không phải secret** — inject nó dưới dạng `environment` entry trong ECS Task Definition, hoặc override qua CDK property override cho `ECS_BASE_URL` trong `scanImage` Lambda.
 
 4. **Encryption key**: Giữ `aws/secretsmanager` (mặc định, miễn phí).
 5. Nhấn **Next**.

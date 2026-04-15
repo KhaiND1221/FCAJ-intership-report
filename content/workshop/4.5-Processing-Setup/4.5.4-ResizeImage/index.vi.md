@@ -95,6 +95,8 @@ const resizedBuffer = await sharp(originalBuffer)
 
 Kết quả điển hình: ảnh điện thoại 4 MB ở 4032×3024 px → 180–400 KB ở 1280×960 px.
 
+![Kết quả ảnh sau resize trong S3 prefix media/](images/resize.png)
+
 ### Bước 4 — Ghi vào media/
 
 ```typescript
@@ -168,8 +170,8 @@ aws s3 ls s3://<bucket>/media/test-user/
 
 ## Mô hình chi phí
 
-- Lambda: 512 MB × ~500 ms/ảnh ≈ 0.5 GB-second. Mỗi resize ~$0.0000067. 10,000 ảnh/tháng: ~$0.07.
-- S3 `GetObject` + `PutObject`: ~$0.005/1,000 request. 10,000 ảnh: ~$0.10.
+- Lambda: 512 MB × ~500 ms/ảnh ≈ 0.5 GB-second. Mỗi resize ≈$0.0000067. 10,000 ảnh/tháng: ≈$0.07.
+- S3 `GetObject` + `PutObject`: ≈$0.005/1,000 request. 10,000 ảnh: ≈$0.10.
 - Data transfer S3 → Lambda: miễn phí cùng region.
 
 ## Liên kết

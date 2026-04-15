@@ -20,7 +20,57 @@ Timeout 120 giây của `ai-engine` là bắt buộc vì `voiceToFood` khởi đ
 
 ## Kiến trúc
 
-![Architecture Diagram](/FCAJ-intership-report/solution-architect/nutritrack-v4.drawio.png)
+```mermaid
+flowchart LR
+  subgraph Client
+    App[Expo app]
+  end
+
+  subgraph API
+    AppSync[AWS AppSync]
+  end
+
+  subgraph Compute
+    AiEngine[ai-engine<br/>Node 22 / 512 MB / 120s]
+    ProcNut[process-nutrition<br/>Node 22 / 512 MB / 30s]
+    FriendReq[friend-request<br/>Node 22]
+    ResizeImg[resize-image<br/>Node 22 / 512 MB]
+    ScanImg[scan-image<br/>Node 22 / 512 MB / 30s]
+  end
+
+  subgraph AI
+    Bedrock[Bedrock<br/>qwen.qwen3-vl-235b-a22b<br/>ap-southeast-2]
+    Transcribe[Amazon Transcribe<br/>vi-VN]
+  end
+
+  subgraph Container
+    ECS[ECS Fargate FastAPI<br/>/analyze-food<br/>/analyze-label<br/>/scan-barcode]
+  end
+
+  subgraph Storage
+    S3[(S3 bucket)]
+    DDB[(DynamoDB<br/>Food, user, Friendship)]
+    SecretsManager[(Secrets Manager)]
+  end
+
+  App --> AppSync
+  AppSync --> AiEngine
+  AppSync --> ProcNut
+  AppSync --> FriendReq
+  AppSync --> ScanImg
+  S3 -->|ObjectCreated incoming/*| ResizeImg
+
+  AiEngine --> Bedrock
+  AiEngine --> Transcribe
+  AiEngine --> S3
+  ProcNut --> DDB
+  ProcNut --> Bedrock
+  FriendReq --> DDB
+  ResizeImg --> S3
+  ScanImg --> S3
+  ScanImg --> SecretsManager
+  ScanImg -->|JWT Bearer| ECS
+```
 
 ## Model Bedrock chuẩn
 

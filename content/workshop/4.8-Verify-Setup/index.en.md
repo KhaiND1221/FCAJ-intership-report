@@ -4,16 +4,7 @@ The ECS Fargate tier runs a containerized FastAPI service alongside the serverle
 
 ## Architecture
 
-```mermaid
-graph LR
-  Internet -->|HTTP 80| ALB["Application\nLoad Balancer\n(public subnet)"]
-  ALB -->|TCP 8000| Task["ECS Fargate Task\n(FastAPI)\n(private subnet)"]
-  Task -->|via NAT| Bedrock["Amazon Bedrock\nap-southeast-2"]
-  Task -->|S3 VPCE| S3["S3 Cache Bucket"]
-  Task -->|via NAT| SecretsManager["Secrets Manager"]
-  Dev["Developer"] -->|docker push| DockerHub["Docker Hub"]
-  DockerHub -->|via NAT| Task
-```
+![NutriTrack API VPC Architecture](images/only-nutritrack-api-vpc.drawio.svg)
 
 Fargate tasks run in private subnets; the ALB sits in public subnets. Tasks reach AWS services via NAT Instance (70% cheaper than NAT Gateway) or the S3 Gateway VPCE (free).
 
@@ -21,13 +12,13 @@ Fargate tasks run in private subnets; the ALB sits in public subnets. Tasks reac
 
 | Component | Estimated monthly cost |
 | :--- | :--- |
-| 2× NAT Instance `t4g.nano` | ~$9 |
-| 2× Fargate Task (0.5 vCPU / 1 GB) | ~$17 |
-| ALB | ~$16 |
-| CloudWatch Logs (5 GB, 30 days) | ~$2 |
-| **Total** | **~$44** |
+| 2× NAT Instance `t4g.nano` | ≈$9 |
+| 2× Fargate Task (0.5 vCPU / 1 GB) | ≈$17 |
+| ALB | ≈$16 |
+| CloudWatch Logs (5 GB, 30 days) | ≈$2 |
+| **Total** | **≈$44** |
 
-Using NAT Gateway instead of NAT Instance adds ~$32/month (total ~$76).
+Using NAT Gateway instead of NAT Instance adds ≈$32/month (total ≈$76).
 
 The ECS tier makes sense when you need:
 

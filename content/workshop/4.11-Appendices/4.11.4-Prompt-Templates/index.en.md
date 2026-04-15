@@ -386,7 +386,7 @@ A typical `generateFoodNutrition` call (text-only DB miss):
 - **Output** (nutrition JSON): ~300–500 tokens.
 - **Total**: ~700–900 tokens.
 
-At Bedrock Qwen3-VL pricing (~$0.002/1K input tokens, ~$0.006/1K output tokens, ap-southeast-2 2025 rates), each DB-miss lookup costs roughly $0.003–$0.004. For a user triggering 3–5 DB misses/day, that's well under $0.10/month in Bedrock costs.
+At Bedrock Qwen3-VL pricing (≈$0.002/1K input tokens, ≈$0.006/1K output tokens, ap-southeast-2 2025 rates), each DB-miss lookup costs roughly $0.003–$0.004. For a user triggering 3–5 DB misses/day, that's well under $0.10/month in Bedrock costs.
 
 Text-only actions (coach tips, macro calculation) consume similar or fewer tokens — typically $0.001 or less per call.
 

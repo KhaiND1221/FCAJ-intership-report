@@ -25,10 +25,10 @@ The `-NONE` suffix is Amplify's placeholder for "no environment type." Sandboxes
 
 - **Partition key**: `food_id` (String)
 - **Sort key**: none
-- **GSIs**: none
+- **GSIs**: `Food-name_vi-index` on `name_vi`, `Food-name_en-index` on `name_en`
 - **Auth**: guest read, authenticated read
 - **Item count**: ~200 (seeded once, rarely updated)
-- **Touched by**: AppSync direct resolvers (read), `process-nutrition` Lambda (scan + read)
+- **Touched by**: AppSync direct resolvers (read), `process-nutrition` Lambda (query via GSI + scan)
 
 Example item:
 

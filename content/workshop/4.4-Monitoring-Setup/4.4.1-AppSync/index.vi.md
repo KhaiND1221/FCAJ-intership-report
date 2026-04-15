@@ -2,6 +2,9 @@
 
 AppSync là tầng GraphQL managed của NutriTrack. Thay vì viết tay VTL template hay resolver pipeline, chúng ta khai báo toàn bộ trong `amplify/data/resource.ts` bằng DSL `a.schema(...)` của Amplify. Khi chạy `npx ampx sandbox` (hoặc khi push lên branch), CLI biên dịch file đó thành một AppSync API hoàn chỉnh, các bảng DynamoDB, IAM role và các wiring Lambda tương ứng.
 
+> **File đầy đủ:** `backend/amplify/data/resource.ts` được xây dần qua các mục 4.4, 4.5, và 4.6. Để paste toàn bộ file một lần, lấy từ repo nguồn:
+> [`backend/amplify/data/resource.ts`](https://github.com/NeuraX-HQ/neurax-web-app/blob/main/backend/amplify/data/resource.ts)
+
 Trang này đi qua từng khối của `data/resource.ts` thật.
 
 ## `defineData` nối dây như thế nào
@@ -73,6 +76,10 @@ Food: a
     source: a.string(),
   })
   .identifier(['food_id'])
+  .secondaryIndexes((index) => [
+    index('name_vi'),
+    index('name_en'),
+  ])
   .authorization((allow) => [
     allow.guest().to(['read']),
     allow.authenticated().to(['read'])
@@ -84,6 +91,7 @@ Lưu ý:
 - `.identifier(['food_id'])` ghi đè partition key mặc định `id` bằng chuỗi `food_id` tự chọn.
 - `.array()` trở thành `List<String>` trong DynamoDB.
 - `a.ref('Macros')` nhúng custom type Macros dưới dạng map attribute.
+- `.secondaryIndexes(...)` tạo GSI trên `name_vi` và `name_en` — Lambda `processNutrition` dùng các GSI này để tra cứu món ăn theo tên tiếng Việt hoặc tiếng Anh mà không cần full-table scan.
 - `allow.guest().to(['read'])` kích hoạt IAM-auth mode song song với Cognito, cho phép user chưa đăng nhập (Cognito Identity Pool guest) đọc catalog.
 
 ### 3. `a.model(...)` với owner auth — bảng user
@@ -153,6 +161,7 @@ FoodLog: a
 
 Các model có GSI:
 
+- `Food` — `name_vi`, `name_en`
 - `user` — `friend_code`
 - `FoodLog` — `date`
 - `ChallengeParticipant` — `user_id`
@@ -269,8 +278,8 @@ scanImage: a
 Amplify JS client được type-hoá đầy đủ từ schema:
 
 ```typescript
-import { generateClient } from 'aws-amplify/api';
-import type { Schema } from '@/amplify/data/resource';
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '../../../backend/amplify/data/resource';
 
 const client = generateClient<Schema>();
 
@@ -294,6 +303,8 @@ const result = await client.queries.scanImage({
   payload: JSON.stringify({ s3Key: 'incoming/user-abc/img-1.jpg' }),
 });
 ```
+
+> **Đường dẫn import:** Dùng `'aws-amplify/data'` (không phải `'aws-amplify/api'`). Type `Schema` được import từ đường dẫn backend `'../../../backend/amplify/data/resource'` — **không phải** từ `amplify_outputs.json` và không dùng alias `@/`, vì đây là import TypeScript type từ source backend.
 
 Type được suy đầy đủ end-to-end: đổi tên field trong `resource.ts` sẽ tạo lỗi biên dịch cho toàn bộ React Native app ở lần chạy `npx ampx sandbox` tiếp theo, nơi `amplify_outputs.json` và type client TypeScript được regen.
 

@@ -95,6 +95,8 @@ const resizedBuffer = await sharp(originalBuffer)
 
 Typical result: a 4 MB phone photo at 4032×3024 px becomes 180–400 KB at 1280×960 px.
 
+![Resized image output in S3 media/ prefix](images/resize.png)
+
 ### Step 4 — Write to media/
 
 ```typescript
@@ -171,8 +173,8 @@ aws s3 cp s3://<bucket>/media/test-user/test.jpg ./output.jpg && open output.jpg
 
 ## Cost model
 
-- Lambda: 512 MB × ~500 ms per image ≈ 0.5 GB-seconds. At Amplify's ARM64 pricing (~$0.0000133/GB-s), each resize costs $0.0000067. For 10,000 photos/month: $0.067.
-- S3 `GetObject` + `PutObject`: ~$0.005 per 1,000 requests. For 10,000 photos: $0.10.
+- Lambda: 512 MB × ~500 ms per image ≈ 0.5 GB-seconds. At Amplify's ARM64 pricing (≈$0.0000133/GB-s), each resize costs $0.0000067. For 10,000 photos/month: $0.067.
+- S3 `GetObject` + `PutObject`: ≈$0.005 per 1,000 requests. For 10,000 photos: $0.10.
 - Data transfer from S3 to Lambda: free within the same region.
 
 ## Cross-links

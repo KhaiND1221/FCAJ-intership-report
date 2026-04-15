@@ -21,7 +21,21 @@ Mỗi `a.model(...)` trong `data/resource.ts` tự động phơi bày ba subscri
 
 ## Kiến trúc
 
-![Architecture Diagram](/FCAJ-intership-report/solution-architect/nutritrack-v4.drawio.png)
+```mermaid
+flowchart LR
+  FE[React Native Client]
+  AS[AppSync GraphQL API]
+  FR[friendRequest Lambda<br/>Node.js 22 ARM64]
+  DDB[(DynamoDB<br/>user + Friendship)]
+  SUB[Subscription Fan-out<br/>MQTT/WebSocket]
+
+  FE -- "Mutation.friendRequest" --> AS
+  AS -- invoke --> FR
+  FR -- "TransactWriteItems" --> DDB
+  DDB -- stream triggers --> AS
+  AS -- "Subscription.onCreate/onUpdate" --> SUB
+  SUB -- push --> FE
+```
 
 - Mutation đi HTTPS → AppSync → Lambda → DynamoDB.
 - Subscription đi ngược lại qua WebSocket bền vững — AppSync phát hiện hàng `Friendship` chuyển từ `pending` sang `accepted` và đẩy object mới tới mọi client có filter khớp `owner`.

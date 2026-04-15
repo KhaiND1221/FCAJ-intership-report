@@ -12,7 +12,16 @@ Later phases bolt Lambdas, AppSync, and DynamoDB onto this foundation without to
 
 ## Architecture for this phase
 
-![Architecture Diagram](/FCAJ-intership-report/solution-architect/nutritrack-v4.drawio.png)
+```mermaid
+flowchart LR
+    Dev[Developer laptop] -->|npx ampx sandbox| CLI[Amplify Gen 2 CLI]
+    CLI -->|synth| CFN[CloudFormation]
+    CFN --> Cognito[Cognito User Pool<br/>+ Hosted UI]
+    CFN --> S3[S3 Bucket<br/>nutritrack_media_bucket]
+    CFN --> IAM[IAM Roles<br/>authRole / unauthRole]
+    Cognito -.->|identity pool| IAM
+    IAM -.->|scoped access| S3
+```
 
 The Amplify CLI runs TypeScript, synthesizes a CDK app under the hood, and submits one CloudFormation stack per developer (the sandbox stack). The stack name is of the form `amplify-nutritrack-<username>-sandbox-<hash>`.
 

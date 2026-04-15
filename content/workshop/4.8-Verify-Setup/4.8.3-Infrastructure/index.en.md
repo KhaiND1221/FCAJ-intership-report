@@ -47,7 +47,7 @@ Secrets Manager stores API keys encrypted at rest. The container reads keys at s
 | `NUTRITRACK_API_KEY` | `<JWT signing secret shared between scan-image Lambda and ECS>` |
 
 > **Do not** store AWS Access Keys/Secret Keys here — use IAM Roles for that.
-> **`ECS_BASE_URL`** (`http://nutritrack-api-vpc-alb-1060755902.ap-southeast-2.elb.amazonaws.com`) is **not** a secret — inject it as a plain `environment` entry in the ECS Task Definition, or override it in the `scanImage` Lambda via the CDK property override for `ECS_BASE_URL`.
+> **`ECS_BASE_URL`** (`http://nutritrack-api-vpc-alb-xxxxxxxxx.ap-southeast-2.elb.amazonaws.com`) is **not** a secret — inject it as a plain `environment` entry in the ECS Task Definition, or override it in the `scanImage` Lambda via the CDK property override for `ECS_BASE_URL`.
 
 1. **Encryption key**: Keep `aws/secretsmanager` (default, free).
 1. Click **Next**.

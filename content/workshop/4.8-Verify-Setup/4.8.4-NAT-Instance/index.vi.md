@@ -10,7 +10,7 @@ NAT Instance là một EC2 được cấu hình để **forward traffic** từ P
 
 | | NAT Gateway | NAT Instance (`t4g.nano`) |
 | :--- | :--- | :--- |
-| **Chi phí** | ~$32–34/tháng | ~$4.33/tháng |
+| **Chi phí** | ≈$32–34/tháng | ≈$4.33/tháng |
 | **HA** | Managed bởi AWS | Cần cấu hình ASG |
 | **Throughput** | Lên đến 100 Gbps | 5 Gbps (đủ cho workshop) |
 | **Setup** | Tạo xong là dùng | Cần SSH/SSM để cài `iptables` |
@@ -24,7 +24,7 @@ NAT Instance là một EC2 được cấu hình để **forward traffic** từ P
 | :--- | :--- | :--- |
 | **OS** | Amazon Linux 2023 (AL2023) ARM64 | AWS-optimized, bảo mật tốt, `dnf` package manager |
 | **Instance type** | `t4g.nano` | ARM Graviton2, 2 vCPU, 0.5 GB RAM — đủ cho NAT forwarding. Băng thông 5 Gbps |
-| **Giá (ap-southeast-2)** | ~$0.0059/giờ (~$4.33/tháng × 2 instances) | |
+| **Giá (ap-southeast-2)** | ≈$0.0059/giờ (≈$4.33/tháng × 2 instances) | |
 
 > **Tại sao t4g.nano đủ?** NAT chỉ là "chuyển gói tin" (packet forwarding) — không cần nhiều RAM hay CPU. t4g.nano có thể handle hàng trăm MB/s throughput.
 
@@ -73,7 +73,7 @@ NAT Instance là một EC2 được cấu hình để **forward traffic** từ P
 2. Tab **Quick Start AMIs** → Chọn **"Amazon Linux 2023 kernel-6.1 AMI"**.
 3. Ở cột **Select**: chọn radio button **`64-bit (Arm), uefi`** ← bắt buộc vì dùng `t4g.nano` (Graviton).
 
-> ⚠️ **KHÔNG chọn AMI từ tab "AWS Marketplace AMIs"!** AMI "Amazon ECS-Optimized Amazon Linux 2023 arm64" trong Marketplace tốn thêm **$0.045/giờ** (~$33/tháng). AMI đúng ở tab **Quick Start AMIs** — hoàn toàn miễn phí, chỉ trả tiền instance.
+> ⚠️ **KHÔNG chọn AMI từ tab "AWS Marketplace AMIs"!** AMI "Amazon ECS-Optimized Amazon Linux 2023 arm64" trong Marketplace tốn thêm **$0.045/giờ** (≈$33/tháng). AMI đúng ở tab **Quick Start AMIs** — hoàn toàn miễn phí, chỉ trả tiền instance.
 
 **Network settings:**
 
@@ -334,13 +334,231 @@ Hoặc thực hiện trong Console:
 
 ## 9. NAT Instance HA (Auto Scaling Group)
 
-> **Nội dung đang cập nhật.** Phần này sẽ hướng dẫn tạo **Launch Template** và **Auto Scaling Group** để NAT Instance tự phục hồi khi sập — không cần can thiệp thủ công. ASG sẽ dùng **User Data** (giống script trên) để tự động setup NAT khi instance mới được tạo, và tự động gọi `ReplaceRoute` để cập nhật Route Table.
+Một NAT Instance đơn lẻ là **single point of failure** — nếu crash, toàn bộ ECS Tasks ở AZ đó mất internet. Auto Scaling Group (ASG) giải quyết điều này:
+
+1. Liên tục health-check instance.
+2. Khi instance die → **tự tạo instance mới** trong 2–3 phút.
+3. Instance mới chạy **User Data script** → NAT được tự động cài đặt.
+4. Script gọi `aws ec2 replace-route` để cập nhật Route Table trỏ về instance ID mới.
+
+**Tại sao mỗi AZ cần ASG riêng?** ASG chung có thể đặt cả 2 instance vào cùng 1 AZ — AZ còn lại sẽ mất NAT. Mỗi AZ cần đúng 1 instance làm default route, nên mỗi AZ cần ASG riêng.
+
+### 9.1 Tạo Launch Template
+
+1. EC2 Console → **Launch Templates** → **Create launch template**.
+
+| Field | Giá trị |
+| :---- | :------ |
+| **Launch template name** | `nutritrack-api-vpc-nati-lt` |
+| **Template version description** | `NAT Instance AL2023 ARM64 t4g.nano` |
+| **Auto Scaling guidance** | ✅ tick checkbox |
+
+- **AMI**: Tìm `Amazon Linux 2023 AMI` → chọn bản **Arm 64-bit** mới nhất.
+- **Instance type**: `t4g.nano`
+- **Key pair**: `nutritrack-api-vpc-pulic-nati-keypair`
+- **Security groups**: `nutritrack-api-vpc-nat-sg`
+
+**Advanced details:**
+
+- **IAM instance profile**: `nutritrack-api-vpc-nat-instance-role`
+- **User data**: paste script bên dưới.
+
+> Trước khi paste, thay 2 Route Table ID placeholder bằng ID thực từ VPC Console → **Route tables**:
 >
-> **Kiến trúc HA:**
-> - 1 Launch Template dùng chung cho cả 2 AZ
-> - 2 Auto Scaling Group riêng biệt (1 per AZ), mỗi ASG giữ `DesiredCapacity=1`
-> - User Data tự cài NAT + cập nhật Route Table của AZ tương ứng
-> - Khi instance sập, ASG tạo instance mới và Route Table tự được cập nhật qua `ec2:ReplaceRoute`
+> - `rtb-REPLACE_WITH_RT01_ID` → Route Table ID của `nutritrack-api-private-rt-01`
+> - `rtb-REPLACE_WITH_RT02_ID` → Route Table ID của `nutritrack-api-private-rt-02`
+
+```bash
+#!/bin/bash
+set -e
+# ============================================================
+# NutriTrack NAT Instance Auto-Setup Script
+# Chạy tự động khi instance boot (User Data / ASG recovery)
+# Log toàn bộ output ra /var/log/user-data.log để debug
+# ============================================================
+exec > >(tee /var/log/user-data.log) 2>&1
+
+echo "=============================================="
+echo " NAT Instance Auto-Setup bắt đầu: $(date)"
+echo "=============================================="
+
+# --- [0] Lấy metadata instance (IMDSv2 — AL2023 bắt buộc) ---
+REGION="ap-southeast-2"
+TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" \
+    -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" --max-time 5)
+INSTANCE_ID=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
+    --max-time 5 http://169.254.169.254/latest/meta-data/instance-id)
+AZ=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
+    --max-time 5 http://169.254.169.254/latest/meta-data/placement/availability-zone)
+PRIVATE_IP=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
+    --max-time 5 http://169.254.169.254/latest/meta-data/local-ipv4)
+echo "[0] Instance: $INSTANCE_ID | AZ: $AZ | Private IP: $PRIVATE_IP"
+
+# --- [1] Xác định Route Table ID theo AZ ---
+if [[ "$AZ" == "ap-southeast-2a" ]]; then
+    ROUTE_TABLE_ID="rtb-REPLACE_WITH_RT01_ID"   # nutritrack-api-private-rt-01
+elif [[ "$AZ" == "ap-southeast-2c" ]]; then
+    ROUTE_TABLE_ID="rtb-REPLACE_WITH_RT02_ID"   # nutritrack-api-private-rt-02
+else
+    echo "[ERROR] AZ không xác định: $AZ — dừng lại"
+    exit 1
+fi
+echo "[1] Route Table: $ROUTE_TABLE_ID (AZ: $AZ)"
+
+# --- [2] Bật IP Forwarding ---
+echo "[2] Bật IP Forwarding..."
+echo "net.ipv4.ip_forward = 1" > /etc/sysctl.d/custom-nat.conf
+sysctl -p /etc/sysctl.d/custom-nat.conf
+echo "    ip_forward = $(sysctl -n net.ipv4.ip_forward)"
+
+# --- [3] Cài và khởi động iptables-services ---
+echo "[3] Cài iptables-services..."
+dnf install iptables-services -y -q
+systemctl enable iptables
+systemctl start iptables
+echo "    iptables: $(systemctl is-active iptables)"
+
+# --- [4] Cấu hình NAT MASQUERADE ---
+echo "[4] Cấu hình NAT MASQUERADE..."
+IFACE=$(ip route get 8.8.8.8 | awk '{print $5; exit}')
+echo "    Interface: $IFACE"
+iptables -t nat -A POSTROUTING -o "$IFACE" -s 10.0.0.0/16 -j MASQUERADE
+
+# --- [5] FORWARD rules — flush REJECT mặc định trước ---
+echo "[5] Flush FORWARD + thêm ACCEPT rules..."
+iptables -F FORWARD
+iptables -A FORWARD -i "$IFACE" -o "$IFACE" -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i "$IFACE" -o "$IFACE" -j ACCEPT
+echo "    FORWARD ACCEPT: $(iptables -L FORWARD -n | grep -c ACCEPT) | REJECT: $(iptables -L FORWARD -n | grep -c REJECT || echo 0)"
+
+# --- [6] Lưu rules để persist qua reboot ---
+echo "[6] Lưu iptables rules..."
+iptables-save > /etc/sysconfig/iptables
+echo "    Saved $(grep -c 'ACCEPT\|MASQUERADE' /etc/sysconfig/iptables) rules"
+
+# --- [7] Tắt Source/Destination Check (bắt buộc cho NAT) ---
+echo "[7] Tắt Source/Dest Check..."
+aws ec2 modify-instance-attribute \
+    --instance-id "$INSTANCE_ID" \
+    --no-source-dest-check \
+    --region "$REGION"
+echo "    Source/Dest Check: disabled"
+
+# --- [8] Cập nhật Route Table trỏ về instance này ---
+echo "[8] Cập nhật Route Table $ROUTE_TABLE_ID..."
+aws ec2 replace-route \
+    --route-table-id "$ROUTE_TABLE_ID" \
+    --destination-cidr-block "0.0.0.0/0" \
+    --instance-id "$INSTANCE_ID" \
+    --region "$REGION" 2>/dev/null || \
+aws ec2 create-route \
+    --route-table-id "$ROUTE_TABLE_ID" \
+    --destination-cidr-block "0.0.0.0/0" \
+    --instance-id "$INSTANCE_ID" \
+    --region "$REGION"
+echo "    Route updated: 0.0.0.0/0 → $INSTANCE_ID"
+
+# --- [9] Test kết nối Internet ---
+echo "[9] Test kết nối Internet..."
+sleep 3
+PUBLIC_IP=$(curl -sf --max-time 10 https://api.ipify.org 2>/dev/null || echo "")
+
+echo ""
+echo "=============================================="
+if [[ -n "$PUBLIC_IP" ]]; then
+    echo " ✅ NAT Instance HOẠT ĐỘNG"
+    echo "    Instance ID : $INSTANCE_ID"
+    echo "    AZ          : $AZ"
+    echo "    Private IP  : $PRIVATE_IP"
+    echo "    Public IP   : $PUBLIC_IP  ← ECS Tasks ra Internet bằng IP này"
+    echo "    Interface   : $IFACE"
+    echo "    Route Table : $ROUTE_TABLE_ID"
+    echo "    Hoàn tất lúc: $(date)"
+else
+    echo " ❌ Test Internet THẤT BẠI — Xem log tại /var/log/user-data.log"
+    echo "    ip_forward   : $(sysctl -n net.ipv4.ip_forward)"
+    echo "    MASQUERADE   : $(iptables -t nat -L POSTROUTING -n | grep MASQUERADE || echo 'KHÔNG CÓ')"
+    echo ""
+    echo " Nguyên nhân thường gặp:"
+    echo "   A. Source/Dest Check chưa tắt"
+    echo "   B. SG Outbound thiếu HTTPS/HTTP ra 0.0.0.0/0"
+    echo "   C. Route Table public subnet thiếu 0.0.0.0/0 → IGW"
+    echo "   D. FORWARD chain còn REJECT rule phía trên ACCEPT"
+fi
+echo "=============================================="
+```
+
+Sau khi điền Route Table IDs, nhấn **Create launch template**.
+
+> Để xem log User Data sau khi ASG tạo instance: EC2 Console → chọn instance → **Connect** → **Session Manager** → chạy `sudo cat /var/log/user-data.log`.
+
+### 9.2 Tạo ASG cho NAT Instance #1 (AZ ap-southeast-2a)
+
+1. EC2 Console → **Auto Scaling** → **Auto Scaling Groups** → **Create Auto Scaling group**.
+
+| Field | Giá trị |
+| :---- | :------ |
+| **Auto Scaling group name** | `nutritrack-api-vpc-nati-asg01` |
+| **Launch template** | `nutritrack-api-vpc-nati-lt` |
+| **Version** | Default (Latest) |
+
+1. **Network**:
+   - **VPC**: `nutritrack-api-vpc`
+   - **Availability Zones**: `ap-southeast-2a` **only** ← quan trọng, chỉ 1 AZ mỗi ASG
+   - **Subnets**: `nutritrack-api-vpc-public-alb01`
+
+1. **Configure group size**:
+   - **Desired capacity**: `1`
+   - **Minimum capacity**: `1`
+   - **Maximum capacity**: `1`
+
+> Giữ min = max = desired = 1. NAT Instance không cần scale — chỉ cần luôn có đúng 1 instance.
+
+1. **Health checks**:
+   - **Health check type**: `EC2`
+   - **Health check grace period**: `60` giây
+
+1. Không cần cấu hình thêm → nhấn **Create Auto Scaling group**.
+
+### 9.3 Tạo ASG cho NAT Instance #2 (AZ ap-southeast-2c)
+
+Lặp lại bước 9.2, chỉ thay các giá trị sau:
+
+| Field | Giá trị |
+| :---- | :------ |
+| **Auto Scaling group name** | `nutritrack-api-vpc-nati-asg02` |
+| **Availability Zones** | `ap-southeast-2c` **only** |
+| **Subnets** | `nutritrack-api-vpc-public-alb02` |
+
+### 9.4 Điều gì xảy ra khi NAT Instance sập?
+
+```text
+NAT Instance #1 (AZ-2a) bị crash
+        │
+        ▼
+ASG health check phát hiện (sau 60–120 giây)
+        │
+        ▼
+ASG terminate instance cũ + launch instance mới từ Launch Template
+    (mất 2–3 phút)
+        │
+        ▼
+Instance mới boot → User Data tự chạy:
+  1. Bật IP forwarding
+  2. Cài iptables + NAT rules
+  3. Tắt Source/Dest Check
+  4. aws ec2 replace-route → Private RT-01 trỏ về instance ID mới
+        │
+        ▼
+ECS Tasks ở AZ-2a tự động dùng NAT mới (route đã cập nhật)
+        │
+        ▼
+Internet connectivity được phục hồi — không cần can thiệp thủ công
+
+Thời gian downtime: ~3–4 phút
+
+Lưu ý: ECS Tasks ở AZ-2c không bị ảnh hưởng gì (có NAT instance riêng)
+```
 
 ---
 

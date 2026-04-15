@@ -16,7 +16,21 @@ From a single `amplify/data/resource.ts` file, Amplify Gen 2 produces:
 
 ## Architecture
 
-![Architecture Diagram](/FCAJ-intership-report/solution-architect/nutritrack-v4.drawio.png)
+```mermaid
+flowchart LR
+  App[Expo / React Native app] -->|GraphQL| Client[Amplify JS client<br/>generateClient&lt;Schema&gt;]
+  Client -->|HTTPS + Cognito JWT| AppSync[AWS AppSync<br/>GraphQL API]
+
+  AppSync -->|auto-generated resolvers| DDB[(DynamoDB<br/>8 tables)]
+  AppSync -->|custom resolver| AiEngine[Lambda: ai-engine]
+  AppSync -->|custom resolver| ProcNut[Lambda: process-nutrition]
+  AppSync -->|custom resolver| FriendReq[Lambda: friend-request]
+
+  AiEngine --> Bedrock[Bedrock Qwen3-VL]
+  AiEngine --> Transcribe[Amazon Transcribe]
+  ProcNut --> DDB
+  FriendReq --> DDB
+```
 
 ## The 8 models at a glance
 

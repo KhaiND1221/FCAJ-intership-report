@@ -131,24 +131,22 @@ unauthenticatedUserIamRole.addToPolicy(new iam.PolicyStatement({
 
 ## Auth guard trong root layout
 
-Root `_layout.tsx` kiểm tra trạng thái xác thực mỗi lần render và redirect user chưa đăng nhập đến `/welcome`:
+Root `_layout.tsx` kiểm tra trạng thái xác thực khi mount và redirect user chưa đăng nhập đến `/welcome`. Phiên bản thực (~390 dòng) có thêm `Hub.listen('auth')` để xử lý OAuth redirect, biometric prompt, và `useRef` guard. Cấu trúc cốt lõi:
 
 ```typescript
 // app/_layout.tsx (rút gọn)
 import { useEffect } from 'react';
 import { router, Slot } from 'expo-router';
-import { useAuthStore } from '@/src/store/authStore';
+import { getCurrentUser } from 'aws-amplify/auth';
 import { LanguageProvider } from '@/src/i18n/LanguageProvider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function RootLayout() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace('/welcome');
-    }
-  }, [isAuthenticated]);
+    getCurrentUser()
+      .then(() => { /* đã đăng nhập — ở lại */ })
+      .catch(() => router.replace('/welcome'));
+  }, []);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -159,6 +157,8 @@ export default function RootLayout() {
   );
 }
 ```
+
+Layout đầy đủ cũng subscribe `Hub.listen('auth', ...)` để khi `signInWithRedirect` hoàn tất (Google OAuth), auth state cập nhật ngay và router điều hướng về `(tabs)/home` mà không cần poll `getCurrentUser` thêm.
 
 `LanguageProvider` bọc toàn bộ app để mọi màn hình có thể truy cập `useAppLanguage()` cho chuyển đổi Tiếng Việt/English.
 

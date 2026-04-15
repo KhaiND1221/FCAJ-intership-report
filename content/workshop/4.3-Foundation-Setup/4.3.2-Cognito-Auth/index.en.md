@@ -182,7 +182,7 @@ await signIn({ username: email, password });
 
 ## Auth guard pattern
 
-`frontend/app/_layout.tsx` runs an auth guard that subscribes to `Hub.listen('auth')` and the current user state. Unauthenticated users are redirected to `/welcome`:
+`frontend/app/_layout.tsx` runs an auth guard. Unauthenticated users are redirected to `/welcome`. The real implementation (~390 lines) uses `Hub.listen('auth')` for OAuth redirect handling, biometric prompts, and `useRef` guards to prevent race conditions. The core logic is:
 
 ```tsx
 import { useEffect } from 'react';
@@ -196,7 +196,7 @@ useEffect(() => {
 }, []);
 ```
 
-The guard runs on every mount of the root layout, so a dropped session (e.g., a revoked refresh token) kicks the user out of the tabs back to `/welcome` on next navigation.
+The guard runs on every mount of the root layout, so a dropped session (e.g., a revoked refresh token) kicks the user out of the tabs back to `/welcome` on next navigation. The full layout also subscribes to `Hub.listen('auth', ...)` to handle the `signInWithRedirect` callback that fires after Google OAuth completes — without the Hub listener, the redirect back from Google would not update the auth state.
 
 ## Sign-up flow and error codes
 

@@ -420,8 +420,8 @@ Ghi chú về IAM: resource dùng wildcard (`table/user-*`) thay vì tham chiế
 Từ bất kỳ màn hình nào đã đăng nhập trên mobile:
 
 ```typescript
-import { generateClient } from 'aws-amplify/api';
-import type { Schema } from '../amplify/data/resource';
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '../../../backend/amplify/data/resource';
 
 const client = generateClient<Schema>();
 

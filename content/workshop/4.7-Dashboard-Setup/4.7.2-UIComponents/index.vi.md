@@ -32,30 +32,39 @@ Tab Add ở giữa dùng nút tab bar tùy chỉnh (icon `+`, to hơn, màu acce
 
 ## Pattern Zustand store
 
-Toàn bộ state trong `src/store/`. Mỗi store dùng `zustand` với middleware `persist` backed bởi `AsyncStorage`:
+Toàn bộ state trong `src/store/`. Các store dùng plain `zustand` với persistence thủ công qua `AsyncStorage` — **không dùng** middleware `persist`. Mỗi store tự quản lý `STORAGE_KEY` và gọi `AsyncStorage.setItem`/`getItem` bên trong các action:
 
 ```typescript
 // src/store/mealStore.ts
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const STORAGE_KEY = '@nutritrack_meals';
+
 interface MealState {
-  logs: FoodLog[];
-  addLog: (log: FoodLog) => void;
-  clearLogs: () => void;
+  meals: Meal[];
+  isLoading: boolean;
+  addMeal: (meal: Omit<Meal, 'id' | 'time' | 'date'> & { date?: string }) => Promise<void>;
+  loadMeals: () => Promise<void>;
+  // ...
 }
 
-export const useMealStore = create<MealState>()(
-  persist(
-    (set) => ({
-      logs: [],
-      addLog: (log) => set((s) => ({ logs: [log, ...s.logs] })),
-      clearLogs: () => set({ logs: [] }),
-    }),
-    { name: 'meal-storage', storage: createJSONStorage(() => AsyncStorage) }
-  )
-);
+export const useMealStore = create<MealState>((set, get) => ({
+  meals: [],
+  isLoading: false,
+
+  loadMeals: async () => {
+    const raw = await AsyncStorage.getItem(STORAGE_KEY);
+    if (raw) set({ meals: JSON.parse(raw) });
+  },
+
+  addMeal: async (mealData) => {
+    // ... build meal object
+    const updated = [meal, ...get().meals];
+    set({ meals: updated });
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  },
+}));
 ```
 
 Màn hình đọc từ store và gọi service:
@@ -104,9 +113,16 @@ Mỗi cấp độ tiến hóa tương ứng với một file video pre-render tr
 
 ```tsx
 import { Video, ResizeMode } from 'expo-av';
+import { getUserData } from '@/src/store/userStore';
 
 export default function BattleScreen() {
-  const petLevel = useUserStore((s) => s.petLevel); // 1–5
+  const [petLevel, setPetLevel] = useState(1);
+
+  useEffect(() => {
+    getUserData().then((user) => {
+      setPetLevel(user?.gamification?.pet_level ?? 1);
+    });
+  }, []);
 
   return (
     <Video
@@ -127,6 +143,8 @@ const petVideos: Record<number, { uri: string }> = {
   5: require('@/assets/MANHINH/5.mp4'),
 };
 ```
+
+> **Lưu ý:** `userStore.ts` **không phải** Zustand store — đây là tiện ích AsyncStorage thuần, export các hàm async `getUserData()` và `saveUserData()`. Không có hook `useUserStore`. Đọc dữ liệu user bằng `await getUserData()` bên trong `useEffect`.
 
 Cách tiếp cận này tránh hoàn toàn overhead của WebGL/3D, cho phép phát mượt 60 fps trên thiết bị Android phổ thông.
 

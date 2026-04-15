@@ -182,7 +182,7 @@ await signIn({ username: email, password });
 
 ## Pattern auth guard
 
-`frontend/app/_layout.tsx` chạy một auth guard subscribe `Hub.listen('auth')` và trạng thái user hiện tại. User chưa đăng nhập sẽ bị đẩy về `/welcome`:
+`frontend/app/_layout.tsx` chạy một auth guard. User chưa đăng nhập sẽ bị đẩy về `/welcome`. Phiên bản thực (~390 dòng) dùng `Hub.listen('auth')` để xử lý OAuth redirect, biometric prompt, và `useRef` guard tránh race condition. Logic cốt lõi:
 
 ```tsx
 import { useEffect } from 'react';
@@ -196,7 +196,7 @@ useEffect(() => {
 }, []);
 ```
 
-Guard chạy mỗi lần mount root layout, nên khi session rơi (vd refresh token bị revoke) user sẽ bị đẩy từ tabs về `/welcome` ở lần navigation kế tiếp.
+Guard chạy mỗi lần mount root layout, nên khi session rơi (vd refresh token bị revoke) user sẽ bị đẩy từ tabs về `/welcome` ở lần navigation kế tiếp. Layout đầy đủ còn subscribe `Hub.listen('auth', ...)` để bắt callback `signInWithRedirect` sau khi Google OAuth hoàn tất — thiếu Hub listener thì redirect từ Google sẽ không cập nhật được auth state.
 
 ## Luồng sign-up và mã lỗi
 
