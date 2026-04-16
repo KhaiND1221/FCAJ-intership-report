@@ -12,6 +12,7 @@ By the end of this workshop you will have a running stack that contains:
   - `process-nutrition` — hybrid DynamoDB + AI nutrition lookup.
   - `friend-request` — friend system mutations.
   - `resize-image` — S3 event trigger on the `incoming/` prefix.
+  - `scan-image` — image processing proxy: fetches files from S3, forwards to ECS FastAPI (`/analyze-food`, `/analyze-label`, `/scan-barcode`) via JWT-authenticated requests, and returns results via asynchronous job polling.
 - **9 AI actions** served by the `aiEngine` Lambda: `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`.
 - **Amazon Bedrock** foundation model `qwen.qwen3-vl-235b-a22b` in **ap-southeast-2** (Sydney), invoked by the AI coach persona **Ollie**, processing voice context, and called directly from the **ECS FastAPI** service for image analysis.
 - **Amazon S3** storage bucket with `incoming/`, `voice/`, and `media/` prefixes, wired to `resize-image` via an S3 event notification and a 1-day lifecycle rule on `incoming/`.

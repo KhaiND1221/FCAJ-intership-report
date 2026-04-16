@@ -12,6 +12,7 @@ Sau khi hoàn thành workshop, bạn sẽ có một stack đang chạy gồm:
   - `process-nutrition` — tra cứu dinh dưỡng lai DynamoDB + AI.
   - `friend-request` — mutation cho hệ thống bạn bè.
   - `resize-image` — trigger S3 event trên prefix `incoming/`.
+  - `scan-image` — proxy xử lý ảnh: tải file từ S3, chuyển tiếp đến ECS FastAPI (/analyze-food, /analyze-label, /scan-barcode) qua JWT xác thực, trả kết quả bằng cơ chế polling bất đồng bộ.
 - **9 hành động AI** do Lambda `aiEngine` phục vụ: `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`.
 - **Amazon Bedrock** với foundation model `qwen.qwen3-vl-235b-a22b` ở **ap-southeast-2** (Sydney), được gọi bởi AI coach persona tên **Ollie**, xử lý dịch âm thanh (voice), và gọi API trực tiếp từ service **ECS FastAPI** để phân tích hình ảnh/thực phẩm.
 - **Amazon S3** bucket với các prefix `incoming/`, `voice/`, `media/`, gắn vào `resize-image` qua S3 event notification và lifecycle rule 1 ngày trên `incoming/`.
