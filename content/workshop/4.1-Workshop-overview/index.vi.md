@@ -61,13 +61,13 @@ Sau khi hoàn thành workshop này, bạn sẽ có thể:
 
 ## Ước tính chi phí
 
-| Dịch vụ | 1 Ngày (workshop) | 1 Tháng (100 DAU) |
+| Dịch vụ | 1 Ngày (workshop) | 1 Tháng (1000 DAU) |
 | --- | --- | --- |
-| Amplify Gen 2 (AppSync, DynamoDB, Lambda, S3) | < $1 | ≈$13 |
-| Amazon Bedrock (Qwen3-VL 235B) | ≈$2–5 | ≈$30 |
-| Amazon Transcribe (ghi âm thực phẩm) | < $0.50 | ≈$6 |
-| ECS Fargate + ALB + NAT Instance | ≈$2–5 | ≈$44 |
-| **Tổng cộng** | **≈$5–10** | **≈$93** |
+| Amplify Gen 2 (AppSync, DynamoDB, Lambda, S3) | < $1 | ≈$11 |
+| Amazon Bedrock (Qwen3-VL 235B) | ≈$2–3 | ≈$148 |
+| Amazon Transcribe (ghi âm thực phẩm) | < $0.50 | ≈$7 |
+| Hạ tầng ECS (Fargate, ALB, NAT, WAF, Route53) | ≈$2–3 | ≈$68 |
+| **Tổng cộng** | **≈$5–8** | **≈$234** |
 
 Chi phí chủ yếu đến từ **Amazon Bedrock** — coaching AI và tra cứu dinh dưỡng text chiếm phần lớn chi phí Bedrock. Phân tích ảnh nay chạy trực tiếp trên **ECS Fargate**, chuyển chi phí xử lý sang dòng compute ECS. Hãy bật AWS Budgets với mức cảnh báo **$25/tháng** trước khi bắt đầu. Xem chi tiết tại [4.11.1 Chi tiết ngân sách](/workshop/4.11.1-Budget-Breakdown).
 

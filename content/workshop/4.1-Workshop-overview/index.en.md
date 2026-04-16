@@ -61,13 +61,13 @@ After completing this workshop you will be able to:
 
 ## Estimated Cost
 
-| Service | 1 Day (workshop) | 1 Month (100 DAU) |
+| Service | 1 Day (workshop) | 1 Month (1000 DAU) |
 | --- | --- | --- |
-| Amplify Gen 2 (AppSync, DynamoDB, Lambda, S3) | < $1 | ≈$13 |
-| Amazon Bedrock (Qwen3-VL 235B) | ≈$2–5 | ≈$30 |
-| Amazon Transcribe (voice logs) | < $0.50 | ≈$6 |
-| ECS Fargate + ALB + NAT Instance | ≈$2–5 | ≈$44 |
-| **Total** | **≈$5–10** | **≈$93** |
+| Amplify Gen 2 (AppSync, DynamoDB, Lambda, S3) | < $1 | ≈$11 |
+| Amazon Bedrock (Qwen3-VL 235B) | ≈$2–3 | ≈$148 |
+| Amazon Transcribe (voice logs) | < $0.50 | ≈$7 |
+| ECS Tier (Fargate, ALB, NAT, WAF, Route53) | ≈$2–3 | ≈$68 |
+| **Total** | **≈$5–8** | **≈$234** |
 
 The dominant cost driver is **Amazon Bedrock** — AI coaching and food text lookups account for the majority of Bedrock spend. Image scanning now runs directly on **ECS Fargate**, shifting photo-analysis cost to the ECS compute line. Enable AWS Budgets with a **$25/month** alert before starting. See the full breakdown in [4.11.1 Budget Breakdown](/workshop/4.11.1-Budget-Breakdown).
 
