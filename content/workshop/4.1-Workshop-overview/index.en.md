@@ -7,13 +7,13 @@ NutriTrack is a production-grade, AI-powered nutrition tracking platform built o
 By the end of this workshop you will have a running stack that contains:
 
 - **6 DynamoDB models** managed by AppSync (`Food`, `user`, `FoodLog`, `FridgeItem`, `Friendship`, `UserPublicStats`) defined in `backend/amplify/data/resource.ts`.
-- **4 Lambda functions** on **Node.js 22 / ARM64**:
+- **5 Lambda functions** on **Node.js 22 / ARM64**:
   - `ai-engine` — multi-action AI handler, 512 MB, 120 s timeout.
   - `process-nutrition` — hybrid DynamoDB + AI nutrition lookup.
   - `friend-request` — friend system mutations.
   - `resize-image` — S3 event trigger on the `incoming/` prefix.
   - `scan-image` — image processing proxy: fetches files from S3, forwards to ECS FastAPI (`/analyze-food`, `/analyze-label`, `/scan-barcode`) via JWT-authenticated requests, and returns results via asynchronous job polling.
-- **9 AI actions** served by the `aiEngine` Lambda: `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`.
+- **8 AI actions** served by the `aiEngine` Lambda: `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `weeklyInsight`.
 - **Amazon Bedrock** foundation model `qwen.qwen3-vl-235b-a22b` in **ap-southeast-2** (Sydney), invoked by the AI coach persona **Ollie**, processing voice context, and called directly from the **ECS FastAPI** service for image analysis.
 - **Amazon S3** storage bucket with `incoming/`, `voice/`, and `media/` prefixes, wired to `resize-image` via an S3 event notification and a 1-day lifecycle rule on `incoming/`.
 - **Amazon Cognito** user pool with email + OTP signup and Google federated identity.
@@ -28,7 +28,7 @@ By the end of this workshop you will have a running stack that contains:
 | **AWS Amplify Gen 2** | Project scaffold, CI/CD pipeline (`amplify.yml`), multi-environment deployments (sandbox → staging → production) |
 | **AWS AppSync** | Managed GraphQL API — all client queries, mutations, and real-time subscriptions route through AppSync |
 | **Amazon DynamoDB** | Primary NoSQL datastore for 6 data models (`Food`, `FoodLog`, `FridgeItem`, `Friendship`, and more) |
-| **AWS Lambda** | Four Node.js 22 / ARM64 functions: `aiEngine`, `processNutrition`, `friendRequest`, `resizeImage` |
+| **AWS Lambda** | Five Node.js 22 / ARM64 functions: `aiEngine`, `processNutrition`, `friendRequest`, `resizeImage`, `scan-image` |
 | **AWS Secrets Manager** | Secure storage for `NUTRITRACK_API_KEY` — the shared secret used to generate HS256 JWT tokens for ECS endpoint authentication |
 | **Amazon Bedrock** | Foundation model inference — `qwen.qwen3-vl-235b-a22b` in `ap-southeast-2` for all AI actions, voice processing, and image analysis directly from ECS |
 | **Amazon S3** | Media storage with four prefixes (`incoming/`, `voice/`, `avatar/`, `media/`) and a 1-day lifecycle rule on `incoming/` |

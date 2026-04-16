@@ -7,13 +7,13 @@ NutriTrack là nền tảng theo dõi dinh dưỡng tích hợp AI, cấp độ 
 Sau khi hoàn thành workshop, bạn sẽ có một stack đang chạy gồm:
 
 - **6 model DynamoDB** do AppSync quản lý (`Food`, `user`, `FoodLog`, `FridgeItem`, `Friendship`, `UserPublicStats`), định nghĩa trong `backend/amplify/data/resource.ts`.
-- **4 Lambda function** chạy trên **Node.js 22 / ARM64**:
+- **5 Lambda function** chạy trên **Node.js 22 / ARM64**:
   - `ai-engine` — handler AI đa hành động, 512 MB, timeout 120 giây.
   - `process-nutrition` — tra cứu dinh dưỡng lai DynamoDB + AI.
   - `friend-request` — mutation cho hệ thống bạn bè.
   - `resize-image` — trigger S3 event trên prefix `incoming/`.
   - `scan-image` — proxy xử lý ảnh: tải file từ S3, chuyển tiếp đến ECS FastAPI (/analyze-food, /analyze-label, /scan-barcode) qua JWT xác thực, trả kết quả bằng cơ chế polling bất đồng bộ.
-- **9 hành động AI** do Lambda `aiEngine` phục vụ: `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`.
+- **8 hành động AI** do Lambda `aiEngine` phục vụ: `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `weeklyInsight`.
 - **Amazon Bedrock** với foundation model `qwen.qwen3-vl-235b-a22b` ở **ap-southeast-2** (Sydney), được gọi bởi AI coach persona tên **Ollie**, xử lý dịch âm thanh (voice), và gọi API trực tiếp từ service **ECS FastAPI** để phân tích hình ảnh/thực phẩm.
 - **Amazon S3** bucket với các prefix `incoming/`, `voice/`, `media/`, gắn vào `resize-image` qua S3 event notification và lifecycle rule 1 ngày trên `incoming/`.
 - **Amazon Cognito** user pool với đăng ký email + OTP và Google federated identity.
@@ -28,12 +28,12 @@ Sau khi hoàn thành workshop, bạn sẽ có một stack đang chạy gồm:
 | **AWS Amplify Gen 2** | Scaffold project, CI/CD pipeline (`amplify.yml`), triển khai đa môi trường (sandbox → staging → production) |
 | **AWS AppSync** | Managed GraphQL API — toàn bộ query, mutation và real-time subscription của client đều đi qua AppSync |
 | **Amazon DynamoDB** | NoSQL datastore chính cho 6 model dữ liệu (`Food`, `FoodLog`, `FridgeItem`, `Friendship` và nhiều hơn) |
-| **AWS Lambda** | Bốn function Node.js 22 / ARM64: `aiEngine`, `processNutrition`, `friendRequest`, `resizeImage` |
+| **AWS Lambda** | Năm function Node.js 22 / ARM64: `aiEngine`, `processNutrition`, `friendRequest`, `resizeImage`, `scan-image` |
 | **AWS Secrets Manager** | Lưu trữ bảo mật `NUTRITRACK_API_KEY` — khóa bí mật dùng để tạo JWT HS256 xác thực với các endpoint trên ECS |
 | **Amazon Bedrock** | Inference foundation model — `qwen.qwen3-vl-235b-a22b` tại `ap-southeast-2` cho các hành động AI, xử lý voice và phân tích hình ảnh trực tiếp từ ECS |
 | **Amazon S3** | Lưu trữ media với 4 prefix (`incoming/`, `voice/`, `avatar/`, `media/`) và lifecycle rule 1 ngày trên `incoming/` |
 | **Amazon Cognito** | Xác thực người dùng — đăng ký email + OTP và Google federated identity qua Hosted UI |
-| **Amazon Transcribe** | Speech-to-text cho ghi âm thực phẩm bằng tiếng Việt (`vi-VN`), gọi từ `aiEngine` |
+| **Amazon Transcribe** | Speech-to-text cho ghi âm thực phẩm bằng tiếng Việt (`vi-VN`), gọi từ `ai-engine` |
 | **Amazon ECS Fargate** | Service xử lý API hình ảnh/thực phẩm bằng FastAPI, đóng gói container và triển khai thủ công qua AWS Console, chạy sau một Application Load Balancer cho thông lượng cao |
 | **Amazon ECR** | Lưu trữ image container của FastAPI cho việc triển khai ECS trong môi trường thực tế |
 | **Amazon VPC** | Cách ly mạng cho tầng ECS — private subnet, NAT Instance, VPC endpoint cho DynamoDB/S3 |
