@@ -6,19 +6,18 @@ NutriTrack là nền tảng theo dõi dinh dưỡng tích hợp AI, cấp độ 
 
 Sau khi hoàn thành workshop, bạn sẽ có một stack đang chạy gồm:
 
-- **8 model DynamoDB** do AppSync quản lý (`Food`, `user`, `FoodLog`, `FridgeItem`, `Challenge`, `ChallengeParticipant`, `Friendship`, `UserPublicStats`), định nghĩa trong `backend/amplify/data/resource.ts`.
-- **5 Lambda function** chạy trên **Node.js 22 / ARM64**:
+- **6 model DynamoDB** do AppSync quản lý (`Food`, `user`, `FoodLog`, `FridgeItem`, `Friendship`, `UserPublicStats`), định nghĩa trong `backend/amplify/data/resource.ts`.
+- **4 Lambda function** chạy trên **Node.js 22 / ARM64**:
   - `ai-engine` — handler AI đa hành động, 512 MB, timeout 120 giây.
   - `process-nutrition` — tra cứu dinh dưỡng lai DynamoDB + AI.
   - `friend-request` — mutation cho hệ thống bạn bè.
   - `resize-image` — trigger S3 event trên prefix `incoming/`.
-  - `scan-image` — proxy xử lý ảnh: tải file từ S3, chuyển tiếp đến ECS FastAPI (`/analyze-food`, `/analyze-label`, `/scan-barcode`) qua JWT xác thực, trả kết quả bằng cơ chế polling bất đồng bộ.
-- **9 hành động AI** do Lambda `aiEngine` phục vụ: `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`. Phân tích ảnh được xử lý bởi Lambda `scan-image` chuyên dụng.
-- **Amazon Bedrock** với foundation model `qwen.qwen3-vl-235b-a22b` ở **ap-southeast-2** (Sydney), gọi bởi AI coach persona tên **Ollie**.
+- **9 hành động AI** do Lambda `aiEngine` phục vụ: `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`.
+- **Amazon Bedrock** với foundation model `qwen.qwen3-vl-235b-a22b` ở **ap-southeast-2** (Sydney), được gọi bởi AI coach persona tên **Ollie**, xử lý dịch âm thanh (voice), và gọi API trực tiếp từ service **ECS FastAPI** để phân tích hình ảnh/thực phẩm.
 - **Amazon S3** bucket với các prefix `incoming/`, `voice/`, `media/`, gắn vào `resize-image` qua S3 event notification và lifecycle rule 1 ngày trên `incoming/`.
 - **Amazon Cognito** user pool với đăng ký email + OTP và Google federated identity.
 - **Amazon Transcribe** cho tính năng voice-to-food, gọi từ `ai-engine` với resource policy cấp quyền trên `voice/*`.
-- **ECS Fargate** container tier chạy service FastAPI (`backend/main.py`) sau một Application Load Balancer, triển khai từ `infrastructure/` (Terraform) hoặc `ECS/` (Docker + CI/CD).
+- **ECS Fargate** container tier chạy service FastAPI (`backend/main.py`) sau một Application Load Balancer. Được triển khai thủ công qua giao diện AWS Console để dễ diễn giải và quản lý thực tế (không dùng Terraform như lý thuyết).
 - **Ứng dụng Expo** (SDK 54, React Native 0.81, React 19, Expo Router 6, Zustand 5) trong `frontend/`.
 
 ## Các dịch vụ AWS sử dụng
@@ -27,16 +26,16 @@ Sau khi hoàn thành workshop, bạn sẽ có một stack đang chạy gồm:
 | --- | --- |
 | **AWS Amplify Gen 2** | Scaffold project, CI/CD pipeline (`amplify.yml`), triển khai đa môi trường (sandbox → staging → production) |
 | **AWS AppSync** | Managed GraphQL API — toàn bộ query, mutation và real-time subscription của client đều đi qua AppSync |
-| **Amazon DynamoDB** | NoSQL datastore chính cho 8 model dữ liệu (`Food`, `FoodLog`, `FridgeItem`, `Challenge`, `Friendship` và nhiều hơn) |
-| **AWS Lambda** | Năm function Node.js 22 / ARM64: `aiEngine`, `processNutrition`, `friendRequest`, `resizeImage`, `scanImage` |
-| **AWS Secrets Manager** | Lưu trữ bảo mật `NUTRITRACK_API_KEY` — khóa bí mật dùng bởi `scanImage` Lambda để tạo JWT HS256 xác thực với ECS |
-| **Amazon Bedrock** | Inference foundation model — `qwen.qwen3-vl-235b-a22b` (Qwen3-VL 235B) tại `ap-southeast-2` cho cả 9 hành động AI |
+| **Amazon DynamoDB** | NoSQL datastore chính cho 6 model dữ liệu (`Food`, `FoodLog`, `FridgeItem`, `Friendship` và nhiều hơn) |
+| **AWS Lambda** | Bốn function Node.js 22 / ARM64: `aiEngine`, `processNutrition`, `friendRequest`, `resizeImage` |
+| **AWS Secrets Manager** | Lưu trữ bảo mật `NUTRITRACK_API_KEY` — khóa bí mật dùng để tạo JWT HS256 xác thực với các endpoint trên ECS |
+| **Amazon Bedrock** | Inference foundation model — `qwen.qwen3-vl-235b-a22b` tại `ap-southeast-2` cho các hành động AI, xử lý voice và phân tích hình ảnh trực tiếp từ ECS |
 | **Amazon S3** | Lưu trữ media với 4 prefix (`incoming/`, `voice/`, `avatar/`, `media/`) và lifecycle rule 1 ngày trên `incoming/` |
 | **Amazon Cognito** | Xác thực người dùng — đăng ký email + OTP và Google federated identity qua Hosted UI |
 | **Amazon Transcribe** | Speech-to-text cho ghi âm thực phẩm bằng tiếng Việt (`vi-VN`), gọi từ `aiEngine` |
-| **Amazon ECS Fargate** | Service FastAPI đóng gói container sau Application Load Balancer cho các API route thông lượng cao |
-| **Amazon ECR** | Không dùng trong production — NutriTrack host image FastAPI trên Docker Hub free tier để tránh chi phí lưu trữ ECR |
-| **Amazon VPC** | Cách ly mạng cho tầng ECS — private subnet, NAT Gateway, VPC endpoint cho DynamoDB/S3 |
+| **Amazon ECS Fargate** | Service xử lý API hình ảnh/thực phẩm bằng FastAPI, đóng gói container và triển khai thủ công qua AWS Console, chạy sau một Application Load Balancer cho thông lượng cao |
+| **Amazon ECR** | Lưu trữ image container của FastAPI cho việc triển khai ECS trong môi trường thực tế |
+| **Amazon VPC** | Cách ly mạng cho tầng ECS — private subnet, NAT Instance, VPC endpoint cho DynamoDB/S3 |
 | **Amazon CloudWatch** | Log, metric và alarm cho Lambda, độ trễ Bedrock và sức khỏe ECS |
 | **AWS IAM** | Execution role theo nguyên tắc least-privilege cho từng Lambda và ECS task; role Cognito identity pool cho mobile client |
 | **Amazon CloudFront** | CDN cho frontend Amplify Hosting (tự cấu hình bởi Amplify) |
@@ -69,7 +68,7 @@ Sau khi hoàn thành workshop này, bạn sẽ có thể:
 | ECS Fargate + ALB + NAT Instance | ≈$2–5 | ≈$44 |
 | **Tổng cộng** | **≈$5–10** | **≈$93** |
 
-Chi phí chủ yếu đến từ **Amazon Bedrock** — coaching AI và tra cứu dinh dưỡng text chiếm phần lớn chi phí Bedrock. Phân tích ảnh nay chạy trên ECS Fargate (qua proxy `scanImage` Lambda → FastAPI), chuyển chi phí xử lý ảnh sang dòng compute ECS. Hãy bật AWS Budgets với mức cảnh báo **$25/tháng** trước khi bắt đầu. Xem chi tiết tại [4.11.1 Chi tiết ngân sách](/workshop/4.11.1-Budget-Breakdown).
+Chi phí chủ yếu đến từ **Amazon Bedrock** — coaching AI và tra cứu dinh dưỡng text chiếm phần lớn chi phí Bedrock. Phân tích ảnh nay chạy trực tiếp trên **ECS Fargate**, chuyển chi phí xử lý sang dòng compute ECS. Hãy bật AWS Budgets với mức cảnh báo **$25/tháng** trước khi bắt đầu. Xem chi tiết tại [4.11.1 Chi tiết ngân sách](/workshop/4.11.1-Budget-Breakdown).
 
 ## Thời lượng và độ khó
 

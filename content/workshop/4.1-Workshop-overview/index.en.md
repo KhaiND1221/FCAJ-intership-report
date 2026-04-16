@@ -6,19 +6,18 @@ NutriTrack is a production-grade, AI-powered nutrition tracking platform built o
 
 By the end of this workshop you will have a running stack that contains:
 
-- **8 DynamoDB models** managed by AppSync (`Food`, `user`, `FoodLog`, `FridgeItem`, `Challenge`, `ChallengeParticipant`, `Friendship`, `UserPublicStats`) defined in `backend/amplify/data/resource.ts`.
-- **5 Lambda functions** on **Node.js 22 / ARM64**:
+- **6 DynamoDB models** managed by AppSync (`Food`, `user`, `FoodLog`, `FridgeItem`, `Friendship`, `UserPublicStats`) defined in `backend/amplify/data/resource.ts`.
+- **4 Lambda functions** on **Node.js 22 / ARM64**:
   - `ai-engine` — multi-action AI handler, 512 MB, 120 s timeout.
   - `process-nutrition` — hybrid DynamoDB + AI nutrition lookup.
   - `friend-request` — friend system mutations.
   - `resize-image` — S3 event trigger on the `incoming/` prefix.
-  - `scan-image` — image processing proxy: fetches files from S3, forwards to ECS FastAPI (`/analyze-food`, `/analyze-label`, `/scan-barcode`) via JWT-authenticated requests, and returns results via asynchronous job polling.
-- **9 AI actions** served by the `aiEngine` Lambda: `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`. Image scanning is handled by the dedicated `scan-image` Lambda.
-- **Amazon Bedrock** foundation model `qwen.qwen3-vl-235b-a22b` in **ap-southeast-2** (Sydney), invoked by the AI coach persona **Ollie**.
+- **9 AI actions** served by the `aiEngine` Lambda: `generateCoachResponse`, `generateFoodNutrition`, `fixFood`, `voiceToFood`, `ollieCoachTip`, `generateRecipe`, `calculateMacros`, `challengeSummary`, `weeklyInsight`.
+- **Amazon Bedrock** foundation model `qwen.qwen3-vl-235b-a22b` in **ap-southeast-2** (Sydney), invoked by the AI coach persona **Ollie**, processing voice context, and called directly from the **ECS FastAPI** service for image analysis.
 - **Amazon S3** storage bucket with `incoming/`, `voice/`, and `media/` prefixes, wired to `resize-image` via an S3 event notification and a 1-day lifecycle rule on `incoming/`.
 - **Amazon Cognito** user pool with email + OTP signup and Google federated identity.
 - **Amazon Transcribe** for voice-to-food logging, invoked from `ai-engine` with a resource-policy grant on `voice/*`.
-- **ECS Fargate** container tier running a FastAPI service (`backend/main.py`) behind an Application Load Balancer, deployed from `infrastructure/` (Terraform) or `ECS/` (Docker + CI/CD).
+- **ECS Fargate** container tier running a FastAPI service (`backend/main.py`) behind an Application Load Balancer. Deployed manually via the AWS Console for simpler understanding, without Terraform.
 - **Expo mobile app** (SDK 54, React Native 0.81, React 19, Expo Router 6, Zustand 5) in `frontend/`.
 
 ## AWS Services Used
@@ -27,16 +26,16 @@ By the end of this workshop you will have a running stack that contains:
 | --- | --- |
 | **AWS Amplify Gen 2** | Project scaffold, CI/CD pipeline (`amplify.yml`), multi-environment deployments (sandbox → staging → production) |
 | **AWS AppSync** | Managed GraphQL API — all client queries, mutations, and real-time subscriptions route through AppSync |
-| **Amazon DynamoDB** | Primary NoSQL datastore for 8 data models (`Food`, `FoodLog`, `FridgeItem`, `Challenge`, `Friendship`, and more) |
-| **AWS Lambda** | Five Node.js 22 / ARM64 functions: `aiEngine`, `processNutrition`, `friendRequest`, `resizeImage`, `scanImage` |
-| **AWS Secrets Manager** | Secure storage for `NUTRITRACK_API_KEY` — the shared secret used by `scanImage` Lambda to generate HS256 JWT tokens for ECS authentication |
-| **Amazon Bedrock** | Foundation model inference — `qwen.qwen3-vl-235b-a22b` (Qwen3-VL 235B) in `ap-southeast-2` for all 9 AI actions |
+| **Amazon DynamoDB** | Primary NoSQL datastore for 6 data models (`Food`, `FoodLog`, `FridgeItem`, `Friendship`, and more) |
+| **AWS Lambda** | Four Node.js 22 / ARM64 functions: `aiEngine`, `processNutrition`, `friendRequest`, `resizeImage` |
+| **AWS Secrets Manager** | Secure storage for `NUTRITRACK_API_KEY` — the shared secret used to generate HS256 JWT tokens for ECS endpoint authentication |
+| **Amazon Bedrock** | Foundation model inference — `qwen.qwen3-vl-235b-a22b` in `ap-southeast-2` for all AI actions, voice processing, and image analysis directly from ECS |
 | **Amazon S3** | Media storage with four prefixes (`incoming/`, `voice/`, `avatar/`, `media/`) and a 1-day lifecycle rule on `incoming/` |
 | **Amazon Cognito** | User authentication — email + OTP signup and Google federated identity via the Hosted UI |
 | **Amazon Transcribe** | Speech-to-text for Vietnamese voice food logging (`vi-VN`), invoked from `aiEngine` |
-| **Amazon ECS Fargate** | Containerized FastAPI service behind an Application Load Balancer for high-throughput API routes |
-| **Amazon ECR** | Not used in production — NutriTrack hosts the FastAPI image on Docker Hub free tier to avoid ECR storage costs |
-| **Amazon VPC** | Network isolation for the ECS tier — private subnets, NAT Gateway, VPC endpoints for DynamoDB/S3 |
+| **Amazon ECS Fargate** | Containerized FastAPI service for image analysis, deployed manually via AWS Console behind an Application Load Balancer for high throughput |
+| **Amazon ECR** | Stores the container image of FastAPI for deployment to ECS |
+| **Amazon VPC** | Network isolation for the ECS tier — private subnets, NAT Instance, VPC endpoints for DynamoDB/S3 |
 | **Amazon CloudWatch** | Logs, metrics, and alarms for Lambda execution, Bedrock latency, and ECS health |
 | **AWS IAM** | Least-privilege execution roles for each Lambda and ECS task; Cognito identity pool roles for mobile client |
 | **Amazon CloudFront** | CDN for the Amplify Hosting frontend (auto-configured by Amplify) |
@@ -69,7 +68,7 @@ After completing this workshop you will be able to:
 | ECS Fargate + ALB + NAT Instance | ≈$2–5 | ≈$44 |
 | **Total** | **≈$5–10** | **≈$93** |
 
-The dominant cost driver is **Amazon Bedrock** — AI coaching and food text lookups account for the majority of Bedrock spend. Image scanning now runs on ECS Fargate (via `scanImage` Lambda proxy to FastAPI), shifting photo-analysis cost to the ECS compute line. Enable AWS Budgets with a **$25/month** alert before starting. See the full breakdown in [4.11.1 Budget Breakdown](/workshop/4.11.1-Budget-Breakdown).
+The dominant cost driver is **Amazon Bedrock** — AI coaching and food text lookups account for the majority of Bedrock spend. Image scanning now runs directly on **ECS Fargate**, shifting photo-analysis cost to the ECS compute line. Enable AWS Budgets with a **$25/month** alert before starting. See the full breakdown in [4.11.1 Budget Breakdown](/workshop/4.11.1-Budget-Breakdown).
 
 ## Duration and Difficulty
 
