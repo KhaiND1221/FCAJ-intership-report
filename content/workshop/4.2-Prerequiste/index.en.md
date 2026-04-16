@@ -19,7 +19,6 @@ For the workshop, use either the root account or an IAM user with the `Administr
 Amazon Bedrock now allows users to directly access available models without requiring prior registration. To integrate and use Bedrock's AI models in your source code, follow these instructions:
 
 - **Identify the Model ID**: Select the Bedrock model you want to use and note its unique identifier.
-- **Use the Boto3 Library**: Integrate the `boto3` library (AWS SDK for Python) into your project to establish a connection and call Bedrock APIs, passing the identified model ID to interact and send requests to the model.
 
 To enable model access in the AWS Console:
 

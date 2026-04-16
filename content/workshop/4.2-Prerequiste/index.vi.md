@@ -19,7 +19,6 @@ Cho workshop này, dùng tài khoản root hoặc một IAM user có managed pol
 Amazon Bedrock hiện cho phép người dùng truy cập trực tiếp các model có sẵn mà không cần đăng ký trước. Để tích hợp và sử dụng AI model của Bedrock trong source code, hãy làm theo hướng dẫn sau:
 
 - **Xác định Model ID**: Chọn model Bedrock bạn muốn dùng và ghi lại mã định danh duy nhất của nó.
-- **Sử dụng thư viện Boto3**: Tích hợp thư viện `boto3` (AWS SDK for Python) vào project để kết nối và gọi Bedrock API, truyền Model ID đã xác định để tương tác và gửi request đến model.
 
 Để bật quyền truy cập model trên AWS Console:
 
