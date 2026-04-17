@@ -5,6 +5,39 @@ import { Link } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { coldarkDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { Info, Lightbulb, AlertTriangle, XOctagon } from 'lucide-react';
+
+// ─── remark plugin for GitHub Alerts ──────────────────────────────────────────
+function remarkGitHubAlerts() {
+    return (tree: any) => {
+        const walk = (node: any) => {
+            if (node.type === 'blockquote' && node.children && node.children.length > 0) {
+                const firstChild = node.children[0];
+                if (firstChild && firstChild.type === 'paragraph' && firstChild.children && firstChild.children.length > 0) {
+                    const firstText = firstChild.children[0];
+                    if (firstText && firstText.type === 'text' && firstText.value) {
+                        const match = firstText.value.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \t]*(?:\n)?/i);
+                        if (match) {
+                            const alertType = match[1].toUpperCase();
+                            // Remove the marker tag from the text
+                            firstText.value = firstText.value.substring(match[0].length);
+                            // Attach data to be passed to custom component
+                            node.data = node.data || {};
+                            node.data.hProperties = node.data.hProperties || {};
+                            node.data.hProperties.className = `github-alert alert-${alertType.toLowerCase()}`;
+                            node.data.hProperties['data-alert-type'] = alertType;
+                        }
+                    }
+                }
+            }
+            if (node.children) {
+                node.children.forEach(walk);
+            }
+        };
+        walk(tree);
+    };
+}
+
 
 function MermaidChart({ chart }: { chart: string }) {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -16,11 +49,7 @@ function MermaidChart({ chart }: { chart: string }) {
         async function renderChart() {
             try {
                 const mermaidModule = await import('mermaid');
-                const mermaid = mermaidModule.default || mermaidModule;
-                
-                if (!mermaid || !mermaid.initialize) {
-                    throw new Error("Mermaid object is invalid");
-                }
+                const mermaid = mermaidModule.default;
                 
                 mermaid.initialize({
                     startOnLoad: false,
@@ -34,10 +63,10 @@ function MermaidChart({ chart }: { chart: string }) {
                 if (isMounted && containerRef.current) {
                     containerRef.current.innerHTML = svg;
                 }
-            } catch (e: any) {
+            } catch (e) {
                 console.error('Mermaid rendering failed', e);
                 if (isMounted) {
-                    setError('Failed to render diagram: ' + (e?.message || String(e)));
+                    setError('Failed to render diagram.');
                 }
             }
         }
@@ -104,27 +133,34 @@ function CopyableCodeBlock({ language, code }: { language: string; code: string 
 interface MarkdownRendererProps {
     content: string;
     /** folderName of the workshop section, e.g. "4.3-Foundation-Setup/4.3.2-Cognito-Auth".
-     *  When provided, relative `images/xxx` paths are resolved to public/workshop-images/<sectionPath>/images/xxx */
+     *  When provided, relative `images/xxx` paths are resolved to public/workshop/<sectionPath>/images/xxx */
     sectionPath?: string;
 }
 
 export function MarkdownRenderer({ content, sectionPath }: MarkdownRendererProps) {
-    const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+    const base = import.meta.env.BASE_URL.replace(/\/$/, ''); // e.g. "/hei-FCAJ-intership-report"
 
     function resolveImageSrc(src: string | undefined): string | undefined {
-        if (!src || !sectionPath) return src;
-        if (src.startsWith('images/')) {
-            return `${base}/workshop-images/${sectionPath}/${src}`;
+        if (!src) return src;
+
+        // Absolute path starting with /images/ → prepend BASE_URL
+        // e.g. /images/architect.jpg → /hei-FCAJ-intership-report/images/architect.jpg
+        if (src.startsWith('/images/')) {
+            return `${base}${src}`;
         }
-        // Special case for 4.2-Prerequiste's bedrock-model-access.png which is outside images/ in the source but we moved it to images/
-        // Actually we moved it to images/, but md file references `images/...,` so it's handled above!
-        // What about `google-oauth-client.png` which is not in `images/` folder in md file?? Wait, the md file says `images/` or direct?
+
+        // Relative path starting with images/ and we have a sectionPath
+        // e.g. images/only-nutritrack-api-vpc.drawio.svg → BASE_URL/workshop/sectionPath/images/...
+        if (src.startsWith('images/') && sectionPath) {
+            return `${base}/workshop/${sectionPath}/${src}`;
+        }
+
         return src;
     }
 
     return (
         <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
+            remarkPlugins={[remarkGfm, remarkGitHubAlerts]}
             rehypePlugins={[rehypeRaw]}
             components={{
                 // Headings with proper styling
@@ -237,10 +273,69 @@ export function MarkdownRenderer({ content, sectionPath }: MarkdownRendererProps
                     return <CopyableCodeBlock language={language} code={codeString} />;
                 },
 
-                // Blockquotes for admonitions
-                blockquote: ({ children }) => (
-                    <blockquote className="admonition-note">{children}</blockquote>
-                ),
+                // Blockquotes for admonitions & GitHub alerts
+                blockquote: ({ node, className, children, ...props }) => {
+                    const alertType = (props as any)['data-alert-type'];
+
+                    if (alertType) {
+                        let Icon = Info;
+                        let colorClass = '';
+                        let bgClass = '';
+                        let title = alertType;
+
+                        switch (alertType) {
+                            case 'NOTE':
+                                Icon = Info;
+                                colorClass = 'text-blue-600';
+                                bgClass = 'bg-blue-50 border-blue-200';
+                                title = 'Note';
+                                break;
+                            case 'TIP':
+                                Icon = Lightbulb;
+                                colorClass = 'text-green-600';
+                                bgClass = 'bg-green-50 border-green-200';
+                                title = 'Tip';
+                                break;
+                            case 'IMPORTANT':
+                                Icon = AlertTriangle;
+                                colorClass = 'text-purple-600';
+                                bgClass = 'bg-purple-50 border-purple-200';
+                                title = 'Important';
+                                break;
+                            case 'WARNING':
+                                Icon = AlertTriangle;
+                                colorClass = 'text-amber-600';
+                                bgClass = 'bg-amber-50 border-amber-200';
+                                title = 'Warning';
+                                break;
+                            case 'CAUTION':
+                                Icon = XOctagon;
+                                colorClass = 'text-red-700';
+                                bgClass = 'bg-red-50 border-red-200';
+                                title = 'Danger';
+                                break;
+                        }
+
+                        return (
+                            <div className={`my-6 rounded-xl border-l-[5px] border ${colorClass} ${bgClass} overflow-hidden shadow-sm`}>
+                                <div className={`flex items-center gap-2.5 px-4 pt-3.5 pb-2 font-bold tracking-wide uppercase ${colorClass}`}>
+                                    <Icon size={18} strokeWidth={2.5} />
+                                    {title}
+                                </div>
+                                <div className="px-4 pb-4 text-gray-700 leading-relaxed text-[14.5px] [&>p:first-child]:mt-0 [&>p:last-child]:mb-0 [&_code]:bg-white/60">
+                                    {children}
+                                </div>
+                            </div>
+                        );
+                    }
+
+                    // Fallback to regular blockquote
+                    return (
+                        <blockquote className="border-l-4 border-gray-300 pl-4 py-1 italic text-gray-600 my-6 bg-gray-50 rounded-r-lg">
+                            {children}
+                        </blockquote>
+                    );
+                },
 
                 // Images
                 img: ({ src, alt, style, width, height }) => (
