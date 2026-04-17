@@ -49,11 +49,13 @@ function AppContent() {
                 <Route path="/proposal" element={<ProposalPage />} />
                 <Route path="/events" element={<EventsPage />} />
 
-                {/* Workshop Routes - new dynamic routing */}
+                {/* Workshop Routes - dynamic routing up to 3 levels */}
                 <Route path="/workshop" element={<WorkshopPage />} />
-                {/* Sub-section route (e.g. /workshop/5.3-foundation/5.3.1-s3-buckets) */}
+                {/* Level 3: /workshop/:sectionId/:subId/:subSubId */}
+                <Route path="/workshop/:sectionId/:subId/:subSubId" element={<WorkshopSectionPage />} />
+                {/* Level 2: /workshop/:sectionId/:subId */}
                 <Route path="/workshop/:sectionId/:subId" element={<WorkshopSectionPage />} />
-                {/* Main section route (e.g. /workshop/5.1-overview) */}
+                {/* Level 1: /workshop/:sectionId */}
                 <Route path="/workshop/:sectionId" element={<WorkshopSectionPage />} />
 
                 {/* Evaluation & Feedback */}

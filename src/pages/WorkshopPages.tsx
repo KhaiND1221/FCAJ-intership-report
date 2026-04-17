@@ -19,8 +19,8 @@ interface WorkshopSection {
 
 const WORKSHOP_SECTIONS: WorkshopSection[] = [
     {
-        id: '4.1-Workshop-overview',
-        folderName: '4.1-Workshop-overview',
+        id: '4.1-Overview',
+        folderName: '4.1-Overview',
         en: '4.1 Overview',
         vi: '4.1 Tổng Quan',
     },
@@ -31,95 +31,58 @@ const WORKSHOP_SECTIONS: WorkshopSection[] = [
         vi: '4.2 Điều Kiện Tiên Quyết',
     },
     {
-        id: '4.3-Foundation-Setup',
-        folderName: '4.3-Foundation-Setup',
-        en: '4.3 Foundation Setup',
-        vi: '4.3 Thiết Lập Nền Tảng',
+        id: '4.3-Frontend',
+        folderName: '4.3-Frontend',
+        en: '4.3 Frontend Setup',
+        vi: '4.3 Thiết Lập Frontend',
+    },
+    {
+        id: '4.4-Backend',
+        folderName: '4.4-Backend',
+        en: '4.4 Backend Setup',
+        vi: '4.4 Thiết Lập Backend',
         children: [
-            { id: '4.3.1-Amplify-Init', folderName: '4.3-Foundation-Setup/4.3.1-Amplify-Init', en: '4.3.1 Amplify Gen 2', vi: '4.3.1 Khởi tạo Amplify' },
-            { id: '4.3.2-Cognito-Auth', folderName: '4.3-Foundation-Setup/4.3.2-Cognito-Auth', en: '4.3.2 Cognito Auth', vi: '4.3.2 Xác thực Cognito' },
-            { id: '4.3.3-S3-Storage', folderName: '4.3-Foundation-Setup/4.3.3-S3-Storage', en: '4.3.3 S3 Storage', vi: '4.3.3 Lưu Trữ S3' }
-        ]
+            { id: '4.4.1-Auth', folderName: '4.4-Backend/4.4.1-Auth', en: '4.4.1 Authentication', vi: '4.4.1 Xác Thực' },
+            { id: '4.4.2-Data', folderName: '4.4-Backend/4.4.2-Data', en: '4.4.2 Data Layer', vi: '4.4.2 Lớp Dữ Liệu' },
+            { id: '4.4.3-Storage', folderName: '4.4-Backend/4.4.3-Storage', en: '4.4.3 Storage Layer', vi: '4.4.3 Lớp Lưu Trữ' },
+            {
+                id: '4.4.4-Functions',
+                folderName: '4.4-Backend/4.4.4-Functions',
+                en: '4.4.4 Lambda Functions',
+                vi: '4.4.4 Các Hàm Lambda',
+                children: [
+                    { id: '4.4.4.1-AIEngine', folderName: '4.4-Backend/4.4.4-Functions/4.4.4.1-AIEngine', en: '4.4.4.1 ai-engine (Bedrock)', vi: '4.4.4.1 ai-engine (Bedrock)' },
+                    { id: '4.4.4.2-ScanImage', folderName: '4.4-Backend/4.4.4-Functions/4.4.4.2-ScanImage', en: '4.4.4.2 scan-image', vi: '4.4.4.2 scan-image' },
+                    { id: '4.4.4.3-ProcessNutrition', folderName: '4.4-Backend/4.4.4-Functions/4.4.4.3-ProcessNutrition', en: '4.4.4.3 process-nutrition', vi: '4.4.4.3 process-nutrition' },
+                    { id: '4.4.4.4-FriendRequest', folderName: '4.4-Backend/4.4.4-Functions/4.4.4.4-FriendRequest', en: '4.4.4.4 friend-request', vi: '4.4.4.4 friend-request' },
+                    { id: '4.4.4.5-ResizeImage', folderName: '4.4-Backend/4.4.4-Functions/4.4.4.5-ResizeImage', en: '4.4.4.5 resize-image', vi: '4.4.4.5 resize-image' },
+                ],
+            },
+        ],
     },
     {
-        id: '4.4-Monitoring-Setup',
-        folderName: '4.4-Monitoring-Setup',
-        en: '4.4 Data Layer',
-        vi: '4.4 Tầng Dữ Liệu',
+        id: '4.5-ECS-Fargate',
+        folderName: '4.5-ECS-Fargate',
+        en: '4.5 ECS Fargate',
+        vi: '4.5 ECS Fargate',
         children: [
-            { id: '4.4.1-AppSync', folderName: '4.4-Monitoring-Setup/4.4.1-AppSync', en: '4.4.1 AppSync GraphQL', vi: '4.4.1 Schema AppSync' },
-            { id: '4.4.2-DynamoDB', folderName: '4.4-Monitoring-Setup/4.4.2-DynamoDB', en: '4.4.2 DynamoDB Tables', vi: '4.4.2 Bảng DynamoDB' }
-        ]
+            { id: '4.5.1-VPC-Network', folderName: '4.5-ECS-Fargate/4.5.1-VPC-Network', en: '4.5.1 VPC & Network', vi: '4.5.1 VPC & Mạng' },
+            { id: '4.5.2-Infrastructure', folderName: '4.5-ECS-Fargate/4.5.2-Infrastructure', en: '4.5.2 Infrastructure', vi: '4.5.2 Hạ Tầng Hỗ Trợ' },
+            { id: '4.5.3-NAT-Instance', folderName: '4.5-ECS-Fargate/4.5.3-NAT-Instance', en: '4.5.3 NAT Optimization', vi: '4.5.3 Tối Ưu NAT' },
+            { id: '4.5.4-Fargate-ALB', folderName: '4.5-ECS-Fargate/4.5.4-Fargate-ALB', en: '4.5.4 Fargate & ALB', vi: '4.5.4 Fargate & ALB' },
+        ],
     },
     {
-        id: '4.5-Processing-Setup',
-        folderName: '4.5-Processing-Setup',
-        en: '4.5 Compute & AI',
-        vi: '4.5 Compute & AI',
-        children: [
-            { id: '4.5.1-Bedrock', folderName: '4.5-Processing-Setup/4.5.1-Bedrock', en: '4.5.1 Bedrock Qwen3-VL', vi: '4.5.1 Bedrock Qwen3-VL' },
-            { id: '4.5.2-AIEngine', folderName: '4.5-Processing-Setup/4.5.2-AIEngine', en: '4.5.2 aiEngine Lambda', vi: '4.5.2 Lambda aiEngine' },
-            { id: '4.5.3-ProcessNutrition', folderName: '4.5-Processing-Setup/4.5.3-ProcessNutrition', en: '4.5.3 processNutrition Lambda', vi: '4.5.3 Lambda processNutrition' },
-            { id: '4.5.4-ResizeImage', folderName: '4.5-Processing-Setup/4.5.4-ResizeImage', en: '4.5.4 resizeImage Lambda', vi: '4.5.4 Lambda resizeImage' },
-            { id: '4.5.5-ScanImage', folderName: '4.5-Processing-Setup/4.5.5-ScanImage', en: '4.5.5 scanImage Lambda', vi: '4.5.5 Lambda scanImage' }
-        ]
+        id: '4.6-CICD',
+        folderName: '4.6-CICD',
+        en: '4.6 CI/CD',
+        vi: '4.6 CI/CD',
     },
     {
-        id: '4.6-Automation-Setup',
-        folderName: '4.6-Automation-Setup',
-        en: '4.6 API & Social',
-        vi: '4.6 API & Xã Hội',
-        children: [
-            { id: '4.6.1-FriendRequest', folderName: '4.6-Automation-Setup/4.6.1-FriendRequest', en: '4.6.1 friendRequest Lambda', vi: '4.6.1 Lambda friendRequest' },
-            { id: '4.6.2-Realtime-Subscriptions', folderName: '4.6-Automation-Setup/4.6.2-Realtime-Subscriptions', en: '4.6.2 Realtime Subscriptions', vi: '4.6.2 Subscriptions Thời Gian Thực' }
-        ]
-    },
-    {
-        id: '4.7-Dashboard-Setup',
-        folderName: '4.7-Dashboard-Setup',
-        en: '4.7 Frontend',
-        vi: '4.7 Frontend',
-        children: [
-            { id: '4.7.1-ReactNative', folderName: '4.7-Dashboard-Setup/4.7.1-ReactNative', en: '4.7.1 Expo Setup', vi: '4.7.1 Thiết lập Expo' },
-            { id: '4.7.2-UIComponents', folderName: '4.7-Dashboard-Setup/4.7.2-UIComponents', en: '4.7.2 UI Components', vi: '4.7.2 Giao diện UI' },
-            { id: '4.7.3-Voice-Camera', folderName: '4.7-Dashboard-Setup/4.7.3-Voice-Camera', en: '4.7.3 Voice & Camera', vi: '4.7.3 Giọng Nói & Camera' }
-        ]
-    },
-    {
-        id: '4.8-Verify-Setup',
-        folderName: '4.8-Verify-Setup',
-        en: '4.8 ECS Deployment',
-        vi: '4.8 Triển Khai ECS',
-        children: [
-            { id: '4.8.1-VPC-ECR', folderName: '4.8-Verify-Setup/4.8.1-VPC-ECR', en: '4.8.1 VPC & Network', vi: '4.8.1 VPC & Network' },
-            { id: '4.8.2-Fargate-ALB', folderName: '4.8-Verify-Setup/4.8.2-Fargate-ALB', en: '4.8.2 Fargate & ALB', vi: '4.8.2 Fargate & ALB' },
-            { id: '4.8.3-Infrastructure', folderName: '4.8-Verify-Setup/4.8.3-Infrastructure', en: '4.8.3 Infrastructure', vi: '4.8.3 Hạ Tầng' },
-            { id: '4.8.4-NAT-Instance', folderName: '4.8-Verify-Setup/4.8.4-NAT-Instance', en: '4.8.4 NAT Instance', vi: '4.8.4 NAT Instance' }
-        ]
-    },
-    {
-        id: '4.9-Use-CDK',
-        folderName: '4.9-Use-CDK',
-        en: '4.9 CI/CD',
-        vi: '4.9 CI/CD',
-    },
-    {
-        id: '4.10-Cleanup',
-        folderName: '4.10-Cleanup',
-        en: '4.10 Cleanup',
-        vi: '4.10 Dọn Dẹp',
-    },
-    {
-        id: '4.11-Appendices',
-        folderName: '4.11-Appendices',
-        en: '4.11 Appendices',
-        vi: '4.11 Phụ Lục',
-        children: [
-            { id: '4.11.1-Budget-Breakdown', folderName: '4.11-Appendices/4.11.1-Budget-Breakdown', en: '4.11.1 Budget Breakdown', vi: '4.11.1 Chi Tiết Ngân Sách' },
-            { id: '4.11.2-IAM-Policies', folderName: '4.11-Appendices/4.11.2-IAM-Policies', en: '4.11.2 IAM Policies', vi: '4.11.2 IAM Policies' },
-            { id: '4.11.3-Troubleshooting', folderName: '4.11-Appendices/4.11.3-Troubleshooting', en: '4.11.3 Troubleshooting', vi: '4.11.3 Xử Lý Lỗi' },
-            { id: '4.11.4-Prompt-Templates', folderName: '4.11-Appendices/4.11.4-Prompt-Templates', en: '4.11.4 Prompt Templates', vi: '4.11.4 Prompt Templates' }
-        ]
+        id: '4.7-Cleanup',
+        folderName: '4.7-Cleanup',
+        en: '4.7 Cleanup',
+        vi: '4.7 Dọn Dẹp',
     },
 ];
 
@@ -131,7 +94,7 @@ function flattenSections(sections: WorkshopSection[]): Map<string, WorkshopSecti
         if (s.children) {
             for (const c of s.children) {
                 map.set(c.id, c);
-                map.set(`${s.id}/${c.id}`, c); // compound key for /workshop/:sectionId/:subId routes
+                map.set(`${s.id}/${c.id}`, c);
                 if (c.children) {
                     for (const gc of c.children) {
                         map.set(gc.id, gc);
@@ -170,10 +133,12 @@ export function WorkshopPage() {
 
 export function WorkshopSectionPage() {
     const { language } = useLanguage();
-    const params = useParams<{ sectionId: string; subId?: string }>();
+    const params = useParams<{ sectionId: string; subId?: string; subSubId?: string }>();
 
-    // Build compound key from URL params
-    const routeId = params.subId
+    // Build compound key from URL params (support up to 3 levels)
+    const routeId = params.subSubId
+        ? `${params.sectionId}/${params.subId}/${params.subSubId}`
+        : params.subId
         ? `${params.sectionId}/${params.subId}`
         : params.sectionId ?? '';
 
@@ -185,9 +150,16 @@ export function WorkshopSectionPage() {
     // Breadcrumb
     const parentId = params.subId ? params.sectionId : undefined;
     const parentMeta = parentId ? SECTION_MAP.get(parentId) : undefined;
+    const grandParentId = params.subSubId ? params.sectionId : undefined;
+    const grandParentMeta = grandParentId ? SECTION_MAP.get(grandParentId) : undefined;
+    const midParentId = params.subSubId && params.subId ? `${params.sectionId}/${params.subId}` : undefined;
+    const midParentMeta = midParentId ? SECTION_MAP.get(midParentId) : undefined;
+
     const crumbs = [
         { label: 'Workshop', path: '/workshop' },
-        ...(parentMeta ? [{ label: language === 'en' ? parentMeta.en : parentMeta.vi, path: `/workshop/${parentId}` }] : []),
+        ...(grandParentMeta ? [{ label: language === 'en' ? grandParentMeta.en : grandParentMeta.vi, path: `/workshop/${grandParentId}` }] : []),
+        ...(midParentMeta ? [{ label: language === 'en' ? midParentMeta.en : midParentMeta.vi, path: `/workshop/${params.sectionId}/${params.subId}` }] : []),
+        ...(parentMeta && !params.subSubId ? [{ label: language === 'en' ? parentMeta.en : parentMeta.vi, path: `/workshop/${parentId}` }] : []),
         { label: sectionMeta ? (language === 'en' ? sectionMeta.en : sectionMeta.vi) : routeId },
     ];
 
@@ -209,7 +181,9 @@ export function WorkshopSectionPage() {
                             {sectionMeta.children.map((child, i) => (
                                 <li key={child.id}>
                                     <Link
-                                        to={`/workshop/${sectionMeta.id}/${child.id}`}
+                                        to={params.subId
+                                            ? `/workshop/${params.sectionId}/${params.subId}/${child.id}`
+                                            : `/workshop/${sectionMeta.id}/${child.id}`}
                                         className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-accent-orange/30 transition-all group"
                                     >
                                         <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-accent-orange font-mono text-sm font-semibold group-hover:bg-accent-orange group-hover:text-white transition-colors">
