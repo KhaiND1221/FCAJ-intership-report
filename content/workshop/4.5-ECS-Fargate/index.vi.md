@@ -2,7 +2,7 @@
 
 ## Kiến trúc Hệ thống
 
-![Kiến trúc NutriTrack API VPC](images/architect.jpg)
+![Kiến trúc NutriTrack API VPC](/images/architect.jpg)
 
 Các ECS task chạy trong **Private Subnet** để đảm bảo an ninh; **Application Load Balancer (ALB)** nằm trong **Public Subnet** để tiếp nhận yêu cầu từ internet. Task truy cập vào các dịch vụ AWS khác thông qua **NAT Instance** (giúp tiết kiệm 70% chi phí so với NAT Gateway) hoặc **S3 Gateway Endpoint** (miễn phí).
 

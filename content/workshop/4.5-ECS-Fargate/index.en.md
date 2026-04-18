@@ -2,7 +2,7 @@
 
 ## System Architecture
 
-![NutriTrack API VPC Architecture](images/architect.jpg)
+![NutriTrack API VPC Architecture](/images/architect.jpg)
 
 The ECS tasks run in a **Private Subnet** for security, while an **Application Load Balancer (ALB)** resides in the **Public Subnet** to receive internet requests. Tasks access other AWS services through a **NAT Instance** (saving 70% cost compared to a NAT Gateway) or an **S3 Gateway Endpoint** (free).
 
