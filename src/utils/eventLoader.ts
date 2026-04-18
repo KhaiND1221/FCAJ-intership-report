@@ -54,24 +54,24 @@ function parseEventMarkdown(content: string): Omit<EventData, 'id'> {
             continue;
         }
 
-        if (line.startsWith('**Date:**')) {
-            date = line.replace('**Date:**', '').trim();
+        if (line.startsWith('**Date:**') || line.startsWith('**Ngày:**')) {
+            date = line.replace('**Date:**', '').replace('**Ngày:**', '').trim();
             continue;
         }
 
-        if (line.startsWith('**Location:**')) {
-            location = line.replace('**Location:**', '').trim();
+        if (line.startsWith('**Location:**') || line.startsWith('**Địa điểm:**')) {
+            location = line.replace('**Location:**', '').replace('**Địa điểm:**', '').trim();
             continue;
         }
 
-        if (line.startsWith('**Role:**')) {
-            role = line.replace('**Role:**', '').trim();
+        if (line.startsWith('**Role:**') || line.startsWith('**Vai trò:**')) {
+            role = line.replace('**Role:**', '').replace('**Vai trò:**', '').trim();
             // After role, we assume content starts
             section = 'content';
             continue;
         }
 
-        if (line.startsWith('## Key Takeaways')) {
+        if (line.startsWith('## Key Takeaways') || line.startsWith('## Kết quả')) {
             section = 'takeaways';
             continue;
         }

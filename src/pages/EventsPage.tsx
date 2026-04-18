@@ -15,6 +15,7 @@ export function EventsPage() {
     const formatDate = (dateStr: string) => {
         try {
             const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return dateStr;
             return date.toLocaleDateString(language === 'en' ? 'en-US' : 'vi-VN', {
                 year: 'numeric',
                 month: 'long',
